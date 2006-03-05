@@ -79,7 +79,7 @@ from DateTime import DateTime
 
 from Products.Archetypes import public as atapi
 from Products.CMFCore.utils import UniqueObject
-from Products.CMFDeployment.segments.core import Consumer
+
 
 
 # external method tests
@@ -461,12 +461,15 @@ class ArchetypesSchemaModel( object ):
         wrapped = instance.__of__( context )
         wrapped.initializeArchetype()
 
-        self._loadInstance( instance )
+        self.loadInstance( instance )
         
         # just to be sure
         instance.unindexObject()
 
-    def _loadInstance( self, instance ):
+    def loadInstance( self, instance ):
+
+        if instance.portal_type in self._tables:
+            return
 
         relation_tables = []
         primary_columns = [ rdb.Column( "uid", rdb.String(50), primary_key=True ) ]
@@ -476,7 +479,6 @@ class ArchetypesSchemaModel( object ):
         table_name = self.ident_translate( portal_type )
         field_translator = self.translator_factory( self, table_name )
         
-
         print "Processing Type", portal_type
 
         d = {}
@@ -532,25 +534,3 @@ class ArchetypesSchemaModel( object ):
 
 
 
-        
-class RDBStorageManager( object ):
-
-    def add( self, pipe, descriptor ):
-        if descriptor.isGhost():
-            return
-        content = descriptor.getContent()
-        model = pipe.variables['rdb_model']
-        model.saveObject( content )
-
-    def remove( self, pipe, descriptor ):
-        model = pipe.variables['rdb_model']
-        model.deleteObject( content )
-
-class RDBStorage( Consumer, RDBStorageManager ):
-
-    process = add
-
-class RDBRemoval( Consumer, RDBStorageManager ):
-
-    process = remove        
-        

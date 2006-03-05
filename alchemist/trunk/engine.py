@@ -11,10 +11,12 @@ import re
 
 from zope.interface import implements
 
-
 from sqlalchemy.engine import SQLEngine
 from sqlalchemy import objectstore
 from sqlalchemy.databases.postgres import PGSQLEngine
+
+import transaction
+from manager import AlchemyDataManager
 
 def create_engine(name, opts=None,**kwargs):
     """
@@ -56,6 +58,9 @@ class ZopeEngine( SQLEngine ):
             conn = self.connection()
             self.do_begin(conn)
             self.context.transaction = conn
+
+            manager = AlchemyDataManager( self )
+            transaction.get().join( manager )
 
     def do_zope_rollback( self ):
         if self.context.transaction is None:
