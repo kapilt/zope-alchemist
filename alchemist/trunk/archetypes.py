@@ -532,5 +532,5 @@ class ArchetypesSchemaModel( object ):
         # associate peer to mapper
         rdb.assign_mapper( type_klass, type_table, **kwargs )
 
-
+        return self[ portal_type ]
 
