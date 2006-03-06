@@ -4,6 +4,7 @@ from Products.CMFCore.utils import UniqueObject
 
 from modeler import AlchemistModeler
 
+
 class AlchemistTool( UniqueObject, AlchemistModeler ):
 
     meta_type = "Alchemist Tool"
