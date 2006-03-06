@@ -7,7 +7,9 @@ Copyright (c) 2006 ObjectRealms, LLC
 $Id$
 """
 
-from Products.Archetypes.public import StorageLayer
+import config
+
+from Products.Archetypes.Storage import StorageLayer
 from Products.CMFCore.utils import getToolByName
 
 class AlchemistStorage( StorageLayer ):
@@ -26,15 +28,17 @@ class AlchemistStorage( StorageLayer ):
 
     def initializeInstance(self, instance, item=None, container=None):
 
-        if self.isInitialized( content ) or \
+        if self.isInitialized( instance ) or \
            getattr( instance, "_at_is_fake_instance", None):
             return 
 
         peer = self.getPeerFor( instance )
+        instance.__initialized = True
+        return peer
 
     def cleanupInstance( self, instance, item=None, container=None):
         # don't delete on move, fake, or not initialized instance
-        if getattr( instance, '_v_cp_refs' None) \
+        if getattr( instance, '_v_cp_refs', None) \
            or getattr( instance, "_at_is_fake_instance", None) \
            or not self.isInitialized( instance ):
             return
@@ -58,8 +62,8 @@ class AlchemistStorage( StorageLayer ):
     def isInitialized(self, content):
         return getattr( content, '__initialized', False )
 
-    def getPeer(self, instance ):
-        alchemist = getToolByName( instance, AlchemistTool.id  )
+    def getPeerFor(self, instance ):
+        alchemist = getToolByName( instance, config.ALCHEMIST_TOOL  )
         factory = alchemist.getPeerFactory( instance )
-        peer = factory.get( uid = instance.UID() ) or factory()
+        peer = factory.get( instance.UID() ) or factory()
         return peer

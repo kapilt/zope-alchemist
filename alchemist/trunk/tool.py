@@ -6,17 +6,18 @@ from AccessControl import ClassSecurityInfo
 from OFS.SimpleItem import SimpleItem
 
 from Products.Archetypes import public as atapi
+
 from Products.ATSchemaEditorNG import SchemaEditor
 from Products.CMFCore.utils import UniqueObject
 from Products.CMFCore import CMFCorePermissions as permissions
-
+from Products.CMFCore.TypesTool import FactoryTypeInformation
 
 from content import AlchemistWebContent
+from model import getModelFor
 
 class AlchemistModeler( SchemaEditor ):
 
     meta_type = "Alchemist Modeler"
-    
     
 
 class AlchemistTool( UniqueObject, AlchemistModeler, atapi.BaseFolder ):
@@ -59,7 +60,7 @@ class AlchemistTool( UniqueObject, AlchemistModeler, atapi.BaseFolder ):
     
 
     def __init__(self, *args, **kw):
-        pass
+        self._type_map = {}
 
     def initializeArchetype( self ):
         atapi.BaseFolder.initializeArchetype( self )
@@ -68,6 +69,18 @@ class AlchemistTool( UniqueObject, AlchemistModeler, atapi.BaseFolder ):
                                   undeletable_fields=('title',) )
         self._clear()
 
+    def createType(self,
+                   type_name,
+                   typeinfo_name='Alchemist Content: Alchemist Web Content',
+                   type_factory = FactoryTypeInformation.meta_type ):
+
+        types_tool = self.portal_types
+        types_tool.manage_addTypeInformation(
+            type_factory,
+            id = type_name,
+            typeinfo_name = typeinfo_name
+            )
+        
     def getPeerFactory( self, instance ):
 
         model = getModelFor( instance )

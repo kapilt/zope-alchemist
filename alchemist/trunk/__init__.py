@@ -9,12 +9,19 @@ from Products.CMFCore.utils import ToolInit
 from Products.CMFCore.DirectoryView import registerDirectory
 
 import config
+import engine
 import permissions
+import model
 import tool
 
 registerDirectory( 'skins', globals() )
 
-   
+model.registerModel(
+    model.default.DefaultSchemaModel(
+          engine.get_engine("zpgsql://database=alchemy", echo=True)
+          )
+    )
+
 def initialize( context ):
 
     ToolInit(

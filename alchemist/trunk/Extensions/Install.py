@@ -4,6 +4,7 @@ $Id$
 
 from StringIO import StringIO
 
+from Products.Alchemist.tool import AlchemistTool
 from Products.Alchemist import config
 from Products.Archetypes import public as atapi
 from Products.Archetypes.Extensions.utils import installTypes
@@ -36,9 +37,11 @@ def install( self ):
 
     portal = self.portal_url.getPortalObject()
 
-    portal.portal_types.constructContent( "Alchemist Tool",
-                                          portal,
-                                          config.ALCHEMIST_TOOL
-                                          )
+    portal._setObject( AlchemistTool.id, AlchemistTool() )
+    
+    #portal.portal_types.constructContent( "Alchemist Tool",
+    #                                      portal,
+    #                                      config.ALCHEMIST_TOOL
+    #                                      )
 
     return out.getvalue()

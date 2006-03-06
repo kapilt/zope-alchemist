@@ -16,7 +16,8 @@ def getModelFor( object ):
             return m
 
 
-
-registerModel( default.DefaultSchemaModel )
+def _clearModels():
+    global _models
+    _models = []
 
     

@@ -8,3 +8,4 @@ class DefaultSchemaModel( ArchetypesSchemaModel ):
 
     def match( self, object ):
         return True
+

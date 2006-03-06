@@ -33,17 +33,28 @@ def create_engine(name, opts=None,**kwargs):
             opts[m.group(1)] = m.group(2)
         re.sub(r'([^&]+)=([^&]*)', assign, args)
         
+    kwargs['use_threadlocal'] = True
     engine_factory = get_engine_factory( name )
-    return engine_factory( opts, **kwargs)
+    print "Opts ", opts
+    engine = engine_factory( opts, **kwargs)
+    _engines[ name ] = engine
+    return engine
 
 _engines = {}
+_engines_factories = {}
 
 def get_engine_factory( name ):
-    return _engines[name]
+    return _engines_factories[name]
 
 def register_engine_factory( name, factory ):
-    _engines[ name ] = factory
+    _engines_factories[ name ] = factory
 
+def get_engine( dburi, **kwargs ):
+    engine =  _engines.get( dburi )
+    if engine is not None:
+        return engine
+    return create_engine( dburi, **kwargs )
+    
 
 SAVEPOINT_PREFIX = 'alchemy-'
 
