@@ -63,6 +63,8 @@ from Products.Archetypes.tests.utils import Dummy
 
 from Products.Alchemist.storage import AlchemistStorage
 from Products.Alchemist.engine import get_engine
+from Products.Alchemist.model import _clearModels
+
 from sqlalchemy.pool import clear_managers
 
 from DateTime import DateTime
@@ -212,10 +214,15 @@ class SQLSetupTests(ATSiteTestCase):
     db_name = "zpgsql://database=alchemy"
 
     def testAlchemySetup(self):
-
-        res = get_engine( self.db_name ).has_table('dummy')
-        print "SS"*20, res        
-        commonAfterSetUp( self )
+        try:
+            commonAfterSetUp( self )
+        except:
+            raise
+            import sys, pdb
+            exc = sys.exc_info()
+            print exc[0], exc[1]
+            pretty_exc( None, exc  )
+            pdb.post_mortem( exc[-1] )
 
     def testAlchemySetup2(self):
         commonAfterSetUp( self )
@@ -223,7 +230,9 @@ class SQLSetupTests(ATSiteTestCase):
     def beforeTearDown(self):
         engine = get_engine( self.db_name )
         engine.do_zope_rollback()
+        _clearModels()
         clear_managers()
+        
 
 class SQLStorageTestBase(ATSiteTestCase):
     """ Abstract base class for the tests """
@@ -479,7 +488,7 @@ class SQLStorageTest(SQLStorageTestBase):
 
 tests = [ SQLSetupTests ]
 
-for db_name in []: #"zpgsql://database=baz"]:
+for db_name in ["zpgsql://database=alchemy"]:
 
     class StorageTest(SQLStorageTest):
         db_name = db_name

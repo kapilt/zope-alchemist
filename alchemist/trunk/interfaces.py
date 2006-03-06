@@ -8,6 +8,11 @@ class IAlchemySchemaModel( Interface ):
         should this model be used for the given object
         """
 
+    def clear( ):
+        """
+        clear all loaded state for the model
+        """
+
     def __getitem__( key ):
         """
         return the peer factor for the given key or None

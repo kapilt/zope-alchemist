@@ -148,7 +148,12 @@ class ZopeEngine( SQLEngine ):
 
 
 class ZopePostgresqlEngine( ZopeEngine, PGSQLEngine ):
-    
+    """
+    a sqlalchemy postgres database engine with zope integration
+
+    additional features for doing column constraints ri actions
+    and table creation and introspection.
+    """
     for property_name in ['__init__',
                           'connect_args',
                           'type_descriptor',
@@ -175,16 +180,19 @@ class ZopePostgresqlEngine( ZopeEngine, PGSQLEngine ):
         )
         return not not cursor.rowcount
 
-    def create_tables( self, tables=(), drop_existing=False, only_new=True):
-        raise NotImplemented
+    def create_tables( self, tables=(), drop_existing=False):
         if not tables:
             tables = self.tables.values()
 
-        for table in tables:
-            if drop_existing and self.has_table( table.name ):
+        if drop_existing:
+            for table in tables:
+                if self.has_table( table.name ):
+                    self.drop( table )
 
-        
-    
+        for table in tables:
+            if not self.has_table( table.name ):
+                print "Create Table", table.name
+                self.create( table )
     
 register_engine_factory( 'zpgsql', ZopePostgresqlEngine )
 

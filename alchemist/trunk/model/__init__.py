@@ -15,9 +15,8 @@ def getModelFor( object ):
         if m.match( object ):
             return m
 
-
 def _clearModels():
-    global _models
-    _models = []
+    for m in _models:
+        m.clear()
 
     

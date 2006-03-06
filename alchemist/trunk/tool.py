@@ -88,7 +88,7 @@ class AlchemistTool( UniqueObject, AlchemistModeler, atapi.BaseFolder ):
 
         if peer_factory is None:
             peer_factory = model.loadInstance( instance )
-
+            model.engine.create_tables()
         return peer_factory
             
 
