@@ -168,11 +168,22 @@ class ZopePostgresqlEngine( ZopeEngine, PGSQLEngine ):
         locals()[property_name] = getattr( PGSQLEngine, property_name)
 
     def has_table( self, table_name):
-        pass
+        cursor = self.execute("""\
+        select relname from pg_class
+        where relname = %(name)s
+        """, {'name':table_name}, return_raw=True
+        )
+        return not not cursor.rowcount
 
     def create_tables( self, tables=(), drop_existing=False, only_new=True):
-        pass
+        raise NotImplemented
+        if not tables:
+            tables = self.tables.values()
 
+        for table in tables:
+            if drop_existing and self.has_table( table.name ):
+
+        
     
     
 register_engine_factory( 'zpgsql', ZopePostgresqlEngine )

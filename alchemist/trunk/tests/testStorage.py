@@ -212,23 +212,18 @@ class SQLSetupTests(ATSiteTestCase):
     db_name = "zpgsql://database=alchemy"
 
     def testAlchemySetup(self):
-        try:
-            commonAfterSetUp( self )
-        except:
-            raise
-            import pdb, sys, traceback
-            ec, e, tb = sys.exc_info()
-            print ec, e
-            #pretty_exc( (ec, e, tb ) )
-            #
-            #pdb.post_mortem( tb )
+
+        res = get_engine( self.db_name ).has_table('dummy')
+        print "SS"*20, res        
+        commonAfterSetUp( self )
 
     def testAlchemySetup2(self):
-        
         commonAfterSetUp( self )
 
     def beforeTearDown(self):
-
+        engine = get_engine( self.db_name )
+        engine.do_zope_rollback()
+        clear_managers()
 
 class SQLStorageTestBase(ATSiteTestCase):
     """ Abstract base class for the tests """
@@ -243,6 +238,7 @@ class SQLStorageTestBase(ATSiteTestCase):
         engine = get_engine( self.db_name )
         engine.do_zope_rollback()
         clear_managers()
+
 
 class SQLStorageTest(SQLStorageTestBase):
 
