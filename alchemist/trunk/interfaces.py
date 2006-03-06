@@ -1,8 +1,12 @@
-
 from zope.interface import Interface
+
 
 class IAlchemySchemaModel( Interface ):
 
+    def match( object ):
+        """
+        should this model be used for the given object
+        """
 
     def __getitem__( key ):
         """
@@ -19,6 +23,9 @@ class IAlchemySchemaModel( Interface ):
 
     def loadInstance( instance ):
         """
-        
+        as above but load from an instance...
+
+        does not support context based schemas.. need to
+        qualify the name on storage.
         """
         
