@@ -18,14 +18,14 @@ from sqlalchemy.databases.postgres import PGSQLEngine
 import transaction
 from manager import AlchemyDataManager
 
-def create_engine(name, opts=None,**kwargs):
+def create_engine(uri, opts=None,**kwargs):
     """
     overriden create engine factory function from
     sqlalchemy.engine.create_engine
 
     we override to create non sqlalchemy contained engines, integrated with zope
     """
-    m = re.match(r'(\w+)://(.*)', name)
+    m = re.match(r'(\w+)://(.*)', uri)
     if m is not None:
         (name, args) = m.group(1, 2)
         opts = {}
@@ -37,7 +37,7 @@ def create_engine(name, opts=None,**kwargs):
     engine_factory = get_engine_factory( name )
     print "Opts ", opts
     engine = engine_factory( opts, **kwargs)
-    _engines[ name ] = engine
+    _engines[ uri ] = engine
     return engine
 
 _engines = {}
@@ -51,9 +51,10 @@ def register_engine_factory( name, factory ):
 
 def get_engine( dburi, **kwargs ):
     engine =  _engines.get( dburi )
-    if engine is not None:
-        return engine
-    return create_engine( dburi, **kwargs )
+    if engine is None:
+        engine = create_engine( dburi, **kwargs )
+    engine.do_zope_begin()
+    return engine
     
 
 SAVEPOINT_PREFIX = 'alchemy-'
@@ -117,8 +118,8 @@ class ZopeEngine( SQLEngine ):
     # null implement the builtin sql alchemy transaction interface, zope's driving
     def begin(self):
         print "sa begin"
-        return self.do_zope_begin()
-        
+        pass
+    
     def rollback(self):
         print "roll"
         pass
@@ -165,6 +166,13 @@ class ZopePostgresqlEngine( ZopeEngine, PGSQLEngine ):
                           'reflecttable']:
         
         locals()[property_name] = getattr( PGSQLEngine, property_name)
+
+    def has_table( self, table_name):
+        pass
+
+    def create_tables( self, tables=(), drop_existing=False, only_new=True):
+        pass
+
     
     
 register_engine_factory( 'zpgsql', ZopePostgresqlEngine )

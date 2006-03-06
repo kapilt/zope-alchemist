@@ -7,7 +7,7 @@ make engine transaction methods noops, except for ensuring registration.
 import re
 
 from zope.interface import implements
-from sqlalchemy.engine import SQLEngine
+from sqlalchemy import objectstore
 from transaction.interfaces import IDataManager, IDataManagerSavepoint
 
 class AlchemySavePoint( object ):
@@ -58,7 +58,7 @@ class AlchemyDataManager( object ):
         """
         
         
-    def commit(transaction):
+    def commit(self, transaction):
         """Commit modifications to registered objects.
 
         Save changes to be made persistent if the transaction commits (if
@@ -72,7 +72,7 @@ class AlchemyDataManager( object ):
         objectstore.commit()
         
 
-    def tpc_vote(transaction):
+    def tpc_vote(self, transaction):
         """Verify that a data manager can commit the transaction.
 
         This is the last chance for a data manager to vote 'no'.  A
@@ -81,9 +81,9 @@ class AlchemyDataManager( object ):
         transaction is the ITransaction instance associated with the
         transaction being committed.
         """
-        savepoint_name = self.engine.do_zope_savepoint()
+        #savepoint_name = self.engine.do_zope_savepoint()
 
-    def tpc_finish(transaction):
+    def tpc_finish(self, transaction):
         """Indicate confirmation that the transaction is done.
 
         Make all changes to objects modified by this transaction persist.
@@ -121,9 +121,9 @@ class AlchemyDataManager( object ):
         """
         return "0-PloneAlchemist"
     
-    def savepoint(self):
-        """Return a data-manager savepoint (IDataManagerSavepoint).
-        """
-        savepoint_name = self.engine.do_zope_savepoint()
+    #def savepoint(self):
+    #    """Return a data-manager savepoint (IDataManagerSavepoint).
+    #    """
+        #savepoint_name = self.engine.do_zope_savepoint()
         
         

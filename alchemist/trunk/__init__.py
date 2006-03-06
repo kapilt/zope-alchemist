@@ -18,7 +18,7 @@ registerDirectory( 'skins', globals() )
 
 model.registerModel(
     model.default.DefaultSchemaModel(
-          engine.get_engine("zpgsql://database=alchemy", echo=True)
+         engine.get_engine("zpgsql://database=alchemy", echo=True)
           )
     )
 

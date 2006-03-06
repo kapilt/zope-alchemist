@@ -72,6 +72,8 @@ author: kapil thangavelu <hazmat@objectrealms.net>
 """
 
 from mx.DateTime import DateFromTicks
+
+from sqlalchemy.ext.proxy import ProxyEngine
 from sqlalchemy.util import OrderedDict
 import sqlalchemy as rdb
 

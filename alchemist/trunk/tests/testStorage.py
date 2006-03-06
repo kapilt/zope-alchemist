@@ -62,6 +62,7 @@ from Products.Archetypes.tests.utils import Dummy
 
 
 from Products.Alchemist.storage import AlchemistStorage
+from Products.Alchemist.engine import get_engine
 from sqlalchemy.pool import clear_managers
 
 from DateTime import DateTime
@@ -206,6 +207,28 @@ def commonAfterSetUp(self):
     obj.meta_type = 'Archetypes Content'
 
 
+class SQLSetupTests(ATSiteTestCase):
+
+    db_name = "zpgsql://database=alchemy"
+
+    def testAlchemySetup(self):
+        try:
+            commonAfterSetUp( self )
+        except:
+            raise
+            import pdb, sys, traceback
+            ec, e, tb = sys.exc_info()
+            print ec, e
+            #pretty_exc( (ec, e, tb ) )
+            #
+            #pdb.post_mortem( tb )
+
+    def testAlchemySetup2(self):
+        
+        commonAfterSetUp( self )
+
+    def beforeTearDown(self):
+
 
 class SQLStorageTestBase(ATSiteTestCase):
     """ Abstract base class for the tests """
@@ -217,8 +240,9 @@ class SQLStorageTestBase(ATSiteTestCase):
         commonAfterSetUp(self)
 
     def beforeTearDown(self):
+        engine = get_engine( self.db_name )
+        engine.do_zope_rollback()
         clear_managers()
-        self._dummy.portal_type
 
 class SQLStorageTest(SQLStorageTestBase):
 
@@ -226,11 +250,8 @@ class SQLStorageTest(SQLStorageTestBase):
         dummy = self._dummy
         value = dummy.getAobjectfield()
         __traceback_info__ = (self.db_name, repr(value), None)
-        # Gadfly represents None as an empty string
-        if self.db_name == 'Gadfly':
-            self.failUnless(value == '')
-        else:
-            self.failUnless(value is None)
+        
+        self.failUnless(value is None)
         dummy.setAobjectfield('Bla')
         value = dummy.getAobjectfield()
         __traceback_info__ = (self.db_name, repr(value), 'Bla')
@@ -240,11 +261,7 @@ class SQLStorageTest(SQLStorageTestBase):
         dummy = self._dummy
         value = dummy.getAstringfield()
         __traceback_info__ = (self.db_name, repr(value), None)
-        # Gadfly represents None as an empty string
-        if self.db_name == 'Gadfly':
-            self.failUnless(value == '')
-        else:
-            self.failUnless(value is None)
+        self.failUnless(value is None)
         dummy.setAstringfield('Bla')
         value = dummy.getAstringfield()
         __traceback_info__ = (self.db_name, repr(value), 'Bla')
@@ -271,11 +288,7 @@ class SQLStorageTest(SQLStorageTestBase):
         dummy = self._dummy
         value = dummy.getAtextfield()
         __traceback_info__ = (self.db_name, repr(value), None)
-        # Gadfly represents None as an empty string
-        if self.db_name == 'Gadfly':
-            self.failUnless(str(value) == '', (value, ''))
-        else:
-            self.failUnless(value is None, (value, None))
+        self.failUnless(value is None, (value, None))
         dummy.setAtextfield('Bla')
         value = dummy.getAtextfield()
         __traceback_info__ = (self.db_name, repr(value), 'Bla')
@@ -468,9 +481,9 @@ class SQLStorageTest(SQLStorageTestBase):
 
 # test each db
 
-tests = []
+tests = [ SQLSetupTests ]
 
-for db_name in ["zpgsql://database=baz"]:
+for db_name in []: #"zpgsql://database=baz"]:
 
     class StorageTest(SQLStorageTest):
         db_name = db_name
