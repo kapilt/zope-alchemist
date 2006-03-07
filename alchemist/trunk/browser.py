@@ -13,7 +13,6 @@ schema_browser_schema = Schema( (
                       )
 ))
 
-
 actions = (
 
     { 'id':'view',
@@ -40,13 +39,45 @@ actions = (
 def modify_fti( fti ):
     fti['actions'] = actions
 
+class PortalView:
 
-class SchemaTableView( object ):
-    pass
+    index_html = None
 
-class SchemaColumnView( object ):
-    pass
+    def __call__(self):
+        '''
+        Invokes the default view.
+        '''
+        view = _getViewFor(self)
+        return view()
+    
+    def view(self):
+        """
+        invoke default view
+        """
+        return self()
 
+class SchemaTable( PortalView, DynamicType, SimpleItem  ):
+
+    def __init__(self, id ):
+        self.id = id
+        
+    def getEngine(self):
+        browser = self.getBrowser()
+        return browser._getEngine()
+
+    def getColumns( self ):
+        engine = self.getEngine()
+        table  = engine.tables[ self.id ]
+        return map( self._mapColumn, table.columns.items() )
+
+    def _mapColumn(self, column_id, column):
+        schema_column = SchemaColumn( column_id, column )
+        return schema_column.__of__( self )
+
+class SchemaColumn( PortalView, DynamicType, SimpleItem ):
+
+    def __init__(self, id, column):
+        self.id = id
 
 class SchemaBrowser( atapi.BaseFolder ):
 
