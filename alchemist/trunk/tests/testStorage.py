@@ -241,7 +241,10 @@ class SQLStorageTestBase(ATSiteTestCase):
     cleanup = cleanup
 
     def afterSetUp(self):
-        commonAfterSetUp(self)
+        try:
+            commonAfterSetUp(self)
+        except:
+            
 
     def beforeTearDown(self):
         engine = get_engine( self.db_name )

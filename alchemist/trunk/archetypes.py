@@ -130,7 +130,6 @@ def dump_content( self, model ):
     rdb.objectstore.commit()
 
 
-
 # requires corresponding engine.generator changes
 class ForeignKeyWithAction( rdb.ForeignKey ):
     
@@ -153,7 +152,6 @@ class ForeignKeyWithAction( rdb.ForeignKey ):
         if on_update:
             assert on_update in self.allowed_change_actions            
             self.on_update = "ON UPDATE %s"%on_update
-    
 
 class ListType( rdb.TypeDecorator, rdb.String ):
 

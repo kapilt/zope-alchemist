@@ -12,8 +12,11 @@ import re
 from zope.interface import implements
 
 from sqlalchemy.engine import SQLEngine
-from sqlalchemy import objectstore
-from sqlalchemy.databases.postgres import PGSQLEngine
+from sqlalchemy import objectstore, Table
+from sqlalchemy.util import OrderedDict
+from sqlalchemy.schema import SchemaVisitor
+from sqlalchemy.databases.postgres import PGSQLEngine, PGSchemaGenerator as saPGSchemaGenerator
+from sqlalchemy.mapping.topological import QueueDependencySorter
 
 import transaction
 from manager import AlchemyDataManager
@@ -59,7 +62,37 @@ def get_engine( dburi, **kwargs ):
 
 SAVEPOINT_PREFIX = 'alchemy-'
 
-class ZopeEngine( SQLEngine ):
+class SANullTransactionMixin( object ):
+    """
+    null implement the builtin sql alchemy transaction interface, someone else
+    is driving.
+    """
+    def begin(self):
+        pass
+    
+    def rollback(self):
+        pass
+
+    def commit(self):
+        pass
+
+    def multi_transaction(self, tables, func):
+        func()
+        
+    def transaction(self, func):
+        func()
+
+    def do_begin(self, connection):
+        pass
+
+    def do_rollback(self, connection):
+        pass
+
+    def do_commit(self, connection):
+        pass
+
+
+class ZopeEngine( SANullTransactionMixin, SQLEngine ):
     """
     a sqlalchemy engine that participates in zope transactions, supports savepoints
     for databases implementing ansi savepoints.
@@ -115,38 +148,29 @@ class ZopeEngine( SQLEngine ):
         self.context.transaction.commit()
         self.context.transaction = None
 
-    # null implement the builtin sql alchemy transaction interface, zope's driving
-    def begin(self):
-        print "sa begin"
-        pass
+class PGSchemaGenerator( saPGSchemaGenerator ):
+    def get_column_specification(self, column, override_pk=False, **kwargs):
+        colspec = column.name
+        if column.primary_key and isinstance(column.type, types.Integer) and (column.default is None or (isinstance(column.default, schema.Sequence) and column.default.optional)):
+            colspec += " SERIAL"
+        else:
+            colspec += " " + column.type.get_col_spec()
+            default = self.get_column_default_string(column)
+            if default is not None:
+                colspec += " DEFAULT " + default
+
+        if not column.nullable:
+            colspec += " NOT NULL"
+        if column.primary_key and not override_pk:
+            colspec += " PRIMARY KEY"
+        if column.foreign_key:
+            colspec += " REFERENCES %s(%s)" % (column.column.foreign_key.column.table.fullname, column.column.foreign_key.column.name)
+            if hasattr(column.foreign_key, 'on_delete') and column.foreign_key.on_delete:
+                colspec += " " + column.foreign_key.on_delete
+            if hasattr(column.foreign_key, 'on_update') and column.foreign_key.on_update:
+                colspec += " " + column.foreign_key.on_update
+        return colspec
     
-    def rollback(self):
-        print "roll"
-        pass
-
-    def commit(self):
-        print "comit"
-        pass
-
-    def multi_transaction(self, tables, func):
-        func()
-        
-    def transaction(self, func):
-        func()
-
-    def do_begin(self, connection):
-        print "dobegin"
-        pass
-
-    def do_rollback(self, connection):
-        print "dorollback"
-        pass
-
-    def do_commit(self, connection):
-        print "docommit"
-        pass
-
-
 class ZopePostgresqlEngine( ZopeEngine, PGSQLEngine ):
     """
     a sqlalchemy postgres database engine with zope integration
@@ -172,7 +196,30 @@ class ZopePostgresqlEngine( ZopeEngine, PGSQLEngine ):
         
         locals()[property_name] = getattr( PGSQLEngine, property_name)
 
+    def clear(self):
+        self.tables = OrderedDict()
+
+    def schemagenerator( self, **params ):
+        return PGSchemaGenerator( self, **params )
+
+    def upgrade_tables( self, tables=(), source='model' ):
+        """
+        compares the tables with the database representation of them,
+        
+        source is a string denoting whether we should treat the either
+        'sqlalchemy''s model as canonical or the 'database'.
+        """
+        if not tables:
+            tables = self.tables.values()
+
+        changeset_engine = ChangeSetEngine( self, tables )
+        changeset_engine.generateDDL()
+        table = Table( self.tables['orders'].name, self, autoload=True)
+
     def has_table( self, table_name):
+        """
+        return boolean whether or not the engine/schema contains this table
+        """
         cursor = self.execute("""\
         select relname from pg_class
         where relname = %(name)s
@@ -180,19 +227,86 @@ class ZopePostgresqlEngine( ZopeEngine, PGSQLEngine ):
         )
         return not not cursor.rowcount
 
-    def create_tables( self, tables=(), drop_existing=False):
+    def create_tables( self, tables=(), table_names=(), only_new=True):
+        """
+        create tables in order, which tables can be specified by keyword args of a sequence
+        of table objects or table names.
+
+        only_new flag, only create tables which don't exist, defaults to true.
+        """
+        if not tables and table_names:
+            tables = [ self.tables[name] for name in table_names ]
+        elif tables and table_names and isinstance( tables, (list, tuple)):
+            tables = list( tables )
+            tables.extend( [ self.tables[name] for name in table_names ] )
+
         if not tables:
             tables = self.tables.values()
 
-        if drop_existing:
-            for table in tables:
-                if self.has_table( table.name ):
-                    self.drop( table )
-
+        tables = self.sort_tables( tables )
         for table in tables:
-            if not self.has_table( table.name ):
-                print "Create Table", table.name
-                self.create( table )
+            if only_new and self.has_table( table.name ):
+                continue
+            self.create( table )
+
+    def drop_tables( self, tables=(), table_names=() ):
+        """
+        drop tables in order, which tables can be specified by keyword args of a sequence
+        of table objects or table names.
+        """
+        if not tables and table_names:
+            tables = [ self.tables[name] for name in table_names ]
+        elif tables and table_names and isinstance( tables, (list, tuple)):
+            tables = list( tables )
+            tables.extend( [ self.tables[name] for name in table_names ] )
+
+        if not tables:
+            tables = self.tables.values()
+
+        tables = self.sort_tables( tables, reverse=False )
+        for table in tables:
+            if self.has_table( table.name ):
+                self.drop( table )
+
+    def sort_tables(self, tables=None, reverse=True ):
+        if tables is None:
+            tables = self.tables.values()
+
+        sorter = TableSorter()
+        for table in tables:
+            sorter.set_table( table.name )
+            table.accept_schema_visitor( sorter )
+
+        for table_name in sorter.sort( reverse ):
+            yield self.tables[ table_name ]
     
+class TableSorter( SchemaVisitor ):
+
+    def __init__(self):
+        self._names = []
+        self._tuples = []
+        
+    def set_table( self, table_name ):
+        self._names.append( table_name )
+
+    def visit_foreign_key(self, join):
+        parent_table = join.column.table.name
+        self._tuples.append( ( self._names[-1], parent_table ) )
+
+    def sort(self, reverse=True ):
+        sorter = QueueDependencySorter( self._tuples, self._names )
+        head =  sorter.sort()
+        sequence = []
+        def to_sequence( node, seq=sequence):
+            seq.append( node.item )
+            for child in node.children:
+                to_sequence( child )
+        to_sequence( head )
+        if reverse:
+            sequence.reverse()
+        return sequence
+    
+
+
 register_engine_factory( 'zpgsql', ZopePostgresqlEngine )
 

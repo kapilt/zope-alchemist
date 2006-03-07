@@ -15,3 +15,10 @@ class DefaultSchemaModel( ArchetypesSchemaModel ):
         self._peer_factories = {}
         self.engine.tables = {}
         self.generateDefaults()
+
+    def loadTypeByName(self, context, type_name):
+        """
+        load an archetype schema by name,
+        for fk relationship callbacks
+        """
+        

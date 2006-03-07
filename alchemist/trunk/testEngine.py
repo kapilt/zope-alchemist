@@ -5,23 +5,83 @@ $Id$
 from unittest import TestCase, main
 
 from sqlalchemy import objectstore
+from sqlalchemy import * # to hard to fight ;-)
 from engine import create_engine
+from changeset import ChangeSetEngine
+
 import sqlalchemy as rdb
+
 import transaction
 
+engine = create_engine( 'pgsql://database=alchemy', echo=True)
+
+users = Table('users', engine,
+              Column('user_id', Integer, Sequence('user_id_seq', optional=True), primary_key = True),
+              Column('user_name', String(40)),
+              )
+
+addresses = Table('email_addresses', engine,
+    Column('address_id', Integer, Sequence('address_id_seq', optional=True), primary_key = True),
+    Column('user_id', Integer, ForeignKey(users.c.user_id)),
+    Column('email_address', String(40)),
+    
+)
+
+orders = Table('orders', engine,
+    Column('order_id', Integer, Sequence('order_id_seq', optional=True), primary_key = True),
+    Column('user_id', Integer, ForeignKey(users.c.user_id)),
+    Column('description', String(50)),
+    Column('isopen', Integer),
+    
+)
+
+orderitems = Table('items', engine,
+    Column('item_id', INT, Sequence('items_id_seq', optional=True), primary_key = True),
+    Column('order_id', INT, ForeignKey("orders")),
+    Column('item_name', VARCHAR(50)),
+    
+)
 
 
-class TestZopeEngine( TestCase ):
+class TestEngineUtility( TestCase ):
 
+    def setUp(self):
+        transaction.begin() # just insures an abort before we begin
 
-    def testObjectStoreCommit(self):
+    def tearDown(self):
+        transaction.get().abort()
+
+    def testTableSorter( self ):
+        tables = engine.sort_tables()
+        table_names = [t.name for t in tables]
+        self.assertEqual( table_names, ['users', 'orders', 'items', 'email_addresses'] )
+
+    def testTableCreation(self):
+        engine.create_tables()
+        self.assertEqual( engine.has_table('items'), True )
+        self.assertEqual( engine.has_table('email_addresses'), True )        
+        engine.create_tables()
+        self.assertEqual( engine.has_table('items'), True )        
+
+    def testTableDeletion(self):
+        self.assertEqual( engine.has_table('items'), False )
+        engine.create_tables()
+        self.assertEqual( engine.has_table('items'), True )        
+        engine.drop_tables()
+        self.assertEqual( engine.has_table('items'), False )
+        self.assertEqual( engine.has_table('email_addresses'), False )                
+        engine.drop_tables()
+        self.assertEqual( engine.has_table('items'), False )                
+
+    def testChangesetEngine(self):
+        pass
+        
+        
+    def XtestObjectStoreCommit(self):
         # test that zope is driving the transaction.
         # autoload a table, create a mapper, create some instances
         # commit the objecstore, assert instance visibility,
         # abort zope transaction, assert instance destruction
-
-        print "creating engine"
-        engine = create_engine( 'zpgsql://database=baz', echo=True)
 
         print "creating table"
         ftable = rdb.Table("foobar", engine, autoload=True)
