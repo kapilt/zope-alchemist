@@ -6,14 +6,17 @@ from unittest import TestCase, main
 
 from sqlalchemy import objectstore
 from sqlalchemy import * # to hard to fight ;-)
-from engine import create_engine
-from changeset import ChangeSetEngine
-
 import sqlalchemy as rdb
+
+
+from engine import create_engine
+from changeset import SchemaChangeSet
+
 
 import transaction
 
-engine = create_engine( 'pgsql://database=alchemy', echo=True)
+
+engine = create_engine( 'zpgsql://database=alchemy', echo=True)
 
 users = Table('users', engine,
               Column('user_id', Integer, Sequence('user_id_seq', optional=True), primary_key = True),
@@ -43,6 +46,7 @@ orderitems = Table('items', engine,
 )
 
 
+
 class TestEngineUtility( TestCase ):
 
     def setUp(self):
@@ -64,7 +68,7 @@ class TestEngineUtility( TestCase ):
         self.assertEqual( engine.has_table('items'), True )        
 
     def testTableDeletion(self):
-        self.assertEqual( engine.has_table('items'), False )
+        #self.assertEqual( engine.has_table('items'), False )
         engine.create_tables()
         self.assertEqual( engine.has_table('items'), True )        
         engine.drop_tables()
@@ -74,7 +78,10 @@ class TestEngineUtility( TestCase ):
         self.assertEqual( engine.has_table('items'), False )                
 
     def testChangesetEngine(self):
-        pass
+
+        engine.create_tables()
+        changeset = SchemaChangeSet( engine )
+        changeset.introspect()
         
         
     def XtestObjectStoreCommit(self):

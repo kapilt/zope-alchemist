@@ -81,15 +81,14 @@ from DateTime import DateTime
 
 from Products.Archetypes import public as atapi
 from Products.CMFCore.utils import UniqueObject
-
-
+from Products.Alchemist.engine import create_engine
 
 # external method tests
 
-def dump_schema( self, db_uri="postgres://database=tat" ):
+def dump_schema( self, db_uri="zpgsql://database=tat" ):
 
     # setup up the schema definitions
-    engine = rdb.create_engine( db_uri, echo=True )
+    engine = create_engine( db_uri, echo=True )
 
     # connect to database
     schema_model = ArchetypesSchemaModel( engine )
@@ -101,20 +100,8 @@ def dump_schema( self, db_uri="postgres://database=tat" ):
     # create table as needed
     schema_model.createTables()
     return "Schema Created"
-    # dump content transactionally (indie)
-    try:
-        dump_content( self, schema_model )
-    except:
-        import pdb, sys, traceback
-        ec, e, tb = sys.exc_info()
-        print ec, e
-        traceback.print_tb( tb)
-        pdb.post_mortem( tb )
-        engine.rollback()
-        rdb.objectstore.clear()        
-        raise e
-    
-    engine.commit()
+
+    dump_content( self, schema_model )
     return "Success"
 
 

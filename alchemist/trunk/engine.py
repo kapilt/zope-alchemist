@@ -14,9 +14,10 @@ from zope.interface import implements
 from sqlalchemy.engine import SQLEngine
 from sqlalchemy import objectstore, Table
 from sqlalchemy.util import OrderedDict
-from sqlalchemy.schema import SchemaVisitor
+from sqlalchemy import schema
 from sqlalchemy.databases.postgres import PGSQLEngine, PGSchemaGenerator as saPGSchemaGenerator
 from sqlalchemy.mapping.topological import QueueDependencySorter
+from sqlalchemy import types as satypes
 
 import transaction
 from manager import AlchemyDataManager
@@ -58,6 +59,9 @@ def get_engine( dburi, **kwargs ):
         engine = create_engine( dburi, **kwargs )
     engine.do_zope_begin()
     return engine
+
+def list_engines( ):
+    return _engine.keys()
     
 
 SAVEPOINT_PREFIX = 'alchemy-'
@@ -151,7 +155,9 @@ class ZopeEngine( SANullTransactionMixin, SQLEngine ):
 class PGSchemaGenerator( saPGSchemaGenerator ):
     def get_column_specification(self, column, override_pk=False, **kwargs):
         colspec = column.name
-        if column.primary_key and isinstance(column.type, types.Integer) and (column.default is None or (isinstance(column.default, schema.Sequence) and column.default.optional)):
+        if column.primary_key and isinstance(column.type, satypes.Integer) \
+           and (column.default is None or (isinstance(column.default, schema.Sequence) \
+                                           and column.default.optional)):
             colspec += " SERIAL"
         else:
             colspec += " " + column.type.get_col_spec()
@@ -164,7 +170,7 @@ class PGSchemaGenerator( saPGSchemaGenerator ):
         if column.primary_key and not override_pk:
             colspec += " PRIMARY KEY"
         if column.foreign_key:
-            colspec += " REFERENCES %s(%s)" % (column.column.foreign_key.column.table.fullname, column.column.foreign_key.column.name)
+            colspec += " REFERENCES %s(%s)" % (column.foreign_key.column.table.fullname, column.foreign_key.column.name)
             if hasattr(column.foreign_key, 'on_delete') and column.foreign_key.on_delete:
                 colspec += " " + column.foreign_key.on_delete
             if hasattr(column.foreign_key, 'on_update') and column.foreign_key.on_update:
@@ -280,7 +286,7 @@ class ZopePostgresqlEngine( ZopeEngine, PGSQLEngine ):
         for table_name in sorter.sort( reverse ):
             yield self.tables[ table_name ]
     
-class TableSorter( SchemaVisitor ):
+class TableSorter( schema.SchemaVisitor ):
 
     def __init__(self):
         self._names = []
