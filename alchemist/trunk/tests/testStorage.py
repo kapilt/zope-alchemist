@@ -173,19 +173,6 @@ def commonAfterSetUp(self):
     # create the Database Adaptor (DA)
     #self.db_uri
     
-    if self.db_name == 'Postgre':
-        portal.manage_addProduct['ZPsycopgDA'].manage_addZPsycopgConnection(
-            id = connection_id, title = 'PostgreSQL Archetypes Storage',
-            connection_string = connectors[self.db_name], zdatetime = 1, check = 1)
-    elif self.db_name == 'MySQL':
-        portal.manage_addProduct['ZMySQLDA'].manage_addZMySQLConnection(
-            id = connection_id, title = 'MySQL Archetypes Storage',
-            connection_string = connectors[self.db_name], check = 1)
-    elif self.db_name == 'Gadfly':
-        portal.manage_addProduct['ZGadflyDA'].manage_addZGadflyConnection(
-            id = connection_id, title = 'Gadfly Archetypes Storage',
-            connection = connectors[self.db_name], check = 1)
-
     # add type information for Dummy
     tt = portal.portal_types
     tt.manage_addTypeInformation(
@@ -244,11 +231,13 @@ class SQLStorageTestBase(ATSiteTestCase):
         try:
             commonAfterSetUp(self)
         except:
-            
+            self.beforeTearDown()
+            raise
 
     def beforeTearDown(self):
         engine = get_engine( self.db_name )
         engine.do_zope_rollback()
+        _clearModels()
         clear_managers()
 
 

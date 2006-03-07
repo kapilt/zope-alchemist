@@ -446,6 +446,15 @@ class ArchetypesSchemaModel( object ):
         self._tables[ self._identity ] = object_identity
         self._peer_factories[ self._identity ] = ObjectIdentity
 
+    def initializePeer( self, instance, peer ):
+        """
+        callback from peer creation to allow for model initialization of the
+        peer given its matching object instance.
+        """
+        defaults = getDefaults( instance )
+        for k in defaults:
+            setattr( peer, k, instance )
+
     def loadType( self, archetype_klass, context):
 
         if archetype_klass.portal_type in self._tables:

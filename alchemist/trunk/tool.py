@@ -80,6 +80,23 @@ class AlchemistTool( UniqueObject, AlchemistModeler, atapi.BaseFolder ):
             id = type_name,
             typeinfo_name = typeinfo_name
             )
+
+    def createSchema(self, schema_id ):
+
+        schema_base = Schema()
+
+    def getPeerFor( self, instance ):
+
+        factory = self.getPeerFactory( instance )
+        peer = factory.get( instance.UID() )
+
+        model = getModelFor( instance ) # refactor ?
+        
+        if peer is None:
+            peer = factory( uid = instance.UID() )
+            model.initializePeer( instance, peer )
+            
+        return peer
         
     def getPeerFactory( self, instance ):
 

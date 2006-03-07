@@ -66,6 +66,5 @@ class AlchemistStorage( StorageLayer ):
 
     def getPeerFor(self, instance ):
         alchemist = getToolByName( instance, config.ALCHEMIST_TOOL  )
-        factory = alchemist.getPeerFactory( instance )
-        peer = factory.get( instance.UID() ) or factory()
+        peer = alchemist.getPeerFor( instance )
         return peer
