@@ -22,12 +22,14 @@
 """
 author: kapil thangavelu <hazmat@objectrealms.net>
 
-dump an entire plone site into a relational database.
+create sqlalchemy mappings on the fly from archetypes schema.
+
+originally designed to dump an entire plone site into a relational
+database.
 
  including all schema attributes.
 
  include relations
-
 
 relation support is a little on the weak side, archetypes
 supports many rich semantics here, bidirectional many 2 many,
@@ -104,27 +106,38 @@ from DateTime import DateTime
 
 from Products.Archetypes import public as atapi
 from Products.CMFCore.utils import UniqueObject
-from Products.Alchemist.engine import create_engine
+from Products.Alchemist.engine import get_engine
+
+import utils
 
 # external method tests
 
-def dump_schema( self, db_uri="zpgsql://database=tat" ):
+def dump_site( self, db_uri="zpgsql://database=alchemy" ):
 
     # setup up the schema definitions
-    engine = create_engine( db_uri, echo=True )
+    engine = get_engine( db_uri, echo=True )
 
     # connect to database
     schema_model = ArchetypesSchemaModel( engine )
 
     # load up schemas
-    for archetype_info in self.archetype_tool.listRegisteredTypes( inProject=True):
+    for archetype_info in self.archetype_tool.listRegisteredTypes():
         schema_model.loadType( archetype_info['klass'], context=self )
 
-    # create table as needed
-    schema_model.createTables()
-    return "Schema Created"
+    engine.create_tables()
 
-    dump_content( self, schema_model )
+    try:
+        dump_content( self, schema_model )
+    except:
+        raise
+        import traceback, pdb, sys
+        ec,e,tb = sys.exc_info()
+        print ec, e
+        traceback.print_tb( tb )
+        pdb.post_mortem( tb )
+        
+        
+    import pdb;
     return "Success"
 
 
@@ -137,7 +150,6 @@ def dump_content( self, model ):
         elif isinstance( content, UniqueObject): continue
 
         peer = model.saveObject( content )
-    rdb.objectstore.commit()
 
 
 # requires corresponding engine.generator changes
@@ -204,14 +216,18 @@ class ArchetypesFieldTranslator( object ):
         self.table_name = table_name
         
     def ident_translate( identifier ):
+        if identifier.lower() == 'end':
+            return "at_end"
+        
         return identifier.lower().replace(' ', '_')
 
     ident_translate = staticmethod( ident_translate )
 
     def getDefaultArgs( self, field, use_field_default=False ):
         args = []
-        if use_field_default and field.default:
-            args.append( rdb.PassiveDefault( field.default ) )
+
+        #if use_field_default and field.default:
+        #    args.append( rdb.PassiveDefault( field.default ) )
         kwargs = {
             'nullable' : not field.required,
             'key' : field.getName(),            
@@ -224,6 +240,7 @@ class ArchetypesFieldTranslator( object ):
     def visit( self, field ):
         field_visitor = "visit_%s"%( field.__class__.__name__ )
         visitor = getattr( self, field_visitor, None )
+
         if visitor is None:
             print "No Visitor", field_visitor, field.getName()
             return None
@@ -340,7 +357,7 @@ class ArchetypeSerializer( object ):
             print "no factory for", content.portal_type
             return
 
-        peer = peer_factory.get( uid=content.UID() ) or peer_factory()
+        peer = peer_factory.get( content.UID() ) or peer_factory()
         
         for field in content.Schema().fields():
 
@@ -461,9 +478,9 @@ class ArchetypesSchemaModel( object ):
         callback from peer creation to allow for model initialization of the
         peer given its matching object instance.
         """
-        defaults = getDefaults( instance )
+        defaults = utils.getDefaults( instance )
         for k in defaults:
-            setattr( peer, k, instance )
+            setattr( peer, k, defaults[k] )
 
     def loadType( self, archetype_klass, context):
 
@@ -483,7 +500,10 @@ class ArchetypesSchemaModel( object ):
         self.loadInstance( instance )
         
         # just to be sure
-        instance.unindexObject()
+        try:
+            instance.unindexObject()
+        except: # for demo
+            pass
 
     def loadInstance( self, instance ):
 

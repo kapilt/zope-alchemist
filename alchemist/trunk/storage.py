@@ -54,7 +54,7 @@ class AlchemistStorage( StorageLayer ):
             return 
 
         peer = self.getPeerFor( instance )
-        instance.__initialized = True
+        instance._at_storage_init = True
         return peer
 
     def cleanupInstance( self, instance, item=None, container=None):
@@ -83,7 +83,7 @@ class AlchemistStorage( StorageLayer ):
         setattr( peer, name, value )
 
     def isInitialized(self, content):
-        return getattr( content, '__initialized', False )
+        return getattr( content, '_at_storage_init', False )
 
     def getPeerFor(self, instance ):
         alchemist = getToolByName( instance, config.ALCHEMIST_TOOL  )

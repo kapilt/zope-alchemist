@@ -19,6 +19,24 @@ def install_dependencies( self, out ):
         print >> out, "Installing dependency %s:" % dependency
         quickinstaller.installProduct(dependency)
         get_transaction().commit(1)
+
+
+
+def install_config_ui(self, out):
+    portal_panels = getToolByName(self,'portal_controlpanel')
+    portal_panels.registerConfiglet( 'alchemist'
+                                     , "Relational Databases"
+                                     , 'string:${portal_url}/%s/alchemist_view' % TOOLNAME
+                                     , ''                 # a condition   
+                                     , 'Manage portal'    # access permission
+                                     , 'Products'         # section to which the configlet should be added: 
+                                     #(Plone,Products,Members) 
+                                     , 1                  # visibility
+                                     , PROJECTNAME
+                                     , 'kupuimages/kupu_icon.gif' # icon in control_panel
+                                     , 'Relational Database Wizardardy' # description
+                                     , None
+                                     )
         
 def install( self ):
 
@@ -35,9 +53,12 @@ def install( self ):
     # install skin
     install_subskin(self, out, config.GLOBALS)
 
+    # install config
+
     portal = self.portal_url.getPortalObject()
 
-    portal._setObject( AlchemistTool.id, AlchemistTool() )
+    if not AlchemistTool.id in portal.objectIds():
+        portal._setObject( AlchemistTool.id, AlchemistTool() )
     
     #portal.portal_types.constructContent( "Alchemist Tool",
     #                                      portal,

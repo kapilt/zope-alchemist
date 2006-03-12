@@ -36,25 +36,35 @@ from Products.CMFCore.TypesTool import FactoryTypeInformation
 from content import AlchemistWebContent
 from model import getModelFor
 
+from sqlalchemy import objectstore
+
 class AlchemistModeler( SchemaEditor ):
 
     meta_type = "Alchemist Modeler"
     
 
-class AlchemistTool( UniqueObject, AlchemistModeler, atapi.BaseFolder ):
+class AlchemistTool( UniqueObject, AlchemistModeler ):
     
-    meta_type = portal_type = "Alchemist Tool"
-
+    meta_type = "Alchemist Tool"
     id = "portal_alchemist"
-    security = ClassSecurityInfo()    
+    title = "Relational "
+    
+    security = ClassSecurityInfo()
 
     global_allow = False
 
     actions = ({
         'id'          : 'view',
-        'name'        : 'View',
+        'name'        : 'Introspector',
         'action'      : 'string:${object_url}/folder_contents',
         'permissions' : (permissions.View,)
+         },
+
+        {
+        'id'          : 'schema_editor',
+        'name'        : 'Workbench',
+        'action'      : 'string:${object_url}/atse_editor',
+        'permissions' : (permissions.ModifyPortalContent,),
          },
                
         {
@@ -64,12 +74,7 @@ class AlchemistTool( UniqueObject, AlchemistModeler, atapi.BaseFolder ):
         'permissions' : (permissions.ModifyPortalContent,),
          },
                
-        {
-        'id'          : 'schema_editor',
-        'name'        : 'Properties',
-        'action'      : 'string:${object_url}/atse_editor',
-        'permissions' : (permissions.ModifyPortalContent,),
-         },
+
                
         {
         'id'          : 'metadata',
@@ -84,12 +89,16 @@ class AlchemistTool( UniqueObject, AlchemistModeler, atapi.BaseFolder ):
         self._type_map = {}
 
     def initializeArchetype( self ):
+        import pdb; pdb.set_trace()
         atapi.BaseFolder.initializeArchetype( self )
         self.atse_init()
         self.atse_registerObject( AlchemistWebContent,
                                   undeletable_fields=('title',) )
-        self._clear()
+        #self._clear()
 
+        value = self.atse_getDefaultSchemaId()
+        assert value
+        
     def createType(self,
                    type_name,
                    typeinfo_name='Alchemist Content: Alchemist Web Content',
@@ -106,14 +115,45 @@ class AlchemistTool( UniqueObject, AlchemistModeler, atapi.BaseFolder ):
 
         schema_base = Schema()
 
-    def getPeerFor( self, instance ):
 
-        factory = self.getPeerFactory( instance )
-        peer = factory.get( instance.UID() )
+    def _getPeerInMemory( self, instance, factory ):
+        """
+        sa doesn't load new instances into its identity map, we always want to return
+        an existing in memory new instance, instead of creating a new one.
 
-        model = getModelFor( instance ) # refactor ?
+        bring this up on the sa-list
+        """
+
+        # oid into identity map
+        oid = ( factory, ( instance.UID(), ) )
         
+        session = objectstore.get_session()
+
+        # check existing in memory
+        peer = session.uow.identity_map.get( oid )
+        
+        if peer is not None:
+            return peer
+
+        #primaries = []
+        #for primary_key in mapper.pks_by_table[ mapper.table ]:
+        #    primaries.append( primary_key.name )
+            
+        # check new in memory
+        for n in session.uow.new:
+            if isinstance( n, factory ) and n.uid == oid[1][0]:
+                return n
+
+        # not found
+        return None
+        
+        
+    def getPeerFor( self, instance ):
+        factory = self.getPeerFactory( instance )
+        peer = self._getPeerInMemory( instance, factory )
+
         if peer is None:
+            model = getModelFor( instance ) # refactor ?            
             peer = factory( uid = instance.UID() )
             model.initializePeer( instance, peer )
             

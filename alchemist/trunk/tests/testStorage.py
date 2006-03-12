@@ -204,7 +204,6 @@ class SQLSetupTests(ATSiteTestCase):
         try:
             commonAfterSetUp( self )
         except:
-            raise
             import sys, pdb
             exc = sys.exc_info()
             print exc[0], exc[1]
@@ -258,7 +257,7 @@ class SQLStorageTest(SQLStorageTestBase):
         dummy = self._dummy
         value = dummy.getAstringfield()
         __traceback_info__ = (self.db_name, repr(value), None)
-        self.failUnless(value is None)
+        self.failUnless(value is '')
         dummy.setAstringfield('Bla')
         value = dummy.getAstringfield()
         __traceback_info__ = (self.db_name, repr(value), 'Bla')
@@ -285,7 +284,7 @@ class SQLStorageTest(SQLStorageTestBase):
         dummy = self._dummy
         value = dummy.getAtextfield()
         __traceback_info__ = (self.db_name, repr(value), None)
-        self.failUnless(value is None, (value, None))
+        self.failUnless(value is '', (value, None))
         dummy.setAtextfield('Bla')
         value = dummy.getAtextfield()
         __traceback_info__ = (self.db_name, repr(value), 'Bla')
@@ -468,7 +467,7 @@ class SQLStorageTest(SQLStorageTestBase):
 ##             self.failUnless(str(PUID) == str(PUID1))
 ##             # make sure we have _p_jar
 ##             transaction.savepoint(optimistic=True)
-##             cb = folder1.manage_cutObjects(ids=(obj_id,))
+##             cb =folder1.manage_cutObjects(ids=(obj_id,))
 ##             portal.manage_pasteObjects(cb)
 ##             doc = getattr(portal, obj_id)
 ##             PUID = f.get(doc)
@@ -478,7 +477,8 @@ class SQLStorageTest(SQLStorageTestBase):
 
 # test each db
 
-tests = [ SQLSetupTests ]
+#tests = [ SQLSetupTests ]
+tests = []
 
 for db_name in ["zpgsql://database=alchemy"]:
 

@@ -101,7 +101,19 @@ class SchemaColumn( PortalView, DynamicType, SimpleItem ):
     def __init__(self, id, column):
         self.id = id
 
-class SchemaBrowser( atapi.BaseFolder ):
+        self.column = column
+
+        # initialize column values for display
+
+        #self.
+        self.type = repr( column.type )
+        self.unique = column.unique
+        self.nullable = column.nullable
+        self.index = column.index
+
+        
+
+class SchemaInspector( atapi.BaseFolder ):
 
     portal_type = archetype_name = meta_type = "Schema Browser"
     global_allow = True
