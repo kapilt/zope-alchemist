@@ -20,10 +20,52 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ##################################################################
 """
-SQLAlchemy Zope Transaction Integration.
+SQLAlchemy Zope Transaction Integration, this module provides an alternative
+creation and lookup mechanism for SA engines, such that they are properly
+integrated with zope transaction management.
 
+by default all engines in zope make use of thread local pools, Use of unique
+connections is currently allowed, but discouraged, 
+
+
+so how does this all work..
+
+ zope has a
+
+ sqlalchemy has a couple of moving parts that play in its transaction story
+
+  - engine
+
+  - sql sessions
+  
+  - connection / pool
+
+  - objecstore
+
+ the sum of it is that sqlalchemy has an explicit begin/commit/rollback api
+ on its engine, and does various gymanistics to make those reentrant and to
+ allow for utilizing non transactional connection/object usage. none of which
+ imo is particularly relevant in a zope context, where there is a transaction
+ manager coordinating transactions between multiple transactional back ends.
+ to that end, the integration starts by null implementing all the entry points
+ into the sqlalchemy transaction machinery in an engine mixin class. Another
+ mixin class provides zope transaction manager callback implementations that
+ drive the sqlalchemy internals (objectstore/connection).
+
+ on access via the get_engine api, we register an engine with the current transaction
+ manager (TM), and the rest is taken care of for us.
+
+ to enable sa and zope to both utilize the same access model for resources involved
+ in a transaction, we setup engine pools to have their thread local option in effect.
+ so now both sa is utilizing thread locals for resource management, and zope by default is
+ also managing transactions in a thread local manner.
+
+
+--- todo ---
 savepoint integration requires further work in sqlalchemy uow, to snapshot
 attributes.
+
+update this integration to change from context to session usage when doing sa bookkeeping
 
 $Id$
 """
@@ -36,6 +78,7 @@ from sqlalchemy.engine import SQLEngine
 from sqlalchemy import objectstore, Table
 from sqlalchemy.util import OrderedDict
 from sqlalchemy import schema
+from sqlalchemy.databases.information_schema import gen_tables
 from sqlalchemy.databases.postgres import PGSQLEngine, PGSchemaGenerator as saPGSchemaGenerator
 from sqlalchemy.mapping.topological import QueueDependencySorter
 from sqlalchemy import types as satypes
@@ -242,6 +285,13 @@ class ZopePostgresqlEngine( ZopeEngine, PGSQLEngine ):
         changeset_engine = ChangeSetEngine( self, tables )
         changeset_engine.generateDDL()
         table = Table( self.tables['orders'].name, self, autoload=True)
+
+    def autoload(self):
+        schema_table = gen_tables.toengine( self )
+
+        for table in schema_table.select( schema_table.c.table_schema == 'public' ).execute().fetchall():
+            print "Autoloading", table['table_name']
+            table_instance = Table( table['table_name'], self, autoload=True)
 
     def has_table( self, table_name):
         """

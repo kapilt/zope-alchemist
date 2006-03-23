@@ -7,10 +7,10 @@ from unittest import TestCase, main
 from sqlalchemy import objectstore
 from sqlalchemy import * # to hard to fight ;-)
 import sqlalchemy as rdb
-
+from sqlalchemy.databases.information_schema import gen_tables
 
 from engine import create_engine
-from changeset import SchemaChangeSet
+import changeset
 
 
 import transaction
@@ -73,5 +73,19 @@ orderitems = Table('items', engine,
 
 engine.create_tables()
 
+cset = changeset.changeset( engine )
+
 import pdb; pdb.set_trace()
+try:
+    cset._target_engine.autoload()
+except:
+    import pdb, traceback, sys
+    ec = sys.exc_info()
+    traceback.print_exception( *ec )
+    pdb.post_mortem( ec[-1] )
+    
+
+
+cset.introspect()
+
 transaction.commit()

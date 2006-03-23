@@ -184,25 +184,30 @@ class SchemaChange( object ):
         visit_method = getattr( visitor, 'visit_%s'%self.change_kind )
         visit_method( self )
 
+def changeset( source, target=None ):
+    # if called with just a source, generate the target from the relational
+    # database.
+
+    if target is None:
+        kw = {}
+        kw['pool'] = getattr( source, '_pool' )
+        kw['echo'] = getattr( source, 'echo' )
+        kw['echo_uow'] = getattr( source, 'echo_uow')
+        kw['logger'] = getattr( source, 'logger' )
+        #kw['convert_unicode'] = getattr( source, 'convert_unE_icode', )
+        #kw['default_ordering'] = getattr( source, 'default_ordering')
+        target = source.__class__( {}, **kw )    
+
+    return SchemaChangeSet( source, target )
+
 class SchemaChangeSet( object ):
 
     allowed_sources = ('rdbms', 'sqlalchemy')
 
-    def __init__(self, engine, source='sqlalchemy'):
-
-        assert source in self.allowed_sources
-        
-        kw = {}
-        kw['pool'] = getattr( engine, '_pool' )
-        kw['echo'] = getattr( engine, 'echo' )
-        kw['echo_uow'] = getattr( engine, 'echo_uow')
-        kw['logger'] = getattr( engine, 'logger' )
-        #kw['convert_unicode'] = getattr( engine, 'convert_unE_icode', )
-        #kw['default_ordering'] = getattr( engine, 'default_ordering')
-
-        self._rdb_engine = engine.__class__( {}, **kw )
-        self._sa_engine  = engine
-        self._sync_source = source
+    def __init__(self, source, target, source_type='sqlalchemy'):
+        self._target_engine = target
+        self._source_engine  = source
+        self._sync_source = source_type
         self._changes = None
         #self.introspect()
 
@@ -211,19 +216,15 @@ class SchemaChangeSet( object ):
         """
         if self._changes is None:
             print "No Changes"
-
+            return
+        
         for c in self._changes.values():
             print c
         
     def introspect(self):
 
-        if self._sync_source == 'sqlalchemy':
-            source_engine = self._sa_engine
-            target_engine = self._rdb_engine
-        else:
-            raise NotImplemented()
-            source_engine = self._rdb_engine
-            target_engine = self._sa_engine
+        source_engine = self._source_engine
+        target_engine = self._target_engine
 
         #self._rdb_engine.autoload_tables()
 
