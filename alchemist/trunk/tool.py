@@ -43,7 +43,7 @@ class AlchemistModeler( SchemaEditor ):
     meta_type = "Alchemist Modeler"
     
 
-class AlchemistTool( UniqueObject, AlchemistModeler ):
+class AlchemistTool( UniqueObject, atapi.BaseFolder, AlchemistModeler ):
     
     meta_type = "Alchemist Tool"
     id = "portal_alchemist"

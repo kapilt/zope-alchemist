@@ -20,6 +20,12 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ##################################################################
 """
+
+odd thoughts.. don't wrap svnb style..
+
+just a tool.. accessor to z2 style objects
+
+
 Author: Kapil Thangavelu <hazmat@objectrealms.net>
 $Id$
 """
@@ -132,7 +138,7 @@ class SchemaInspector( atapi.BaseFolder ):
         return map( self._mapTable, engine.tables.values() )
 
     def _mapTable( self, table ):
-        return SchemaTable( table )
+        return SchemaTable( table ).__of__(self)
         
         
 
