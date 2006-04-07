@@ -1,4 +1,4 @@
-##################################################################
+###################################################################
 #
 # (C) Copyright 2006 ObjectRealms, LLC
 # All Rights Reserved
@@ -23,7 +23,7 @@
 $Id$
 """
 
-import default
+import archetypes
 
 _models = []
 

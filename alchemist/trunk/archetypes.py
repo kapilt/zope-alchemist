@@ -473,6 +473,7 @@ class ArchetypesSchemaModel( object ):
         self._tables[ self._identity ] = object_identity
         self._peer_factories[ self._identity ] = ObjectIdentity
 
+
     def initializePeer( self, instance, peer ):
         """
         callback from peer creation to allow for model initialization of the

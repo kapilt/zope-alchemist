@@ -65,7 +65,7 @@ class AlchemistStorage( StorageLayer ):
             return
 
         peer = self.getPeerFor( instance )
-        # delete
+        peer.delete()
 
     def get(self, name, instance, **kwargs):
         if not self.isInitialized( instance ):

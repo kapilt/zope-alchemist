@@ -1,6 +1,13 @@
 """
 $Id$
 """
+import os, sys
+if __name__ == '__main__':
+    execfile(os.path.join(sys.path[0], 'framework.py'))
+
+from Testing import ZopeTestCase
+
+ZopeTestCase.installProduct("Alchemist")
 
 from unittest import TestCase, main
 
@@ -9,9 +16,8 @@ from sqlalchemy import * # to hard to fight ;-)
 import sqlalchemy as rdb
 
 
-from engine import create_engine
-from changeset import SchemaChangeSet
-
+from Products.Alchemist.engine import create_engine
+from Products.Alchemist.changeset import SchemaChangeSet
 
 import transaction
 
@@ -77,13 +83,6 @@ class TestEngineUtility( TestCase ):
         engine.drop_tables()
         self.assertEqual( engine.has_table('items'), False )                
 
-    def testChangesetEngine(self):
-
-        engine.create_tables()
-        changeset = SchemaChangeSet( engine )
-        changeset.introspect()
-        
-        
     def XtestObjectStoreCommit(self):
         # test that zope is driving the transaction.
         # autoload a table, create a mapper, create some instances

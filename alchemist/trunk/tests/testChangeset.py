@@ -26,6 +26,7 @@ users = Table('users', engine,
               Column('user_name', String(40)),
               )
 
+
 other_users = Table('users', other_engine,
               Column('user_id', Integer, Sequence('user_id_seq', optional=True), primary_key = True),
               Column('user_name', String(40)),

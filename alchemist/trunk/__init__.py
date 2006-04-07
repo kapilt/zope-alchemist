@@ -23,27 +23,41 @@
 $Id$
 """
 
-from Products.Archetypes import public as atapi
+try:
+    from Products.Archetypes import public as atapi
+except ImportError:
+    atapi = None
 
-from Products.CMFCore.utils import ContentInit
-from Products.CMFCore.utils import ToolInit
-from Products.CMFCore.DirectoryView import registerDirectory
+try:    
+    from Products.CMFCore.utils import ContentInit
+    from Products.CMFCore.utils import ToolInit
+    from Products.CMFCore.DirectoryView import registerDirectory
+except:
+    ToolInit = None
+    registerDirectory = None
 
 import config
 import engine
 import permissions
 import model
 import tool
+import databases
 
-registerDirectory( 'skins', globals() )
+
+if registerDirectory is not None:
+    registerDirectory( 'skins', globals() )
+
 
 model.registerModel(
-    model.default.DefaultSchemaModel(
+    model.archetypes.ArchetypesSchemaModel(
           engine.create_engine("zpgsql://database=alchemy", echo=True)
           )
     )
 
 def initialize( context ):
+
+    if ToolInit is None:
+        return
 
     ToolInit(
         'Alchemist Tools',
@@ -51,6 +65,9 @@ def initialize( context ):
         product_name='Alchemist',
         icon='tool.gif'
         ).initialize( context )
+
+    if atapi is None:
+        return
 
     listOfTypes = atapi.listTypes( config.PROJECTNAME )
     content_types, constructors, ftis = atapi.process_types( listOfTypes, config.PROJECTNAME )
