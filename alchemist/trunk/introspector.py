@@ -84,39 +84,40 @@ class PortalView:
         """
         return self()
 
-class SchemaTable( PortalView, DynamicType, SimpleItem  ):
+class SchemaElement( object ): pass
 
-    def __init__(self, id ):
+class SchemaTable( PortalView, DynamicType, SimpleItem, SchemaElement  ):
+
+    def __init__(self, id, table ):
         self.id = id
+        self._table = table
         
-    def getEngine(self):
-        browser = self.getBrowser()
-        return browser._getEngine()
-
     def getColumns( self ):
-        engine = self.getEngine()
-        table  = engine.tables[ self.id ]
-        return map( self._mapColumn, table.columns.items() )
+        return map( self._mapColumn, self._table.columns.items() )
+
+    columns = property( getColumns )
+
+    def getTable( self ):
+        return self._table
+
+    table = property( getTable )
 
     def _mapColumn(self, column_id, column):
         schema_column = SchemaColumn( column_id, column )
         return schema_column.__of__( self )
 
-class SchemaColumn( PortalView, DynamicType, SimpleItem ):
+class SchemaColumn( PortalView, DynamicType, SimpleItem, SchemaElement ):
 
     def __init__(self, id, column):
         self.id = id
-
         self.column = column
 
         # initialize column values for display
 
-        #self.
         self.type = repr( column.type )
         self.unique = column.unique
         self.nullable = column.nullable
         self.index = column.index
-
         
 
 class SchemaInspector( atapi.BaseFolder ):
@@ -139,10 +140,9 @@ class SchemaInspector( atapi.BaseFolder ):
 
     def _mapTable( self, table ):
         return SchemaTable( table ).__of__(self)
-        
-        
 
-atapi.registerType( SchemaBrowser )        
+    def createTypeFor( self, table_id, options=None):
+        pass
 
 
         
