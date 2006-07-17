@@ -20,25 +20,62 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ##################################################################
 """
-a zope transaction manager for sqlalchemy
+zope transaction manager integration for sqlalchemy
 
-make engine transaction methods noops, except for ensuring registration.
+$Id$
 """
 
-from zope.interface import implements
+import sqlalchemy.mods.threadlocal
 from sqlalchemy import objectstore
-from transaction.interfaces import IDataManager
+from zope.interface import implements
+from transaction.interfaces import IDataManager, ISynchronizer
+import transaction
+
+class AlchemyObserver( object ):
+    """
+    a transaction synchronizer/observer that ensures alchemy transactions
+    are begun when zope transactions are.
+
+    XXX not really nescesary, the engine registration handles for us.
+    """
+    implements( ISynchronizer )
+
+    def newTransaction( self, transaction ):
+        dm = AlchemyDataManager()
+        transaction.join( dm )
+
+    def afterCompletion( self, transaction ):
+        if hasattr( objectstore.context.current, 'zope_tpc'):
+            del objectstore.context.current.zope_tpc 
+
+    def beforeCompletion( self, transaction ):
+        pass
+
+    def getDataManager( self ):
+        return getattr( objectstore.context.current, 'zope_tpc', None )
+
+# install the observer with zope's transaction manager        
+observer = AlchemyObserver()
+transaction.manager.registerSynch( observer )
+
+def register( engine ):
+    # register alchemy data manager for transaction if not registered
+    zope_tpc  = observer.getDataManager()
+    if zope_tpc is None:
+        observer.newTransaction( transaction.get() )
+
+    # register engine if not registered (begins connection's transaction)
+    zope_tpc.transaction.get_or_add( engine )
         
 class AlchemyDataManager( object ):
     """
-    a data manager facade for alchemy engines participating in zope.transactions
+    a data manager facade for alchemy sessions participating in zope transactions
     """
     implements( IDataManager )
 
     def __init__(self):
-        self.transaction = None
-        # not sure if we need to reference data managers
-        #objectstore.context.current.zope_tpc = self
+        self.transaction = objectstore.create_transaction( autoflush = False )
+        objectstore.context.current.zope_tpc = self
         
     def abort(self, transaction):
         """Abort a transaction and forget all changes.
@@ -49,9 +86,7 @@ class AlchemyDataManager( object ):
         Abort is called by the transaction manager to abort transactions
         that are not yet in a two-phase commit.
         """
-        if self.transaction is not None:
-            self.transaction.rollback()
-        objectstore.clear()
+        self.transaction.rollback()
 
     # Two-phase commit protocol.  These methods are called by the ITransaction
     # object associated with the transaction being committed.  The sequence
@@ -64,7 +99,6 @@ class AlchemyDataManager( object ):
         transaction is the ITransaction instance associated with the
         transaction being committed.
         """
-        self.transaction = objectstore.create_transaction( autoflush = False )
         
     def commit(self, transaction):
         """Commit modifications to registered objects.
@@ -116,7 +150,6 @@ class AlchemyDataManager( object ):
 
         This should never fail.
         """
-        objectstore.clear()
         self.transaction.abort()
         self.transaction = None
         

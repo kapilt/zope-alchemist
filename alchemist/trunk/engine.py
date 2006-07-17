@@ -20,21 +20,13 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ##################################################################
 """
-SQLAlchemy Zope Transaction Integration, this module provides an alternative
-creation and lookup mechanism for SA engines, such that they are properly
-integrated with zope transaction management and cached.
 
-by default all engines in zope make use of thread local pools, Use of unique
-connections is currently allowed, but discouraged.
+this module provides an alternative creation and lookup mechanism for SA
+engines, such that they are properly integrated with zope transaction
+management, cached by dburi, and use a zope compatible strategy.
 
 the get_engine function is the primary accessor, it caches engines in order
 to return existing engines when possible for the same dburi.
-
-
-TODO
----
-  post 0.2 refactoring, currently zope transactions aren't utilized to the transaction
-  commits??
 
 $Id$
 """
@@ -46,27 +38,25 @@ import transaction
 import sqlalchemy.mods.threadlocal
 
 from sqlalchemy import objectstore, create_engine as EngineFactory
-from manager import AlchemyDataManager
+from manager import register
+
+__all__ = [ 'create_engine', 'get_engine', 'list_engine' ]
+
+_engines = {}
 
 def create_engine(*args, **kwargs):
     kwargs['strategy'] = 'zope'
     engine = EngineFactory( *args, **kwargs )
     name_or_url = args[0]
     _engines[ name_or_url ] = engine
-
-_engines = {}
-_engines_factories = {}
-
-def get_engine_factory( name ):
-    return _engines_factories[name]
-
-def register_engine_factory( name, factory ):
-    _engines_factories[ name ] = factory
+    register( engine )
+    return engine
 
 def get_engine( dburi, **kwargs ):
     engine =  _engines.get( dburi )
     if engine is None:
         engine = create_engine( dburi, **kwargs )
+    register( engine )
     return engine
 
 def list_engines( ):
