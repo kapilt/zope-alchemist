@@ -115,7 +115,7 @@ class PlonePASModel( object ):
                            
 if __name__ == '__main__':
 
-    from Products.Alchemist.engine import get_engine
+    from Products.alchemist.engine import get_engine
     engine = get_engine("postgres://database=alchemy", echo=True )    
     model = PlonePASModel(engine)
     parts = model.generateDefaults()

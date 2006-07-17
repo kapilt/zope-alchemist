@@ -32,7 +32,7 @@ cli_doc = """
 import sys
 import optparse
 import transaction
-from Products.Alchemist.archetypes import dump_site
+from Products.alchemist.Extensions.dump import dump_site
 
 from AccessControl.SecurityManagement import newSecurityManager
 

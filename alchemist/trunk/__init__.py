@@ -38,23 +38,25 @@ except:
 
 import config
 import engine
+import archetypes
 import permissions
-import model
 import tool
 import databases
-
+import strategy
+import model
+    
+model.registerModel(
+    model.archetypes.ArchetypesSchemaModel(
+       engine.create_engine("postgres://database=alchemy", echo=True)
+       )
+    )    
 
 if registerDirectory is not None:
     registerDirectory( 'skins', globals() )
 
 
-model.registerModel(
-    model.archetypes.ArchetypesSchemaModel(
-          engine.create_engine("zpgsql://database=alchemy", echo=True)
-          )
-    )
-
 def initialize( context ):
+
 
     if ToolInit is None:
         return

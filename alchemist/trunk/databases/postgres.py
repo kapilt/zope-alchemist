@@ -2,11 +2,11 @@
 $Id$
 """
 
-from Products.Alchemist.engine import register_engine_factory, ZopeEngineMixin
+from Products.alchemist.engine import register_engine_factory, ZopeEngineMixin
 
 from sqlalchemy.databases.postgres import PGSQLEngine, PGSchemaGenerator as saPGSchemaGenerator
 from sqlalchemy import schema
-from sqlalchemy.mapping.topological import QueueDependencySorter
+from sqlalchemy.orm.topological import QueueDependencySorter
 from sqlalchemy import types as satypes
 
 class PGSchemaGenerator( saPGSchemaGenerator ):
@@ -62,8 +62,8 @@ class ZopePostgresqlEngine( ZopeEngineMixin, PGSQLEngine ):
     def clear(self):
         self.tables = OrderedDict()
 
-    def schemagenerator( self, **params ):
-        return PGSchemaGenerator( self, **params )
+    #def schemagenerator( self, **params ):
+    #    return PGSchemaGenerator( self, **params )
 
     def upgrade_tables( self, tables=(), source='model' ):
         """

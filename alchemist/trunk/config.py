@@ -25,7 +25,7 @@ $Id$
 
 ALCHEMIST_TOOL = 'portal_alchemist'
 
-PROJECTNAME = "Alchemist"
+PROJECTNAME = "alchemist"
 
 DEPENDENCIES = ("ATSchemaEditorNG",)
 

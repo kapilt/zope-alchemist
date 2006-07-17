@@ -61,16 +61,17 @@ from Products.Archetypes.tests.utils import makeContent
 from Products.Archetypes.tests.utils import Dummy
 
 
-from Products.Alchemist.storage import AlchemistStorage
-from Products.Alchemist.engine import get_engine
-from Products.Alchemist.model import _clearModels
+from Products.alchemist.storage import AlchemistStorage
+from Products.alchemist.engine import get_engine
+from Products.alchemist.model import _clearModels
 
+from sqlalchemy import objectstore
 from sqlalchemy.pool import clear_managers
 
 from DateTime import DateTime
 
 
-ZopeTestCase.installProduct("Alchemist")
+ZopeTestCase.installProduct("alchemist")
 
 # the id to use in the connection objects
 connection_id = 'sql_connection'
@@ -168,7 +169,7 @@ def gen_dummy(storage_class):
 def commonAfterSetUp(self):
 
     portal = self.portal
-    portal.portal_quickinstaller.installProduct("Alchemist")
+    portal.portal_quickinstaller.installProduct("alchemist")
     
     # create the Database Adaptor (DA)
     #self.db_uri
@@ -214,9 +215,7 @@ class SQLSetupTests(ATSiteTestCase):
         commonAfterSetUp( self )
 
     def beforeTearDown(self):
-        engine = get_engine( self.db_name )
-        engine.do_zope_rollback()
-        _clearModels()
+        objectstore.clear()
         clear_managers()
         
 
@@ -234,8 +233,7 @@ class SQLStorageTestBase(ATSiteTestCase):
             raise
 
     def beforeTearDown(self):
-        engine = get_engine( self.db_name )
-        engine.do_zope_rollback()
+        objectstore.clear()
         _clearModels()
         clear_managers()
 
@@ -480,7 +478,7 @@ class SQLStorageTest(SQLStorageTestBase):
 #tests = [ SQLSetupTests ]
 tests = []
 
-for db_name in ["zpgsql://database=alchemy"]:
+for db_name in ["postgres://database=alchemy"]:
 
     class StorageTest(SQLStorageTest):
         db_name = db_name

@@ -15,10 +15,10 @@ import changeset
 
 import transaction
 
-engine = create_engine( 'zpgsql://database=alchemy', echo=True)
+engine = create_engine( 'postgres://database=alchemy', echo=True)
 engine.do_zope_begin()
 
-other_engine = create_engine( 'zpgsql://database=alchemy', echo=True)
+other_engine = create_engine( 'postgres://database=alchemy', echo=True)
 
 
 users = Table('users', engine,

@@ -92,7 +92,6 @@ references
   relation table -
   s oid |  t oid  | relation
 
-
   
 """
 
@@ -106,50 +105,9 @@ from DateTime import DateTime
 
 from Products.Archetypes import public as atapi
 from Products.CMFCore.utils import UniqueObject
-from Products.Alchemist.engine import get_engine
+
 
 import utils
-
-# external method tests
-
-def dump_site( self, db_uri="zpgsql://database=alchemy" ):
-
-    # setup up the schema definitions
-    engine = get_engine( db_uri, echo=True )
-
-    # connect to database
-    schema_model = ArchetypesSchemaModel( engine )
-
-    # load up schemas
-    for archetype_info in self.archetype_tool.listRegisteredTypes():
-        schema_model.loadType( archetype_info['klass'], context=self )
-
-    engine.create_tables()
-
-    try:
-        dump_content( self, schema_model )
-    except:
-        raise
-        import traceback, pdb, sys
-        ec,e,tb = sys.exc_info()
-        print ec, e
-        traceback.print_tb( tb )
-        pdb.post_mortem( tb )
-        
-        
-    import pdb;
-    return "Success"
-
-
-def dump_content( self, model ):
-    # dump content
-    for brain in self.portal_catalog():
-        content = brain.getObject()
-        
-        if content is None: continue
-        elif isinstance( content, UniqueObject): continue
-
-        peer = model.saveObject( content )
 
 
 # requires corresponding engine.generator changes
@@ -465,7 +423,8 @@ class ArchetypesSchemaModel( object ):
                                  self.engine,
                                  rdb.Column( "uid", rdb.String(50), primary_key=True ),
                                  rdb.Column( "id",  rdb.String(60) ),
-                                 rdb.Column( "table_name", rdb.String(50) )
+                                 rdb.Column( "table_name", rdb.String(50) ),
+                                 useexisting = True
                                  )
 
         class ObjectIdentity( object ): pass

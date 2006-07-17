@@ -2,4 +2,4 @@
 $Id$
 """
 
-import postgres
+#import postgres

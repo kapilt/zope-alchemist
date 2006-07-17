@@ -7,22 +7,25 @@ if __name__ == '__main__':
 
 from Testing import ZopeTestCase
 
-ZopeTestCase.installProduct("Alchemist")
+
+ZopeTestCase.installProduct("alchemist")
 
 from unittest import TestCase, main
+
+from Products.alchemist.engine import create_engine
+from Products.alchemist.changeset import SchemaChangeSet
 
 from sqlalchemy import objectstore
 from sqlalchemy import * # to hard to fight ;-)
 import sqlalchemy as rdb
 
 
-from Products.Alchemist.engine import create_engine
-from Products.Alchemist.changeset import SchemaChangeSet
+
 
 import transaction
 
 
-engine = create_engine( 'zpgsql://database=alchemy', echo=True)
+engine = create_engine( 'postgres://database=alchemy', echo=True)
 
 users = Table('users', engine,
               Column('user_id', Integer, Sequence('user_id_seq', optional=True), primary_key = True),

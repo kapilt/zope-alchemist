@@ -4,8 +4,8 @@ $Id$
 
 from StringIO import StringIO
 
-from Products.Alchemist.tool import AlchemistTool
-from Products.Alchemist import config
+from Products.alchemist.tool import AlchemistTool
+from Products.alchemist import config
 from Products.Archetypes import public as atapi
 from Products.Archetypes.Extensions.utils import installTypes
 from Products.Archetypes.Extensions.utils import install_subskin

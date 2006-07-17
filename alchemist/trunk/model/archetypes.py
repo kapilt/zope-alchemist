@@ -23,10 +23,11 @@
 $Id$
 """
 
-from Products.Alchemist.archetypes import ArchetypesSchemaModel
+from Products.alchemist.archetypes import ArchetypesSchemaModel as ModelBase
 from sqlalchemy.util import OrderedDict
 
-class ArchetypeSchemaModel( ArchetypesSchemaModel ):
+
+class ArchetypesSchemaModel( ModelBase ):
 
     def match( self, object ):
         return True

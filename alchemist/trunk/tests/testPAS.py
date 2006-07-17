@@ -7,14 +7,14 @@ if __name__ == '__main__':
 
 from Testing import ZopeTestCase
 
-ZopeTestCase.installProduct("Alchemist")
+ZopeTestCase.installProduct("alchemist")
 
 from unittest import TestCase, main
 
 import transaction
 
-from Products.Alchemist.engine import get_engine
-from Products.Alchemist.model import pas
+from Products.alchemist.engine import get_engine
+from Products.alchemist.model import pas
 import sqlalchemy as rdb
 
 class TestAlchemistPAS( TestCase ):
