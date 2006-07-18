@@ -82,23 +82,10 @@ class AlchemyDataManager( object ):
 
         Abort must be called outside of a two-phase commit.
 
-
         Abort is called by the transaction manager to abort transactions
         that are not yet in a two-phase commit.
         """
         self.transaction.rollback()
-
-    # Two-phase commit protocol.  These methods are called by the ITransaction
-    # object associated with the transaction being committed.  The sequence
-    # of calls normally follows this regular expression:
-    #     tpc_begin commit tpc_vote (tpc_finish | tpc_abort)
-
-    def tpc_begin(self, transaction):
-        """Begin commit of a transaction, starting the two-phase commit.
-
-        transaction is the ITransaction instance associated with the
-        transaction being committed.
-        """
         
     def commit(self, transaction):
         """Commit modifications to registered objects.
@@ -112,16 +99,6 @@ class AlchemyDataManager( object ):
         changes persist when tpc_finish is called.
         """
         objectstore.flush()
-
-    def tpc_vote(self, transaction):
-        """Verify that a data manager can commit the transaction.
-
-        This is the last chance for a data manager to vote 'no'.  A
-        data manager votes 'no' by raising an exception.
-
-        transaction is the ITransaction instance associated with the
-        transaction being committed.
-        """
 
     def tpc_finish(self, transaction):
         """Indicate confirmation that the transaction is done.

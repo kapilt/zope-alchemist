@@ -22,6 +22,20 @@
 
 from zope.interface import Interface
 
+class IAlchemistTableCollection( Interface ):
+    """
+    marker interface for sqlachemy metadata
+    """
+
+class IAlchemistTranslator( Interface ):
+
+    def translate( context, schema ):
+        """
+        translates the schema and returns the translation.
+
+        context is typically a sqlalchemy metadata, that can
+        be utilized for foreign key table lookups.
+        """
 
 class IAlchemySchemaModel( Interface ):
 

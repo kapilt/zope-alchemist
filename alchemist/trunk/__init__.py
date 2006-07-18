@@ -38,9 +38,6 @@ except:
 
 import config
 import engine
-import archetypes
-import permissions
-import tool
 import strategy
 import model
     
