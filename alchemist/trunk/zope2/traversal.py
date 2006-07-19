@@ -9,7 +9,6 @@ from zExceptions import NotFound
 
 from Products.Five.traversable import FiveTraversable
 
-
 class ContainerTraversal( FiveTraversable ):
 
     implements( ITraversable )

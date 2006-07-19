@@ -4,6 +4,42 @@
 
   <five:traversable class="Products.alchemist.zope2.container.AlchemistContainer" />
   <five:traversable class="Products.alchemist.zope2.domain.DomainRecord" />
+  <five:traversable class="Products.alchemist.zope2.tool.AlchemistTool" />
+
+  <browser:page
+      for="zope.app.container.interfaces.IAdding"
+      name="addAlchemistTool.html"
+      template="addAlchemistTool.pt"
+      class="Products.alchemist.zope2.tool.AddingView"
+      permission="zope2.ViewManagementScreens"
+      />
+
+  <browser:page
+      for="Products.alchemist.zope2.interfaces.IAlchemistTool"
+      name="tool_view.html"
+      template="tool_view.pt"
+      permission="zope2.ViewManagementScreens"
+      />
+
+  <five:defaultViewable class="Products.alchemist.zope2.tool.AlchemistTool"/>
+
+  <browser:defaultView
+      for="Products.alchemist.zope2.interfaces.IAlchemistTool"
+      name="tool_view.html"
+      />
+
+  <browser:resource
+      name="tool.png"
+      image="tool.png"
+      />
+
+  <five:registerClass
+      class="Products.alchemist.zope2.tool.AlchemistTool"
+      meta_type="Alchemist Tool"
+      addview="addAlchemistTool.html"
+      icon="tool.png"
+      permission="zope2.ViewManagementScreens"
+      />
 
   <adapter
       for="Products.alchemist.interfaces.IAlchemistContainer"
