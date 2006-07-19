@@ -2,7 +2,7 @@
 $Id$
 """
 
-from zope.app.traversing.interfaces import ITraverseable, TraversalError
+from zope.app.traversing.interfaces import ITraversable, TraversalError
 from zope.component import ComponentLookupError
 from zope.interface import implements 
 from zExceptions import NotFound
@@ -21,7 +21,7 @@ class ContainerTraversal( FiveTraversable ):
         # first try to find a view
         try:
             return super( ContainerTraversal, self).traverse( name, furtherPath )
-        except (ComponentLookupError AttributeError, KeyError, NotFound):
+        except (ComponentLookupError, AttributeError, KeyError, NotFound):
             pass
 
         # next try to load the domain record

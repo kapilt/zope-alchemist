@@ -8,11 +8,11 @@ from Globals import InitializeClass
 
 from zope.interface import implements
 
-from Products.alchemist.interfaces import ITableModel
+from Products.alchemist.interfaces import ITableSchema
 
 class DomainRecord( Explicit ):
 
-    implements( ITableModel )
+    implements( ITableSchema )
 
     _mapper = None
 

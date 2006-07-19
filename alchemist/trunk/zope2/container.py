@@ -45,4 +45,4 @@ class AlchemistContainer( SimpleItem ):
         return domain_class.count()
 
         
-    
+InitializeClass(AlchemistContainer)    

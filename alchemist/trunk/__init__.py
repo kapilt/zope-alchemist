@@ -23,3 +23,9 @@
 $Id$
 """
 
+import engine
+
+
+def initialize( context ):
+    
+    from zope2 import container, domain
