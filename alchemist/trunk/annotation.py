@@ -1,6 +1,8 @@
 """
+Annotations for Table objects, to annotate as needed, the notion
 
-Annotations for Table objects, to annotate as nescessary
+is that the annotation keys correspond to column, and values correspond
+to application specific column metadata.
 
 $Id$
 """

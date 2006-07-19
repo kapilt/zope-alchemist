@@ -25,15 +25,17 @@ SQLAlchemy to Zope3 Schemas
 $Id$
 """
 
-from zope.interface import Interface
+from zope.interface import Interface, moduleProvides
 from zope import schema
 from zope.schema.interfaces import ValidationError
 
 from sqlalchemy import types as rt
-
 import sqlalchemy as rdb
 
-class TableSchema( Interface ): pass
+from Products.alchemist.interfaces import ITableSchema,\
+     TransmutationException, IAlchemistTransmutation
+
+moduleProvides( IAlchemistTranslation )
 
 class ColumnTranslator( object ):
 
@@ -95,7 +97,7 @@ class ColumnVisitor( object ):
                 column_handler = handler
 
         if column_handler is None:
-            raise RuntimeError("no column handler for %r"%column)
+            raise TransmutationException("no column handler for %r"%column)
 
         return column_handler( column, self.info )
 
@@ -109,10 +111,12 @@ class SQLAlchemySchemaTranslator( object ):
 
         d = {}
         for columns in table.columns:
+            if annotation.get( column.name, {}).get('omit', False ):
+                continue
             for column in table.columns:
-                d[ column.name ] = visitor.visit( column )            
+                d[ column.name ] = visitor.visit( column )
         
-        class DerivedTableSchema( Interface ):
+        class DerivedTableSchema( ITableSchema ):
             locals().update( d )
             del locals()['d']
             
@@ -120,6 +124,6 @@ class SQLAlchemySchemaTranslator( object ):
 
         return DerivedTableSchema
             
-def transmute(  table, annotation ):
+def transmute(  table, annotation, __module__='alchemist.derived.interfaces'):
     
     return SQLAlchemySchemaTranslator().translate( table, annotation )
