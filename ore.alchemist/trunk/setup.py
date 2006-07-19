@@ -11,8 +11,8 @@ setup(
     },
 
     zip_safe=False,
-    author='ObjectRealms',
-    author_email='info@objectrealms.net'
+    author='ObjectRealms, LLC',
+    author_email='info@objectrealms.net',
     description="""\
 ore.alchemist contains an integration of sqlalchemy into the
 Zope App server environment. It can be used with Zope2, Zope3 or
