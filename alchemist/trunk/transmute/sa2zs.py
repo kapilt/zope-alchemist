@@ -26,6 +26,7 @@ $Id$
 """
 
 from zope.interface import Interface, moduleProvides
+from zope.interface.interface import InterfaceClass
 from zope import schema
 from zope.schema.interfaces import ValidationError
 
@@ -35,7 +36,7 @@ import sqlalchemy as rdb
 from Products.alchemist.interfaces import ITableSchema,\
      TransmutationException, IAlchemistTransmutation
 
-moduleProvides( IAlchemistTranslation )
+moduleProvides( IAlchemistTransmutation)
 
 class ColumnTranslator( object ):
 
@@ -104,26 +105,28 @@ class ColumnVisitor( object ):
 
 class SQLAlchemySchemaTranslator( object ):
 
-    def translate( self, table, annotation=None):
+    def translate( self, table, annotation, __module__, **kw):
 
+        annotation = annotation or {}
         visitor = ColumnVisitor(annotation)
         iname ='I%sTable'%table.name
 
         d = {}
-        for columns in table.columns:
+        for column in table.columns:
             if annotation.get( column.name, {}).get('omit', False ):
                 continue
             for column in table.columns:
                 d[ column.name ] = visitor.visit( column )
-        
-        class DerivedTableSchema( ITableSchema ):
-            locals().update( d )
-            del locals()['d']
-            
-        locals()['DerivedTableSchema'].__name__ = iname
 
+        DerivedTableSchema = InterfaceClass( iname,
+                                             (ITableSchema,),
+                                             attrs=d,
+                                             __module__ = __module__ )
         return DerivedTableSchema
-            
-def transmute(  table, annotation, __module__='alchemist.derived.interfaces'):
+        
+def transmute(  table, annotation=None, __module__='alchemist.derived.interfaces', **kw):
     
-    return SQLAlchemySchemaTranslator().translate( table, annotation )
+    return SQLAlchemySchemaTranslator().translate( table,
+                                                   annotation,
+                                                   __module__,
+                                                   **kw )

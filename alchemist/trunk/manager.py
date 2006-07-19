@@ -86,6 +86,7 @@ class AlchemyDataManager( object ):
         that are not yet in a two-phase commit.
         """
         self.transaction.rollback()
+        objectstore.clear()
         
     def commit(self, transaction):
         """Commit modifications to registered objects.
@@ -113,7 +114,6 @@ class AlchemyDataManager( object ):
         serious error.
         """
         self.transaction.commit()
-        self.transaction = None
         
     def tpc_abort(self, transaction):
         """Abort a transaction.
@@ -128,7 +128,7 @@ class AlchemyDataManager( object ):
         This should never fail.
         """
         self.transaction.abort()
-        self.transaction = None
+        objectstore.clear()
         
     def sortKey(self):
         """Return a key to use for ordering registered DataManagers.
