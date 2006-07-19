@@ -33,8 +33,7 @@ from zope.schema.interfaces import ValidationError
 from sqlalchemy import types as rt
 import sqlalchemy as rdb
 
-from ore.alchemist.interfaces import ITableSchema,\
-     TransmutationException, IAlchemistTransmutation
+from interfaces import ITableSchema, TransmutationException, IAlchemistTransmutation
 
 moduleProvides( IAlchemistTransmutation)
 
