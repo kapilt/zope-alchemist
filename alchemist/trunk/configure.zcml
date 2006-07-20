@@ -55,10 +55,21 @@
 
   <browser:defaultView
       for="Products.alchemist.interfaces.IAlchemistContainer"
-      name="ihdex.html"
+      name="index.html"
       />
 
   <!-- Records -->
+  <browser:page
+      for="ore.alchemist.interfaces.ITableSchema"
+      name="index.html"
+      template="browser/record_view.pt"
+      permission="zope2.ViewManagementScreens"
+      />
+
+  <browser:defaultView
+      for="ore.alchemist.interfaces.ITableSchema"
+      name="index.html"
+      />
 
 
 

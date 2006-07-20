@@ -6,7 +6,6 @@ from zope.interface import Interface
 from zope.schema import TextLine
 
 
-
 class IAlchemistContainer( Interface ):
     """
     a domain record container

@@ -14,13 +14,16 @@ class ContainerTraversal( FiveTraversable ):
     implements( ITraversable )
 
     def __init__(self, context ):
-        self.context = context
+        self._subject = context
 
     def traverse( self, name, furtherPath ):
+
         # first try to find a view
         try:
-            return super( ContainerTraversal, self).traverse( name, furtherPath )
-        except (ComponentLookupError, AttributeError, KeyError, NotFound):
+            next = super( ContainerTraversal, self).traverse( name, furtherPath )
+            if next is not None:
+                return next
+        except (ComponentLookupError, AttributeError, KeyError, NotFound, TraversalError):
             pass
 
         # next try to load the domain record
@@ -31,8 +34,7 @@ class ContainerTraversal( FiveTraversable ):
         except:
             oid = name
             
-            
-        object = self.context.get( oid )
+        object = self._subject.get( oid )
         if object is not None:
             return object
         
