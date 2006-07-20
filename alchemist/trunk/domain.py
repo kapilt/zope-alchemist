@@ -8,7 +8,7 @@ from Globals import InitializeClass
 
 from zope.interface import implements
 
-from Products.alchemist.interfaces import ITableSchema
+from ore.alchemist.interfaces import ITableSchema
 
 class DomainRecord( Explicit ):
 

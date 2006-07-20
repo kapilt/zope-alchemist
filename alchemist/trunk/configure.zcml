@@ -2,9 +2,11 @@
            xmlns:browser="http://namespaces.zope.org/browser"
            xmlns:five="http://namespaces.zope.org/five">
 
-  <five:traversable class=".container.AlchemistContainer" />
-  <five:traversable class=".domain.DomainRecord" />
+  <!-- Make Legacy Traversable -->
+  <five:traversable class="OFS.Application.Application"/>
+  <five:traversable class="OFS.Folder.Folder" />
 
+  <!-- Container Stuff -->
   <five:registerClass
       class=".container.AlchemistContainer"
       meta_type="Alchemist Container"
@@ -16,16 +18,18 @@
   <adapter
       for="Products.alchemist.interfaces.IAlchemistContainer"
       provides="zope.app.traversing.interfaces.ITraversable"
-      factory="Products.alchemist.zope2.traversal.ContainerTraversal" />
+      factory=".traversal.ContainerTraversal" />
 
-  <!--
+  <five:traversable class=".container.AlchemistContainer" />
   <five:defaultViewable 
       class=".container.AlchemistContainer" />
-    -->
-
-  <!-- UI Definitions -->
 
 
+  <!-- Domain Record Stuff -->
+  <five:traversable class=".domain.DomainRecord" />
+
+
+ <!-- UI Definitions -->
 
   <!-- Resources -->
   <browser:resource
@@ -50,7 +54,7 @@
       />
 
   <browser:defaultView
-      for="Products.alchemist.zope2.interfaces.IAlchemistTool"
+      for="Products.alchemist.interfaces.IAlchemistContainer"
       name="ihdex.html"
       />
 

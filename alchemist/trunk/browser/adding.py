@@ -2,7 +2,7 @@
 $Id$
 """
 
-from Products.Alchemist.container import AlchemistContainer
+from Products.alchemist.container import AlchemistContainer
 
 class ContainerAddingView:
 
@@ -11,6 +11,8 @@ class ContainerAddingView:
 
     def __call__(self, container_id='', domain_class='', title='', submit_add=''):
 
+        import pdb; pdb.set_trace()
+        
         if not submit_add or not domain_class:
             return self.index()
 

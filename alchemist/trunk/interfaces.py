@@ -3,6 +3,9 @@ $Id$
 """
 
 from zope.interface import Interface
+from zope.schema import TextLine
+
+
 
 class IAlchemistContainer( Interface ):
     """
@@ -18,13 +21,11 @@ class IAlchemistContainer( Interface ):
 
     domain_class = TextLine(
         title = u"Domain Class",
-        description = u"The Python Path of the Domain Class"
+        description = u"The Python Path of the Domain Class",
         default = u"Products.alchemist.domain.DomainRecord",
         required = True
         )
 
 
-class IAlchemistTool( Interface ):
-    """ marker interface """
 
     

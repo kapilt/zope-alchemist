@@ -6,6 +6,7 @@ from Globals import InitializeClass
 from OFS.SimpleItem import SimpleItem
 
 from zope.dottedname.resolve import resolve
+from zope.interface import implements
 
 from sqlalchemy.orm.mapper import ClassKey
 from sqlalchemy import objectstore
@@ -29,8 +30,8 @@ class AlchemistContainer( SimpleItem ):
             
         self.domain_class = domain_class
         self.id = id
-        sel
-
+        self.title = title
+        
     def getDomainClass( self ):
         return resolve( self.domain_class )
 
@@ -48,7 +49,7 @@ class AlchemistContainer( SimpleItem ):
 
     def __len__(self):
         domain_class = self.getDomainClass()
-        return domain_class.count()
+        return objectstore.count( domain_class )
 
         
 InitializeClass(AlchemistContainer)    
