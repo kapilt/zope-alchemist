@@ -63,7 +63,8 @@ def register( engine ):
     zope_tpc  = observer.getDataManager()
     if zope_tpc is None:
         observer.newTransaction( transaction.get() )
-
+        zope_tpc = observer.getDataManager()
+        
     # register engine if not registered (begins connection's transaction)
     zope_tpc.transaction.get_or_add( engine )
         
@@ -140,3 +141,9 @@ class AlchemyDataManager( object ):
         """
         return "100-alchemist"
     
+
+    def null( self, *args, **kw): pass
+
+    tpc_vote = tpc_begin = null
+
+        

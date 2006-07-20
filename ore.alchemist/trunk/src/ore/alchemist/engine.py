@@ -36,6 +36,7 @@ import transaction
 
 # install thread local module
 import sqlalchemy.mods.threadlocal
+import strategy
 
 from sqlalchemy import objectstore, create_engine as EngineFactory
 from manager import register
