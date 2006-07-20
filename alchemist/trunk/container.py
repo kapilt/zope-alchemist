@@ -6,17 +6,21 @@ from Globals import InitializeClass
 from OFS.SimpleItem import SimpleItem
 
 from zope.dottedname.resolve import resolve
+
 from sqlalchemy.orm.mapper import ClassKey
 from sqlalchemy import objectstore
+
+from interfaces import IAlchemistContainer
 
 def get_dottedname( klass ):
     return "%s.%s"%(klass.__module__, klass.__name__)
 
+
 class AlchemistContainer( SimpleItem ):
 
-    meta_type = "Alchemist Container"
+    implements( IAlchemistContainer )
 
-    def __init__(self, id, domain_class, title ):
+    def __init__(self, id, domain_class, title=''):
 
         if isinstance( domain_class, type ):
             domain_class = get_dottedname( domain_class )
@@ -24,6 +28,8 @@ class AlchemistContainer( SimpleItem ):
             assert isinstance( domain_class, str)
             
         self.domain_class = domain_class
+        self.id = id
+        sel
 
     def getDomainClass( self ):
         return resolve( self.domain_class )

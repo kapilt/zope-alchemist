@@ -2,42 +2,14 @@
            xmlns:browser="http://namespaces.zope.org/browser"
            xmlns:five="http://namespaces.zope.org/five">
 
-  <five:traversable class="Products.alchemist.zope2.container.AlchemistContainer" />
-  <five:traversable class="Products.alchemist.zope2.domain.DomainRecord" />
-  <five:traversable class="Products.alchemist.zope2.tool.AlchemistTool" />
-
-  <browser:page
-      for="zope.app.container.interfaces.IAdding"
-      name="addAlchemistTool.html"
-      template="addAlchemistTool.pt"
-      class="Products.alchemist.zope2.tool.AddingView"
-      permission="zope2.ViewManagementScreens"
-      />
-
-  <browser:page
-      for="Products.alchemist.zope2.interfaces.IAlchemistTool"
-      name="tool_view.html"
-      template="tool_view.pt"
-      permission="zope2.ViewManagementScreens"
-      />
-
-  <five:defaultViewable class="Products.alchemist.zope2.tool.AlchemistTool"/>
-
-  <browser:defaultView
-      for="Products.alchemist.zope2.interfaces.IAlchemistTool"
-      name="tool_view.html"
-      />
-
-  <browser:resource
-      name="tool.png"
-      image="tool.png"
-      />
+  <five:traversable class=".container.AlchemistContainer" />
+  <five:traversable class=".domain.DomainRecord" />
 
   <five:registerClass
-      class="Products.alchemist.zope2.tool.AlchemistTool"
-      meta_type="Alchemist Tool"
-      addview="addAlchemistTool.html"
-      icon="tool.png"
+      class=".container.AlchemistContainer"
+      meta_type="Alchemist Container"
+      addview="add-container.html"
+      icon="container.png"
       permission="zope2.ViewManagementScreens"
       />
 
@@ -45,6 +17,45 @@
       for="Products.alchemist.interfaces.IAlchemistContainer"
       provides="zope.app.traversing.interfaces.ITraversable"
       factory="Products.alchemist.zope2.traversal.ContainerTraversal" />
+
+  <!--
+  <five:defaultViewable 
+      class=".container.AlchemistContainer" />
+    -->
+
+  <!-- UI Definitions -->
+
+
+
+  <!-- Resources -->
+  <browser:resource
+      name="container.png"
+      image="browser/container.png"
+      />
+
+  <!-- Containers -->
+  <browser:page
+      for="zope.app.container.interfaces.IAdding"
+      name="add-container.html"
+      template="browser/container_add.pt"
+      class=".browser.adding.ContainerAddingView"
+      permission="zope2.ViewManagementScreens"
+      />
+
+  <browser:page
+      for="Products.alchemist.interfaces.IAlchemistContainer"
+      name="index.html"
+      template="browser/container_view.pt"
+      permission="zope2.ViewManagementScreens"
+      />
+
+  <browser:defaultView
+      for="Products.alchemist.zope2.interfaces.IAlchemistTool"
+      name="ihdex.html"
+      />
+
+  <!-- Records -->
+
 
 
 </configure>
