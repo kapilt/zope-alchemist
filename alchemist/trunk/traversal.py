@@ -24,7 +24,15 @@ class ContainerTraversal( FiveTraversable ):
             pass
 
         # next try to load the domain record
-        object = self.context.get( name )
+
+        # ugh.. XXX temp hack convert to int
+        try:
+            oid = int( name )
+        except:
+            oid = name
+            
+            
+        object = self.context.get( oid )
         if object is not None:
             return object
         
