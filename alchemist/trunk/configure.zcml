@@ -16,7 +16,7 @@
       />
 
   <adapter
-      for="Products.alchemist.interfaces.IAlchemistContainer"
+      for=".interfaces.IAlchemistContainer"
       provides="zope.app.traversing.interfaces.ITraversable"
       factory=".traversal.ContainerTraversal" />
 
@@ -48,18 +48,18 @@
       />
 
   <browser:page
-      for="Products.alchemist.interfaces.IAlchemistContainer"
+      for=".interfaces.IAlchemistContainer"
       name="index.html"
       template="browser/container_view.pt"
       permission="zope2.ViewManagementScreens"
       />
 
   <browser:defaultView
-      for="Products.alchemist.interfaces.IAlchemistContainer"
+      for=".interfaces.IAlchemistContainer"
       name="index.html"
       />
 
-  <!-- Records -->
+  <!-- Records   -->
   <browser:page
       for="ore.alchemist.interfaces.ITableSchema"
       name="index.html"

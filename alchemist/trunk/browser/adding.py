@@ -19,3 +19,4 @@ class ContainerAddingView:
         self.request.response.redirect(self.context.nextURL())
         return ''
 
+

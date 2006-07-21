@@ -10,7 +10,9 @@ from zope.interface import implements
 
 from ore.alchemist.interfaces import ITableSchema
 
-class DomainRecord( Explicit ):
+from OFS.SimpleItem import SimpleItem
+
+class DomainRecord( SimpleItem ):
 
     implements( ITableSchema )
 

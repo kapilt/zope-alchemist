@@ -35,8 +35,9 @@ class ContainerTraversal( FiveTraversable ):
             oid = name
             
         object = self._subject.get( oid )
+
         if object is not None:
-            return object
+            return object.__of__( self._subject )
         
         raise TraversalError( name )
         
