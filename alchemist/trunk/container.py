@@ -34,31 +34,28 @@ class AlchemistContainer( SimpleItem ):
     def getDomainClass( self ):
         return resolve( self.domain_class )
 
+    domain_model = property( getDomainClass )
+    
     def add( self, *args, **kw):
-        domain_class = self.getDomainClass()
-        return domain_class( *args, **kw )
+        return self.domain_model( *args, **kw )
 
     def get( self, identity, **kwargs):
-        domain_class = self.getDomainClass()
-        return objectstore.get( domain_class, identity, **kwargs )
+        return objectstore.get( self.domain_model, identity, **kwargs )
     
     def remove( self, object ):
-        assert isinstance( object, self.getDomainClass() )
+        assert isinstance( object, self.domain_model )
         objectstore.delete( object )
 
     def values(self, offset=0, limit=20):
-        domain_class = self.getDomainClass()
-        query = objectstore.query( domain_class )
+        query = objectstore.query( self.domain_model )
         return [res.__of__(self) for res in query.select()]
 
     def query(self, **kw ):
-        domain_class = self.getDomainClass()        
-        query = objectstore.query( domain_class )
-        pass
+        query = objectstore.query( self.domain_model )
+        return [ res.__of__(self) for res in query.select_by( **kw )]
 
     def __len__(self):
-        domain_class = self.getDomainClass()
-        return objectstore.count( domain_class )
+        return objectstore.count( self.domain_model )
 
         
 InitializeClass(AlchemistContainer)    
