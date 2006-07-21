@@ -16,7 +16,6 @@ from interfaces import IAlchemistContainer
 def get_dottedname( klass ):
     return "%s.%s"%(klass.__module__, klass.__name__)
 
-
 class AlchemistContainer( SimpleItem ):
 
     implements( IAlchemistContainer )
@@ -46,6 +45,16 @@ class AlchemistContainer( SimpleItem ):
     def remove( self, object ):
         assert isinstance( object, self.getDomainClass() )
         objectstore.delete( object )
+
+    def values(self, offset=0, limit=20):
+        domain_class = self.getDomainClass()
+        query = objectstore.query( domain_class )
+        return [res.__of__(self) for res in query.select()]
+
+    def query(self, **kw ):
+        domain_class = self.getDomainClass()        
+        query = objectstore.query( domain_class )
+        pass
 
     def __len__(self):
         domain_class = self.getDomainClass()
