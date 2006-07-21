@@ -46,6 +46,7 @@ class ColumnTranslator( object ):
         d = {}
         d['title'] = unicode( info.get('title', column.name )  )
         d['description'] = unicode( info.get('description', '' ) )
+        d['required'] = not column.nullable
 
         # this could be all sorts of things ...
         if isinstance( column.default, rdb.ColumnDefault ):
