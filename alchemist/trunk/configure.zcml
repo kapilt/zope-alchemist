@@ -27,7 +27,8 @@
 
   <!-- Domain Record Stuff -->
   <five:traversable class=".domain.DomainRecord" />
-
+  <five:defaultViewable 
+      class=".domain.DomainRecord" />
 
  <!-- UI Definitions -->
 
