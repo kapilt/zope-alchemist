@@ -77,7 +77,7 @@ class ColumnVisitor( object ):
         ( rt.DateTime, ColumnTranslator( schema.Datetime ) ),
 #        ( rt.Time, ColumnTranslator( schema.Datetime ),
         ( rt.Boolean, ColumnTranslator( schema.Bool ) ),
-        ( rt.String, ColumnTranslator( schema.ASCII ) ),
+        ( rt.String, ColumnTranslator( schema.TextLine ) ),
         ( rt.Binary, ColumnTranslator( schema.Bytes ) ),
         ( rt.Unicode, ColumnTranslator( schema.Bytes ) ),
         ( rt.Numeric, ColumnTranslator( schema.Float ) ),
