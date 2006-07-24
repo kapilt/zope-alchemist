@@ -63,3 +63,5 @@ def get_engine( dburi, **kwargs ):
 def list_engines( ):
     return _engine.keys()
 
+def iter_engines():
+    return _engines.itervalues()

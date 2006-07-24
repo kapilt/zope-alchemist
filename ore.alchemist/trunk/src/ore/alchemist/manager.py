@@ -41,28 +41,37 @@ class AlchemyObserver( object ):
     implements( ISynchronizer )
 
     def newTransaction( self, transaction ):
-        dm = AlchemyDataManager()
-        transaction.join( dm )
-
+        self.attach( transaction )
+        
     def afterCompletion( self, transaction ):
         if hasattr( objectstore.context.current, 'zope_tpc'):
             del objectstore.context.current.zope_tpc 
-
+        #if getattr( objectstore.context.current, 'transaction', None) is not None:
+        #    objectstore.context.current.transaction = None
+            
     def beforeCompletion( self, transaction ):
         pass
-
+    
+    def attach( self, transaction ):
+        from engine import iter_engines
+        dm = AlchemyDataManager()
+        transaction.join( dm )
+        zope_tpc = observer.getDataManager()
+        # attach extant engines
+        map( zope_tpc.transaction.get_or_add, iter_engines() )
+             
     def getDataManager( self ):
         return getattr( objectstore.context.current, 'zope_tpc', None )
 
 # install the observer with zope's transaction manager        
 observer = AlchemyObserver()
-transaction.manager.registerSynch( observer )
+transaction.manager.registerGlobalSynch( observer )
 
 def register( engine ):
     # register alchemy data manager for transaction if not registered
     zope_tpc  = observer.getDataManager()
     if zope_tpc is None:
-        observer.newTransaction( transaction.get() )
+        observer.attach( transaction.get() )
         zope_tpc = observer.getDataManager()
         
     # register engine if not registered (begins connection's transaction)
