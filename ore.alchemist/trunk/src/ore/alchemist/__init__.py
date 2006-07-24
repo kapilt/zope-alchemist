@@ -23,5 +23,6 @@
 $Id$
 """
 
-import engine
 import patches
+import engine
+
