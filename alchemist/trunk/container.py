@@ -8,7 +8,7 @@ from OFS.SimpleItem import SimpleItem
 from zope.dottedname.resolve import resolve
 from zope.interface import implements
 
-from sqlalchemy.orm.mapper import ClassKey
+from sqlalchemy.orm.query import Query
 from sqlalchemy import objectstore
 
 from interfaces import IAlchemistContainer
@@ -55,7 +55,6 @@ class AlchemistContainer( SimpleItem ):
         return [ res.__of__(self) for res in query.select_by( **kw )]
 
     def __len__(self):
-        return objectstore.count( self.domain_model )
+        return Query( self.domain_model ).count()
 
-        
 InitializeClass(AlchemistContainer)    
