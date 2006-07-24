@@ -31,8 +31,8 @@ class ContainerTraversal( FiveTraversable ):
         # ugh.. XXX temp hack convert to int
         try:
             oid = int( name )
-        except:
-            oid = name
+        except: # bobo traverse gets called alot, skip for now if we don't have an int
+            raise AttributeError ( name )
             
         object = self._subject.get( oid )
 
