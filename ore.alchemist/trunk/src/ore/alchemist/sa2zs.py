@@ -25,15 +25,19 @@ SQLAlchemy to Zope3 Schemas
 $Id$
 """
 
-from zope.interface import Interface, moduleProvides
+from zope.interface import Interface, moduleProvides, directlyProvides
 from zope.interface.interface import InterfaceClass
 from zope import schema
 from zope.schema.interfaces import ValidationError
+from zope.component import provideAdapter
 
 from sqlalchemy import types as rt
 import sqlalchemy as rdb
 
-from interfaces import ITableSchema, TransmutationException, IAlchemistTransmutation
+from interfaces import ITableSchema, TransmutationException, IAlchemistTransmutation, \
+     IModelAnnotation, IIModelInterface
+
+
 
 moduleProvides( IAlchemistTransmutation)
 
@@ -126,7 +130,17 @@ class SQLAlchemySchemaTranslator( object ):
         
 def transmute(  table, annotation=None, __module__='alchemist.derived.interfaces', **kw):
     
-    return SQLAlchemySchemaTranslator().translate( table,
-                                                   annotation,
-                                                   __module__,
-                                                   **kw )
+    z3iface = SQLAlchemySchemaTranslator().translate( table,
+                                                      annotation,
+                                                      __module__,
+                                                      **kw )
+
+    # mark the interface itself as being model driven
+    directlyProvides( z3iface, IIModelInterface)
+
+    # provide a named annotation adapter to go from the iface back to the annotation
+    if annotation is not None:
+        name = "%s.%s"%(z3iface.__module__, z3iface.__name__)
+        provideAdapter( annotation, adapts=(IIModelInterface,), provides=IModelAnnotation, name = name )
+
+    return z3iface

@@ -9,7 +9,7 @@ $Id$
 
 from zope.interface import implements
 from interfaces import IModelAnnotation
-
+from sqlalchemy.util import OrderedDict
     
 class ModelAnnotation( object ):
     
@@ -23,22 +23,40 @@ class ModelAnnotation( object ):
         from zc.table.column import GetterColumn        
         columns = []
         for i in self.annotation.values():
-            column = GetterColumn( title = i.title,
-                                   name = i.title,
-                                   getter = lambda ob: getattr( ob, i.title ) )
+            if i.get('table_column') is not True:
+                continue
+            def getter( ob, format, name=i['name']):
+                return getattr( ob, name )
+            column = GetterColumn( title = i['label'],
+                                   name = i['name'],
+                                   getter = getter )
             columns.append( column )
+        return columns
 
+class TableAnnotation( object ):
 
-class TableAnnotation( dict ):
+    __slots__ = ("table_name", "_annot")
 
-    __slots__ = ("table_name",)
-
-    def __init__(self, table_name, **kw):
+    def __init__(self, table_name, columns=None):
         self.table_name = table_name
-        super( TableAnnotation, self).__init__( **kw )
+        self._annot = OrderedDict()
 
+        if columns:
+            for c in columns:
+                self._annot[ c['name'] ] = c
+        
     def __call__( self, context ):
         return ModelAnnotation( context, self )
 
-        
-class ColumnAnnotation( dict ): pass        
+    def get( self, name, default=None ):
+        return self._annot.get( name, default )
+
+    def __getitem__(self, anme):
+        return self.get( name )
+
+    def values( self ):
+        return self._annot.values()
+
+    def __contains__(self, name ):
+        marker = object()
+        return not marker == self.get( name, marker )

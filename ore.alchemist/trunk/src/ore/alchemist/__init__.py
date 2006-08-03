@@ -26,3 +26,7 @@ $Id$
 import patches
 import engine
 
+
+def named( klass ):
+    return "%s.%s"%( klass.__module__, klass.__name__ )
+    
