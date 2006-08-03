@@ -25,25 +25,20 @@ Schema Introspecion
 $Id$
 """
 
-from zope.interface import Interface
+from zope.interface import Interface, Attribute
 from zope.interface.common.mapping import IEnumerableMapping
 from sqlalchemy.databases import information_schema
 from sqlalchemy.schema import BoundMetaData, Table
 from sqlalchemy import sql
 
-class ISchemaIntrospector( IEnumerableMapping ):
-    # a read dictionary interfaces to tables
+from interfaces import ISchemaIntrospector
+                                        
 
-    def bind( metadata=None, engine=None ):
-        """
-        binds introspector to a particular bound metadata, if metadata is none, create a new
-        metadata and bind to the passed in engine
-        """
+class TableSchemaIntrospector( object ):
 
-class SchemaIntrospector( object ):
-
+    implements( ISchemaIntrospector )
+    
     def __init__(self):
-        self._engine = None
         self._metadata = None
 
     def keys( self ):
@@ -98,13 +93,6 @@ class SchemaIntrospector( object ):
         return self._metadata
 
     metadata = property( _getMetadata )
-
-    def _getEngine( self ):
-        if self._engine is None:
-            raise AttributeError( "_engine" )
-        return self._engine
-
-    engine = property( _getEngine )
 
     def _getInformationSchema( self ):
         if self._information_schema is None:
