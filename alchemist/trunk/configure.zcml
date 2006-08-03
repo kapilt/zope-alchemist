@@ -2,6 +2,14 @@
            xmlns:browser="http://namespaces.zope.org/browser"
            xmlns:five="http://namespaces.zope.org/five">
 
+
+  <include package="zope.app.pagetemplate" file="meta.zcml" />
+  <include package="zc.resourcelibrary" file="meta.zcml" />
+
+  <include package="zope.app.pagetemplate" />
+  <include package="zc.resourcelibrary" />
+  <include package="zc.table" />
+
   <!-- Make Legacy Traversable -->
   <five:traversable class="OFS.Application.Application"/>
   <five:traversable class="OFS.Folder.Folder" />
@@ -51,6 +59,7 @@
       for=".interfaces.IAlchemistContainer"
       name="index.html"
       template="browser/container_view.pt"
+      class=".browser.container.ContainerView"
       permission="zope2.ViewManagementScreens"
       />
 
