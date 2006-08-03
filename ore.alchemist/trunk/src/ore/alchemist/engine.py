@@ -28,6 +28,8 @@ management, cached by dburi, and use a zope compatible strategy.
 the get_engine function is the primary accessor, it caches engines in order
 to return existing engines when possible for the same dburi.
 
+also provides a zope vocabulary utility for enumerating engine urls
+
 $Id$
 """
 
@@ -39,9 +41,15 @@ import sqlalchemy.mods.threadlocal
 import strategy
 
 from sqlalchemy import objectstore, create_engine as EngineFactory
+
+from zope.interface import implements
+from zope.component import getUtility
+from zope.schema.vocabulary import SimpleVocabulary
+
+from interfaces import IEngineVocabularyUtility
 from manager import register
 
-__all__ = [ 'create_engine', 'get_engine', 'list_engine' ]
+__all__ = [ 'create_engine', 'get_engine', 'list_engines' ]
 
 _engines = {}
 
@@ -65,3 +73,16 @@ def list_engines( ):
 
 def iter_engines():
     return _engines.itervalues()
+
+
+
+class EngineUtility( object ):
+    implements( IEngineVocabularyUtility )
+    engines = property( list_engines )
+    
+def EngineVocabulary( context ):
+    utility = getUtility( IEngineVocabularyUtility )
+    return SimpleVocabulary.fromValues( utility.engines )
+
+
+    
