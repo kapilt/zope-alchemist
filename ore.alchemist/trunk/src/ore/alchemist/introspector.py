@@ -93,6 +93,7 @@ class TableSchemaIntrospector( object ):
         return self._metadata
 
     metadata = property( _getMetadata )
+    context = metadata
 
     def _getInformationSchema( self ):
         if self._information_schema is None:
@@ -103,12 +104,35 @@ class TableSchemaIntrospector( object ):
         return self._information_schema
 
     information_schema = property( _getInformationSchema )
+
+    def orderedKeys( self, reverse=False ):
+        # side affect of loading all the tables.. so we
+        # can use their metadata to order based on fk chains
+
+        # order is non deterministic, it just preserves ordering
+        # of fk dependencies.
+        self.values()
+
+        for table in self.metadata.table_iterator( reverse ):
+            yield table.name
+
+    def itemInfo( self, key ):
+        return self._getTableInfo( key )
     
     #################################
     # internals
     def _clear(self):
         self._information_schema = None
-        
+
+    def _getTableInfo( self, table_name ):
+        t = self.information_schema.tables['information_schema.tables']
+        s = sql.select()
+        if self.metadata.name:
+            s.append_whereclause( t.c.table_schema == self.metadata.name )
+        s.append_whereclause( t.c.table_name == sql.bindparam("table_name") )
+        results = s.execute( table_name = table_name )
+        return return dict( results[0].items() )
+
     def _getTable( self, table_name ):
         if not table_name in self:
             raise KeyError( table_name )

@@ -1,0 +1,13 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    >
+
+  <utility provides=".interfaces.IEngineVocabularyUtility"
+	   factory=".engine.EngineUtility" />
+
+  <vocabulary
+           name="Alchemist Available Engines"
+           factory=".engine.EngineVocabulary" />
+
+
+</configure>
