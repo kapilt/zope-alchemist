@@ -11,10 +11,9 @@ from zope.interface import implements
 from sqlalchemy.orm.query import Query
 from sqlalchemy import objectstore
 
-from interfaces import IAlchemistContainer
+from ore.alchemist import named
+from ore.alchemist.interfaces import IAlchemistContainer
 
-def get_dottedname( klass ):
-    return "%s.%s"%(klass.__module__, klass.__name__)
 
 class AlchemistContainer( SimpleItem ):
 
@@ -23,7 +22,7 @@ class AlchemistContainer( SimpleItem ):
     def __init__(self, id, domain_class, title=''):
 
         if isinstance( domain_class, type ):
-            domain_class = get_dottedname( domain_class )
+            domain_class = named( domain_class )
         else:
             assert isinstance( domain_class, str)
             
