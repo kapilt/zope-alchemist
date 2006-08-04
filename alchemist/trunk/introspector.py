@@ -26,10 +26,13 @@ $Id$
 from OFS.SimpleItem import SimpleItem
 from zope.interface import implements
 from interfaces import IAlchemistIntrospector
+from ore.alchemist.introspector import TableSchemaIntrospector
 
 class AlchemistIntrospector( SimpleItem ):
 
     implements( IAlchemistIntrospector )
+
+    _v_introspector = None
 
     def __init__( self, id, title, engine_uri, schema=None ):
         self.id = id
@@ -42,8 +45,10 @@ class AlchemistIntrospector( SimpleItem ):
         if self._v_introspector:
             return self._v_introspector
 
-        self._v_introspector = SchemaIntrospector()
-        self._v_introspector.bindEngine( engine_uri, self.schema )
-
+        self._v_introspector = TableSchemaIntrospector()
+        self._v_introspector.bindEngine( self.engine_uri, self.schema )
+        return self._v_introspector
+    
     introspector = property( _introspector )
+
 
