@@ -68,17 +68,18 @@ def get_engine( dburi, **kwargs ):
     register( engine )
     return engine
 
-def list_engines( ):
-    return _engine.keys()
+def list_engines():
+    return _engines.keys()
 
 def iter_engines():
     return _engines.itervalues()
 
-
-
 class EngineUtility( object ):
     implements( IEngineVocabularyUtility )
-    engines = property( list_engines )
+
+    def _engines( self ):
+        return list_engines()
+    engines = property( _engines )
     
 def EngineVocabulary( context ):
     utility = getUtility( IEngineVocabularyUtility )
