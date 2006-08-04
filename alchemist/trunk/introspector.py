@@ -23,25 +23,27 @@
 $Id$
 """
 
-from zope.interface import Interface, Attribute
-from zope.schema import TextLine, Choice
-from ore.alchemist.interfaces import IAlchemistContainer
+from OFS.SimpleItem import SimpleItem
+from zope.interface import implements
+from interfaces import IAlchemistIntrospector
 
+class AlchemistIntrospector( SimpleItem ):
 
-class IAlchemistIntrospector( Interface ):
+    implements( IAlchemistIntrospector )
 
-    introspector = Attribute(u"introspector", u"volatile introspector implementation")
+    def __init__( self, id, title, engine_uri, schema=None ):
+        self.id = id
+        self.title = title
+        self.engine_uri = engine_uri
+        self.schema = schema
 
-    add_input_name = TextLine( title=u"Id")
-    title = TextLine( title=u"Title", required=False)
-    engine_uri = Choice( title=u"Engine URI", vocabulary="Alchemist Available Engines")    
-    schema = TextLine( title=u"Schema", required=False )
+    def _introspector( self ):
 
-    
+        if self._v_introspector:
+            return self._v_introspector
 
+        self._v_introspector = SchemaIntrospector()
+        self._v_introspector.bindEngine( engine_uri, self.schema )
 
-                             
+    introspector = property( _introspector )
 
-
-
-    
