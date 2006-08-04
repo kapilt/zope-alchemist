@@ -27,15 +27,18 @@ from zope.interface import Interface, Attribute
 from zope.schema import TextLine, Choice
 from ore.alchemist.interfaces import IAlchemistContainer
 
-
-class IAlchemistIntrospector( Interface ):
-
-    introspector = Attribute(u"introspector", u"volatile introspector implementation")
-
+class IZopeSimpleItem( Interface ):
     add_input_name = TextLine( title=u"Id")
     title = TextLine( title=u"Title", required=False)
+    
+class IAlchemistIntrospector( Interface ):
+    introspector = Attribute(u"introspector", u"volatile introspector implementation")
     engine_uri = Choice( title=u"Engine URI", vocabulary="Alchemist Available Engines")    
     schema = TextLine( title=u"Schema", required=False )
+
+class IAlchemistWorkbench( Interface ):
+    pass
+
 
     
 

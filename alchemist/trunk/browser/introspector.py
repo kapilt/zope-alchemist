@@ -31,12 +31,12 @@ from Products.Five.formlib import formbase
 from Products.Bling.ajax import jsonify
 
 from Products.alchemist.introspector import AlchemistIntrospector
-from Products.alchemist.interfaces import IAlchemistIntrospector
+from Products.alchemist.interfaces import IAlchemistIntrospector, IZopeSimpleItem
 
 class IntrospectorAddingView( formbase.AddFormBase ):
 
-    #template = ZopeTwoPageTemplateFile('introspector_add.pt')    
-    form_fields = form.Fields( IAlchemistIntrospector, for_input=True)
+    form_fields = form.Fields( IZopeSimpleItem, for_input= True )
+    form_fields += form.Fields( IAlchemistIntrospector, for_input=True)
     
     def create(self, data):
         # using formlib, name is form prefixed, stuff it directly onto
@@ -48,7 +48,7 @@ class IntrospectorAddingView( formbase.AddFormBase ):
                                       data.get('schema', None) )
 
     def nextURL( self ):
-        return self.context.absolute_url()
+        return self.context.absolute_url() + "/" + self.context.contentName
     
 class IntrospectorBrowserView( BrowserView ):
 
@@ -62,7 +62,16 @@ class IntrospectorBrowserView( BrowserView ):
     def tableGraph( self ):
         pass
 
-class IntrospectorGraphvizView( IntrospectorBrowserView ):
+class IntrospectorTableView( IntrospectorBrowserView ):
+
+    def table(self):
+        name = self.request.get('table_name')
+        if not name:
+            self.request.response.redirect( context.absolute_url() )
+        return self.context.introspector[ name ]
+
+    
+class IntrospectorJSONView( IntrospectorBrowserView ):
 
     tableListing = jsonify( IntrospectorBrowserView.tableListing )
 
@@ -70,7 +79,7 @@ class IntrospectorGraphvizView( IntrospectorBrowserView ):
 
     tableGraph = jsonify( IntrospectorBrowserView.tableGraph )
 
-class IntrospectorJSONView( BrowserView ):
+class IntrospectorGraphvizView( BrowserView ):
     pass
 
     

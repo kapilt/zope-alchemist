@@ -68,11 +68,30 @@
   <browser:page
       for="zope.app.container.interfaces.IAdding"
       name="add-introspector"
-      template="browser/introspector_add.pt"
       class=".browser.introspector.IntrospectorAddingView"
       permission="zope2.ViewManagementScreens"
       />
 
+  <browser:page
+      for=".interfaces.IAlchemistIntrospector"
+      name="index.html"
+      template="browser/introspector_view.pt"
+      class=".browser.introspector.IntrospectorBrowserView"
+      permission="zope2.ViewManagementScreens"
+      />
+
+  <browser:page
+      for=".interfaces.IAlchemistIntrospector"
+      name="table"
+      template="browser/introspector_table.pt"
+      class=".browser.introspector.IntrospectorTableView"
+      permission="zope2.ViewManagementScreens"
+     />
+
+  <browser:defaultView
+      for=".interfaces.IAlchemistIntrospector"
+      name="index.html"
+      />
 
   <!-- Containers -->
   <browser:page
