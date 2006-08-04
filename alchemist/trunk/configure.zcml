@@ -3,35 +3,48 @@
            xmlns:five="http://namespaces.zope.org/five">
 
 
+  <!-- include meta dependencies -->
   <include package="zope.app.pagetemplate" file="meta.zcml" />
   <include package="zc.resourcelibrary" file="meta.zcml" />
 
+  <!-- include dependencies -->
   <include package="zope.app.pagetemplate" />
   <include package="zc.resourcelibrary" />
   <include package="zc.table" />
+  <include package="ore.alchemist" />x
 
   <!-- Make Legacy Traversable -->
   <five:traversable class="OFS.Application.Application"/>
   <five:traversable class="OFS.Folder.Folder" />
 
+  <!-- Introspector Stuff -->
+  <five:registerClass
+      class=".introspector.AlchemistIntrospector"
+      meta_type="Alchemist Introspector"
+      addview="add-introspector"
+      icon="introspector.png"
+      permission="zope2.ViewManagementScreens"
+     />
+
+  <five:traversable class=".introspector.AlchemistIntrospector" />
+  <five:defaultViewable class=".introspector.AlchemistIntrospector" />
+
   <!-- Container Stuff -->
   <five:registerClass
       class=".container.AlchemistContainer"
       meta_type="Alchemist Container"
-      addview="add-container.html"
+      addview="add-container"
       icon="container.png"
       permission="zope2.ViewManagementScreens"
       />
 
   <adapter
-      for=".interfaces.IAlchemistContainer"
+      for="ore.alchemist.interfaces.IAlchemistContainer"
       provides="zope.app.traversing.interfaces.ITraversable"
       factory=".traversal.ContainerTraversal" />
 
   <five:traversable class=".container.AlchemistContainer" />
-  <five:defaultViewable 
-      class=".container.AlchemistContainer" />
-
+  <five:defaultViewable class=".container.AlchemistContainer" />
 
   <!-- Domain Record Stuff -->
   <five:traversable class=".domain.DomainRecord" />
@@ -46,17 +59,32 @@
       image="browser/container.png"
       />
 
+  <browser:resource
+      name="introspector.png"
+      image="browser/introspector.png"
+     />
+
+  <!-- Introspectors -->
+  <browser:page
+      for="zope.app.container.interfaces.IAdding"
+      name="add-introspector"
+      template="browser/introspector_add.pt"
+      class=".browser.introspector.IntrospectorAddingView"
+      permission="zope2.ViewManagementScreens"
+      />
+
+
   <!-- Containers -->
   <browser:page
       for="zope.app.container.interfaces.IAdding"
-      name="add-container.html"
+      name="add-container"
       template="browser/container_add.pt"
-      class=".browser.adding.ContainerAddingView"
+      class=".browser.container.ContainerAddingView"
       permission="zope2.ViewManagementScreens"
       />
 
   <browser:page
-      for=".interfaces.IAlchemistContainer"
+      for="ore.alchemist.interfaces.IAlchemistContainer"
       name="index.html"
       template="browser/container_view.pt"
       class=".browser.container.ContainerView"
@@ -64,7 +92,7 @@
       />
 
   <browser:defaultView
-      for=".interfaces.IAlchemistContainer"
+      for="ore.alchemist.interfaces.IAlchemistContainer"
       name="index.html"
       />
 
