@@ -33,7 +33,7 @@ class ModelAnnotation( object ):
             columns.append( column )
         return columns
 
-class TableAnnotation( object ):
+class MapperAnnotation( object ):
 
     __slots__ = ("table_name", "_annot")
 
@@ -60,3 +60,5 @@ class TableAnnotation( object ):
     def __contains__(self, name ):
         marker = object()
         return not marker == self.get( name, marker )
+
+TableAnnotation = MapperAnnotation

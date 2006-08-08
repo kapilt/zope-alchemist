@@ -19,24 +19,5 @@
   Provides through the web schema development tools.
 
 
- Ways to use
-
-  TTW Development
-
-   - 
-
-  AlchemistStorage
-
-   - by using 
-
-  CMFDeployment
-
-   - in conjunction with cmfdeployment, alchemist can do incremental
-     data deployments to relational databases. it can provided this
-     facility for any generic archetype based object.
-
-  Custom Models
-
-  
 
 
