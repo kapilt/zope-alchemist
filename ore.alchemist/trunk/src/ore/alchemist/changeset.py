@@ -42,7 +42,8 @@ limitations..
 
   - lots
 
-  - architecturally no rename support
+  - we don't track ddl changes, we compare final states and there is no ancestry metadata.
+    so architecturally no rename support.
 
 $Id$
 """
@@ -51,10 +52,14 @@ from sqlalchemy import ansisql
 from sqlalchemy.schema import Table
 from sqlalchemy.sql import ClauseElement
 from sqlalchemy.util import OrderedDict
+from sqlalchemy.engine import ComposedSQLEngine
+
+from ore.alchemist import introspector
+from pprint import pprint
 
 try:
     set
-except NameError:
+except NameError: # be nice to py2.3
     from sets import Set as set
 
 class ANSISchemaModifier( ansisql.ANSISchemaGenerator, ansisql.ANSISchemaDropper ):
@@ -72,9 +77,9 @@ class ANSISchemaModifier( ansisql.ANSISchemaGenerator, ansisql.ANSISchemaDropper
         table = self.resolve( change.name )
         self.visit_table_create( table )
         
-    #def visit_drop_table( self, change ):
-    #    entity = change.resolveEntity()
-    #    self.visit_table_drop( entity )
+    def visit_drop_table( self, change ):
+        entity = change.resolveEntity()
+        self.visit_table_drop( entity )
 
     def visit_add_column( self, change ):
         raise NotImplemented
@@ -85,6 +90,12 @@ class ANSISchemaModifier( ansisql.ANSISchemaGenerator, ansisql.ANSISchemaDropper
         self.append(
             "ALTER TABLE %s DROP COLUMN %s\n"%( table.fullname, column.name )
             )
+
+    def visit_add_constraint( self, change ):
+        raise NotImplemented
+
+    def visit_drop_constraint( self, change ):
+        raise NotImplemented
 
     def visit_change_column_type( self, change ):
         raise NotImplemented
@@ -184,19 +195,23 @@ class SchemaChange( object ):
         visit_method = getattr( visitor, 'visit_%s'%self.change_kind )
         visit_method( self )
 
-def changeset( source, target=None ):
-    # if called with just a source, generate the target from the relational
-    # database.
+    def __repr__( self):
+        return "<SchemaChange %s %s>"%( self.target_name, self.change_kind )
+    
 
-    if target is None:
-        kw = {}
-        kw['pool'] = getattr( source, '_pool' )
-        kw['echo'] = getattr( source, 'echo' )
-        kw['echo_uow'] = getattr( source, 'echo_uow')
-        kw['logger'] = getattr( source, 'logger' )
-        #kw['convert_unicode'] = getattr( source, 'convert_unE_icode', )
-        #kw['default_ordering'] = getattr( source, 'default_ordering')
-        target = source.__class__( {}, **kw )    
+def metadata_from_engine( engine ):
+    # return a metadata loaded with all tables accessible from the engine
+    introspector = introspector.TableIntrospector()
+    introspector.bindEngine(  source )
+    source = introspector.metadata
+    introspector.values() # load all the tables
+
+def changeset( source, target ):
+    # if called with an engine, generate the metadata from the relational
+    if isinstance( source, ComposedSQLEngine ):
+        source = metadata_from_engine( source )
+    if isinstance( target, ComposedSQLEngine ):
+        target = metadata_from_engine( target )
 
     return SchemaChangeSet( source, target )
 
@@ -205,8 +220,8 @@ class SchemaChangeSet( object ):
     allowed_sources = ('rdbms', 'sqlalchemy')
 
     def __init__(self, source, target, source_type='sqlalchemy'):
-        self._target_engine = target
-        self._source_engine  = source
+        self._target_metadata = target
+        self._source_metadata  = source
         self._sync_source = source_type
         self._changes = None
         #self.introspect()
@@ -217,38 +232,46 @@ class SchemaChangeSet( object ):
         if self._changes is None:
             print "No Changes"
             return
-        
-        for c in self._changes.values():
-            print c
-        
+        pprint( self._changes )
+
     def introspect(self):
 
-        source_engine = self._source_engine
-        target_engine = self._target_engine
-
-        #self._rdb_engine.autoload_tables()
+        source_metadata = self._source_metadata
+        target_metadata = self._target_metadata
 
         changes = OrderedDict()
 
         def make_change( name, change_kind ):
+            if '.' in name:
+                parts = name.split('.')
+                for i in range(len(parts)):
+                    n = parts[i]
+                    if i+1 ==len(parts):
+                        local_changes = local_changes.setdefault( n, [] )
+                    else:
+                        local_changes = changes.setdefault( n, {} )
+            else:
+                local_changes = changes.setdefault( name, [] )                
             change = SchemaChange( name, change_kind )
-            changes[ name ] = change
+            local_changes.append( change )
 
-        for source in source_engine.sort_tables():
-            if not target_engine.has_table( source.name ):
-                change = SchemaChange( source.name, "create_table")
-                changes.setdefault( source.name, []).append( change )
+        for source in source_metadata.table_iterator():
+            if not source.name in target_metadata.tables:
+                make_change( str( source.name ), "create_table")
                 continue
             
-            target = Table( source.name, target_engine, autoload = True )
+            target = target_metadata.tables[ source.name ]
 
             for column_id in source.columns.keys():
 
                 source_column = source.columns[ column_id ]
-                
+
+                column_name = "%s.%s"%(source.name, column_id)
+                print "Colname", column_name, column_id, str( source_column )
+
                 # assert existance
                 if not column_id in target.columns:
-                    make_change( str( source_column ), 'add_column')
+                    make_change( column_name, 'add_column')
                     continue
                 
                 target_column = target.columns[ column_id ]
@@ -256,17 +279,17 @@ class SchemaChangeSet( object ):
                 # assert type is same
                 if not normalize_type( source_column.type ) \
                    ==  normalize_type( target_column.type ):
-                    make_change( str( source_column ), 'change_column_type')
+                    make_change( column_name, 'change_column_type')
 
                 # assert defaults are the same
                 if not normalize_default( source_column.default ) \
                    ==  normalize_default( target_column.default ):
-                    make_change( str( source_column ), 'change_column_default')
+                    make_change( column_name, 'change_column_default')
                     
                 # assert foreign keys are same
                 if not normalize_fk( source_column.foreign_key ) \
                    == normalize_fk( target_column.foreign_key ):
-                    make_change( str( source_column ), 'change_column_fk')
+                    make_change( column_name, 'change_column_fk')
                     
             # process deleted columns
             target_columns = set( target.columns.keys() )
@@ -278,14 +301,21 @@ class SchemaChangeSet( object ):
             
         # generate table deletions?
 
-        self.changes = changes
+        self._changes = changes
+        self.introspected = True
 
-    def getChangeSetDDL( self ):
-        pass
+    def toFile(self, file_name):
+        if not self.introspected:
+            self.introspect()
 
-    def syncChangeSet(self):
-        pass
+    def toString(self):
+        if not self.introspected:
+            self.introspect()        
             
+    def sync(self):
+        if not self.introspected:
+            self.introspect()        
+
 
 def normalize_type( satype ):
     if satype is None:
