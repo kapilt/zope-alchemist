@@ -25,7 +25,7 @@ Schema Introspecion
 $Id$
 """
 
-from zope.interface import Interface, Attribute
+from zope.interface import Interface, Attribute, implements
 from zope.interface.common.mapping import IEnumerableMapping
 from sqlalchemy.databases import information_schema
 from sqlalchemy.schema import BoundMetaData, Table
@@ -131,7 +131,7 @@ class TableSchemaIntrospector( object ):
             s.append_whereclause( t.c.table_schema == self.metadata.name )
         s.append_whereclause( t.c.table_name == sql.bindparam("table_name") )
         results = s.execute( table_name = table_name )
-        return return dict( results[0].items() )
+        return dict( results[0].items() )
 
     def _getTable( self, table_name ):
         if not table_name in self:
