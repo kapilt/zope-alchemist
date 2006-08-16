@@ -55,11 +55,11 @@ _engines = {}
 
 def create_engine(*args, **kwargs):
     kwargs['strategy'] = 'zope'
-    engine = EngineFactory( *args, **kwargs )
+    engine = EngineProxy( EngineFactory( *args, **kwargs ) )
     name_or_url = args[0]
     _engines[ name_or_url ] = engine
     register( engine )
-    return engine
+    return EngineProxy( engine )
 
 def get_engine( dburi, **kwargs ):
     engine =  _engines.get( dburi )
@@ -73,6 +73,26 @@ def list_engines():
 
 def iter_engines():
     return _engines.itervalues()
+
+class EngineProxy( object ):
+
+    __slots__ = ('_engine',)
+
+    def __init__(self, engine):
+        self._engine = engine
+
+    def _execute_many( self, *args, **kw):
+        register( self._engine )
+        return self._engine.execute_many( *args, **kw )
+
+    def __getattr__(self, name):
+        return getattr(self._engine, name )
+
+    def __setattr__(self, name, value ):
+        if name == '_engine':
+            return super( EngineProxy, self).__setattr__( name, value )
+            
+        return setattr( self._engine, name, value )
 
 class EngineUtility( object ):
     implements( IEngineVocabularyUtility )

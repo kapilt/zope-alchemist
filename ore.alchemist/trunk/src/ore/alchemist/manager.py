@@ -46,8 +46,8 @@ class AlchemyObserver( object ):
         self.attach( transaction )
         
     def afterCompletion( self, transaction ):
-        if hasattr( objectstore.context.current, 'zope_tpc'):
-            del objectstore.context.current.zope_tpc 
+        if hasattr( objectstore.session, 'zope_tpc'):
+            del objectstore.session.zope_tpc
         #if getattr( objectstore.context.current, 'transaction', None) is not None:
         #    objectstore.context.current.transaction = None
             
@@ -63,7 +63,7 @@ class AlchemyObserver( object ):
         map( zope_tpc.transaction.get_or_add, iter_engines() )
              
     def getDataManager( self ):
-        return getattr( objectstore.context.current, 'zope_tpc', None )
+        return getattr( objectstore.session, 'zope_tpc', None )
 
 # install the observer with zope's transaction manager        
 observer = AlchemyObserver()
@@ -87,7 +87,7 @@ class AlchemyDataManager( object ):
 
     def __init__(self):
         self.transaction = objectstore.create_transaction( autoflush = False )
-        objectstore.context.current.zope_tpc = self
+        objectstore.session.zope_tpc = self
         
     def abort(self, transaction):
         """Abort a transaction and forget all changes.
