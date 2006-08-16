@@ -116,6 +116,9 @@ class ColumnTranslator( object ):
             default = column.default
 
         # create a field on the fly to validate the default value... 
+        # xxx there is a problem with default value somewhere in the stack,
+        # 
+
         validator = self.schema_field()
         try:
             validator.validate( default )

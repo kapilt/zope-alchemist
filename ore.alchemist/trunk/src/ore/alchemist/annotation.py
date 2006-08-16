@@ -33,17 +33,17 @@ class ModelAnnotation( object ):
             columns.append( column )
         return columns
 
-class MapperAnnotation( object ):
+class TableAnnotation( object ):
 
     __slots__ = ("table_name", "_annot")
 
-    def __init__(self, table_name, columns=None):
+    def __init__(self, table_name, **columns):
         self.table_name = table_name
         self._annot = OrderedDict()
 
         if columns:
-            for c in columns:
-                self._annot[ c['name'] ] = c
+            for k,c in columns.items():
+                self._annot[ k ] = c
         
     def __call__( self, context ):
         return ModelAnnotation( context, self )
@@ -60,5 +60,3 @@ class MapperAnnotation( object ):
     def __contains__(self, name ):
         marker = object()
         return not marker == self.get( name, marker )
-
-TableAnnotation = MapperAnnotation
