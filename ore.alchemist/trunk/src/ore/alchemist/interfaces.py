@@ -117,6 +117,10 @@ class IModelAnnotation( Interface ):
         return the columns that should be displayed
         """
 
+class IModelIO( Interface ):
+    """
+    """
+
 class IAlchemySchemaModel( Interface ):
 
     def match( object ):

@@ -1,0 +1,17 @@
+
+
+mappings:
+
+  persons:
+     interface module : Products.AddressBook.interfaces
+    
+     columns:
+       first_name :
+         label : First Name
+       address_id :
+         attribute : address
+         backref : person
+
+
+     
+ 

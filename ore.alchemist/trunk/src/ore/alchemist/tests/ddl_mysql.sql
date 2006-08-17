@@ -1,9 +1,9 @@
 
 --
-drop table Users;
+--drop table Users;
 --
-drop table Persons;
-drop table Addresses;
+--drop table Persons;
+--drop table Addresses;
 
 create table Addresses (
   address_id       integer primary key auto_increment,

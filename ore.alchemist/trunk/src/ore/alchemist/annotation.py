@@ -35,18 +35,27 @@ class ModelAnnotation( object ):
 
 class TableAnnotation( object ):
 
-    __slots__ = ("table_name", "_annot")
+    #__slots__ = ("table_name", "_annot", "_options")
 
     def __init__(self, table_name, **columns):
         self.table_name = table_name
+        self._options = {}
         self._annot = OrderedDict()
-
         if columns:
             for k,c in columns.items():
                 self._annot[ k ] = c
-        
+
+    def setOption( self, name, value ):
+        self._options[ name ] = value
+    def getOption( self, name, default=None ):
+        return self._options.get( name, default )
+    
     def __call__( self, context ):
         return ModelAnnotation( context, self )
+
+
+    def __setitem__(self, name, value ):
+        self._annot[name] = value
 
     def get( self, name, default=None ):
         return self._annot.get( name, default )
