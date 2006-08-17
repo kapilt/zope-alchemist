@@ -1,6 +1,11 @@
 """
 $Id$
 """
+from zope.interface import Interface, implements
+from ore.alchemist import named
+
+from sqlalchemy import mapper, BoundMetaData, Table
+from sa2zs import transmute, bindClass
 
 class IAlchemistModel( Interface ):
 
@@ -70,6 +75,7 @@ class AppModel( object ):
         self.interfaces = {} # name to iface
         self.mappers = {} # class name to mapper
         self.tables = {} # table name to table
+        self.table_classes = {} # table name to class name
         self.klasses = {} # class name to class
         self.metadata = metadata
         self.compiled = False 
@@ -79,13 +85,23 @@ class AppModel( object ):
         loader.fromFile( file_path )
         self.compile()
         
-    def defineMapping( self, annotated_table, domain_class=None, **kw ):
-        pass
+    def defineMapping( self, annotated_table, **kw ):
+        table_mapper = mapper( annotated_table.domain_class, annotated_table.table, **kw)
+        self.mappers[ named( annotated_table.domain_class ) ] = table_mapper
+        annotated_table.domain_class.mapper = table_mapper
+        self.table_classes[ annotated_table.table.name ] = annotated_table.domain_class
+
+    def defineInterface(self, annotated_table, module=None):
+        annotated_table.interface = i = transmute( annotated_table.table,
+                                                   annotated_table,
+                                                   __module__ = module )
+        
 
     def loadTable( self, table_name ):
         if table_name in self.tables:
             return self.tables[ table_name ]
-        self.tables[ table_name ] = rdb.Table( table_name, autoload=True )
+        self.tables[ table_name ] = Table( table_name, self.metadata, autoload=True )
+        return self.tables[table_name]
 
     def loadMapping( self, domain_class, domain_table, **kw ):
         self.klasses[ named( domain_class ) ] = domain_class
@@ -97,11 +113,12 @@ class AppModel( object ):
     def addMapping( self, mapping ):
         self.klasses[ named( mapping.class_ ) ] = mapping.class_
         self.mappers[ named( mapping.class_ ) ] = mapping
+
+    def getMappingFor( self, class_name=None, table_name=None ):
+        pass
+
+    def getClassFor( self, table_name ):
+        return self.table_classes[ table_name ]
     
     def compile( self ):
-        if not self.compiled:
-            
-
-    
-        
-    
+        pass
