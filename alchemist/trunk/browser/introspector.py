@@ -28,7 +28,7 @@ from zope.component import getAdapter
 
 from Products.Five import BrowserView
 from Products.Five.formlib import formbase
-from Products.Bling.ajax import jsonify
+#from Products.Bling.ajax import jsonify
 
 from Products.alchemist.introspector import AlchemistIntrospector
 from Products.alchemist.interfaces import IAlchemistIntrospector, IZopeSimpleItem
@@ -72,12 +72,12 @@ class IntrospectorTableView( IntrospectorBrowserView ):
 
     
 class IntrospectorJSONView( IntrospectorBrowserView ):
+    pass
+##     tableListing = jsonify( IntrospectorBrowserView.tableListing )
 
-    tableListing = jsonify( IntrospectorBrowserView.tableListing )
+##     tableDetails = jsonify( IntrospectorBrowserView.tableDetails )    
 
-    tableDetails = jsonify( IntrospectorBrowserView.tableDetails )    
-
-    tableGraph = jsonify( IntrospectorBrowserView.tableGraph )
+##     tableGraph = jsonify( IntrospectorBrowserView.tableGraph )
 
 class IntrospectorGraphvizView( BrowserView ):
     pass
