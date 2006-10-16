@@ -47,12 +47,12 @@ class TableAnnotation( object ):
 
     def setOption( self, name, value ):
         self._options[ name ] = value
+        
     def getOption( self, name, default=None ):
         return self._options.get( name, default )
     
     def __call__( self, context ):
         return ModelAnnotation( context, self )
-
 
     def __setitem__(self, name, value ):
         self._annot[name] = value
