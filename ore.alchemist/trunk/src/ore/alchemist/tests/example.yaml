@@ -1,5 +1,4 @@
 
-
 mappings:
 
   persons:
@@ -12,6 +11,20 @@ mappings:
          attribute : address
          backref : person
 
+  addresses:
+      interface module : Products.AddressBook.interfaces
 
-     
+      columns:
+        address_1 :
+          label : Street Address
+        address_2 :
+          label : Street Address #2
+        city :
+          label : City 
+        state :
+          label : State
+        zip : 
+          label : Zip
+
+
  
