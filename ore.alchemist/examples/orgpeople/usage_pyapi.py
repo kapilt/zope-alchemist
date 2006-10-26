@@ -1,19 +1,15 @@
-
 #################################
 # Inserting Records 
 #################################
-
-
 # Table Model
 """
 using the table models. sqlalchemy provides multiple usage modes, you can utilize
 what you need.
-
 """
-
 import schema
 import transaction
 
+import pdb; pdb.set_trace()
 # create an insert statement against this table
 i = schema.PersonTable.insert()
 
@@ -32,6 +28,14 @@ i.execute( first_name="mary",
 # commit the transaction.
 transaction.commit()
 
+
+
+
+
+
+
+
+import pdb; pdb.set_trace()
 # Object Model
 """
 
@@ -49,6 +53,15 @@ person = domain.Person()
 person.last_name = u"wolf"
 person.email = u"mrwolf@example.com"
 
+address = domain.Address( name=u"conference", city=u"Seattle", state=u"WA")
+
+person.address = address
+
+# because of the backref we can use either endpoint to get to the other.
+# ie. we get bidirectional references.
+#
+print "Person name", address.person.last_name == 'wolf'
+
 # commit the transaction
 transaction.commit()
 
@@ -56,6 +69,7 @@ transaction.commit()
 #################################
 # Querying Objects
 #################################
+import pdb; pdb.set_trace()
 
 # session accessor api
 from ore.alchemist.manager import get_session
@@ -68,12 +82,4 @@ query = object_session.query( domain.Person )
 
 # query by email
 print query.select_by_email(u'mrwolf@example.com')[0].last_name
-
-"""
-from 
-"""
-
-#################################
-# Deleting Objects
-#################################
 

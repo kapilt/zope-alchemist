@@ -21,7 +21,7 @@ PersonAnnotation = TableAnnotation(
          dict( name="first_name", label = "First Name", table_column=True ),
          dict( name="middle_initial", label = "Middle Initial", table_column=True ),         
          dict( name="last_name", label = "Last Name",  table_column=True ),
-         dict( name="email", label = "Email Adddress", table_column=True ),
+         dict( name="email", label = "Email Address", table_column=True ),
          dict( name="phone_number", label = "Home Phone Number"),
          ]
     )

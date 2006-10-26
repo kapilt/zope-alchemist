@@ -1,17 +1,10 @@
-
---
---drop table Users;
---
---drop table Persons;
---drop table Addresses;
-
+-- database definition 
 create database orgperson;
-
 connect orgperson;
 
 create table Addresses (
   address_id       integer primary key auto_increment,
-  name		   varchar(120),
+  name		   varchar(120) not null,
   address_1        varchar(120),
   address_2        varchar(120),
   city		   varchar(120),
@@ -30,11 +23,6 @@ create table Persons (
    foreign key ( address_id ) references Addresses( address_id ) on delete cascade
 ) ENGINE=INNODB;
 
-create table Users (
-   user_id         integer primary key,
-   last_login	   date,
-   foreign key ( user_id ) references Persons( person_id ) on delete cascade
-) ENGINE=INNODB;
 
 
 

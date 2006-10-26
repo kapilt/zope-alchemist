@@ -1,5 +1,5 @@
 """
-Table Definitions for CTIS database structure
+Table Definitions for database structure
 
 $Id$
 """
