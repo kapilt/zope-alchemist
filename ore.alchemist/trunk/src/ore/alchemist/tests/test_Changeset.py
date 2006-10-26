@@ -40,7 +40,7 @@ addresses = Table('email_addresses', metadata,
 other_addresses = Table('email_addresses', other_metadata,
                             Column('address_id', Integer, Sequence('address_id_seq', optional=True), primary_key = True),
                             Column('email_address', String(40)),
-                        )
+\                        )
 
 
 
