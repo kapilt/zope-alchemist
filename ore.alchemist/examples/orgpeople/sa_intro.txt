@@ -1,0 +1,18 @@
+
+ Lower Level Components
+
+  - Database Adapters and Connection Pools
+
+  - Database Dialects and Generators
+
+  - Table/Column Semantic Structures
+
+  - Metadata ( Table Collections )
+
+ Higher Level
+
+  - Mappers
+
+  - Sessions
+
+  - Query Objects
