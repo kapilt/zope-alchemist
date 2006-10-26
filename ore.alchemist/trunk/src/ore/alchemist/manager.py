@@ -33,6 +33,12 @@ from transaction.interfaces import IDataManager, ISynchronizer
 import transaction
 import patches
 
+
+def get_session( ):
+    """ return the current active session in this thread.
+    """
+    return objectstore.session
+
 class AlchemyObserver( object ):
     """
     a transaction synchronizer/observer that ensures alchemy transactions
@@ -43,7 +49,8 @@ class AlchemyObserver( object ):
     implements( ISynchronizer )
 
     def newTransaction( self, transaction ):
-        self.attach( transaction )
+        pass
+        #self.attach( transaction )
         
     def afterCompletion( self, transaction ):
         if hasattr( objectstore.session, 'zope_tpc'):
@@ -52,7 +59,9 @@ class AlchemyObserver( object ):
         #    objectstore.context.current.transaction = None
             
     def beforeCompletion( self, transaction ):
-        pass
+        sess = objectstore.session
+        if sess.dirty or sess.new or sess.deleted:
+            self.attach( transaction )            
     
     def attach( self, transaction ):
         from engine import iter_engines

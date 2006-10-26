@@ -25,6 +25,7 @@ SQLAlchemy to Zope3 Schemas
 $Id$
 """
 
+import sys
 from zope.interface import Interface, moduleProvides, directlyProvides
 from zope.interface.interface import InterfaceClass
 from zope import schema
@@ -73,16 +74,20 @@ def providedByInstances( klass ):
         return ()
     return iter( class_provides._implements )
     
-def bindClass( klass ):
+def bindClass( klass, mapper=None ):
     """ insert validated properties into a class based on its primary mapper, and model schemas
     """
     # compile the klass mapper, this will add instrumented attributes to the class
     # we could alternatively do.. mapper.compile() compiles all extant mappers
-    klass._mapper.compile()
+
+    if mapper is None:
+        mapper = getattr( klass, 'mapper')
+
+    mapper.compile()
 
     # find all the model schemas implemented by the class
     for iface in providedByInstances( klass ):
-        if not IIModelInterface.isImplementedBy( iface ):
+        if not IIModelInterface.providedBy( iface ):
             continue
 
         # for any field in the schema, see if we have an sa property
@@ -90,13 +95,14 @@ def bindClass( klass ):
             v = klass.__dict__.get( field_name )
 
             # if so then wrap it in a field property
-            if isinstance( v, attributes.InstrumentedAttribute):
-                field = getattr( iface, field_name )
-                vproperty = ValidatedProperty( field, v, field_name )
-                setattr( klass, field_name, vproperty )
+            if not isinstance( v, attributes.InstrumentedAttribute):
+                continue
+            field = iface[ field_name ]
+            vproperty = ValidatedProperty( field, v, field_name )
+            setattr( klass, field_name, vproperty )
 
 
-moduleProvides( IAlchemistTransmutation)
+moduleProvides( IAlchemistTransmutation )
 
 class ColumnTranslator( object ):
 
@@ -116,9 +122,8 @@ class ColumnTranslator( object ):
             default = column.default
 
         # create a field on the fly to validate the default value... 
-        # xxx there is a problem with default value somewhere in the stack,
+        # xxx there is a problem with default value somewhere in the stack
         # 
-
         validator = self.schema_field()
         try:
             validator.validate( default )
@@ -132,6 +137,14 @@ class ColumnTranslator( object ):
         d = self.extractInfo( column, annotation)
         return self.schema_field( **d )
 
+class SizedColumnTranslator( ColumnTranslator ):
+
+    def extractInfo( self, column, info ):
+        d = super( SizedColumnTranslator, self).extractInfo( column, info )
+        d['max_length'] = column.type.length
+        return d
+        
+
 class ColumnVisitor( object ):
 
     column_type_map = [
@@ -141,9 +154,9 @@ class ColumnVisitor( object ):
         ( rt.DateTime, ColumnTranslator( schema.Datetime ) ),
 #        ( rt.Time, ColumnTranslator( schema.Datetime ),
         ( rt.Boolean, ColumnTranslator( schema.Bool ) ),
-        ( rt.String, ColumnTranslator( schema.TextLine ) ),
+        ( rt.String, SizedColumnTranslator( schema.TextLine ) ),
         ( rt.Binary, ColumnTranslator( schema.Bytes ) ),
-        ( rt.Unicode, ColumnTranslator( schema.Bytes ) ),
+        ( rt.Unicode, SizedColumnTranslator( schema.Bytes ) ),
         ( rt.Numeric, ColumnTranslator( schema.Float ) ),
         ( rt.Integer,  ColumnTranslator( schema.Int ) )
         ]
@@ -188,8 +201,12 @@ class SQLAlchemySchemaTranslator( object ):
                                              __module__ = __module__ )
         return DerivedTableSchema
         
-def transmute(  table, annotation=None, __module__='alchemist.derived.interfaces', **kw):
-    
+def transmute(  table, annotation=None, __module__=None, **kw):
+
+    # if no module given, use the callers module
+    if __module__ is None:
+        __module__ = sys._getframe(1).f_globals['__name__']
+
     z3iface = SQLAlchemySchemaTranslator().translate( table,
                                                       annotation,
                                                       __module__,
@@ -197,7 +214,7 @@ def transmute(  table, annotation=None, __module__='alchemist.derived.interfaces
 
     # mark the interface itself as being model driven
     directlyProvides( z3iface, IIModelInterface)
-
+        
     # provide a named annotation adapter to go from the iface back to the annotation
     if annotation is not None:
         name = "%s.%s"%(z3iface.__module__, z3iface.__name__)
