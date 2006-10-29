@@ -3,7 +3,7 @@ $Id$
 """
 
 # zope interface decl are on the class but not useable as such
-from sqlalchemy.attributes import AttributeManager, InstrumentedAttribute
+from sqlalchemy.orm.attributes import AttributeManager, InstrumentedAttribute
 
 def managed_attributes(self, class_):
     """returns an iterator of all InstrumentedAttribute objects associated with the given class."""
