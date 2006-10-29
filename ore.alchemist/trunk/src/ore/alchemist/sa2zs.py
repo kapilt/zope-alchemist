@@ -34,7 +34,7 @@ from zope.component import provideAdapter
 
 from sqlalchemy import types as rt
 import sqlalchemy as rdb
-from sqlalchemy import attributes
+from sqlalchemy.orm import attributes
 
 from interfaces import ITableSchema, TransmutationException, IAlchemistTransmutation, \
      IModelAnnotation, IIModelInterface
