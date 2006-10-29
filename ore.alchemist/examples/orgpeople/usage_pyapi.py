@@ -9,7 +9,6 @@ what you need.
 import schema
 import transaction
 
-import pdb; pdb.set_trace()
 # create an insert statement against this table
 i = schema.PersonTable.insert()
 
@@ -35,7 +34,6 @@ transaction.commit()
 
 
 
-import pdb; pdb.set_trace()
 # Object Model
 """
 
@@ -69,7 +67,7 @@ transaction.commit()
 #################################
 # Querying Objects
 #################################
-import pdb; pdb.set_trace()
+
 
 # session accessor api
 from ore.alchemist.manager import get_session

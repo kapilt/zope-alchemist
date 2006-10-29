@@ -17,6 +17,7 @@ person_mapper = bind_mapper( app_model.Person,
                              app_schema.PersonTable,
                              properties={ 'address' :
                                           relation(address_mapper,
+                                                   lazy=True,
                                                    backref=backref('person', uselist=False))
                                           }
                              )
