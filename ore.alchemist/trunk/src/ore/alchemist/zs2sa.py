@@ -8,19 +8,36 @@ from zope import schema
 from sqlalchemy import types as rt
 import sqlalchemy as rdb
 
-
 class FieldTranslator(object):
-    """ Translate 
+    """ Translate a zope schema field to an sa  column
     """
 
     def __init__(self, column_type):
         self.column_type = column_type
 
-    def __call__(self, field):
-        return rdb.Column(field.getName(), self.column_type)
+    def extractInfo( self, field, info ):
+        d = {}
+        d['name'] = field.getName()
+        if field.required:
+            d['nullable'] = False
+        d['default'] = field.default
+        d['type'] = self.column_type        
+        return d
+    
+    def __call__(self, field, annotation):
+        d = self.extractInfo( field, info )
+        return rdb.Column( **d)
 
 class StringTranslator(FieldTranslator):
-    pass
+    
+    column_type = rdb.String
+    
+    def extractInfo( self, field, info ):
+        d = super( StringTranslator, self ).extractInfo( field, info )
+        
+        if schema.interfaces.IMinMaxLen.providedBy( field ):
+            ti['length'] = field.max_length
+        
 
 class ObjectTranslator(object):
     
@@ -33,24 +50,24 @@ class ObjectTranslator(object):
 
 
 fieldmap = {
-    'ASCII': StringTranslator(rdb.String),
-    'ASCIILine': StringTranslator(rdb.String),
+    'ASCII': StringTranslator(),
+    'ASCIILine': StringTranslator(),
     'Bool': FieldTranslator(rdb.BOOLEAN),
     'Bytes': FieldTranslator(rdb.BLOB),
     'BytesLine': FieldTranslator(rdb.BLOB),
-    'Choice': StringTranslator(rdb.String),
+    'Choice': StringTranslator(),
     'Date': FieldTranslator(rdb.DATE), 
     'Datetime': FieldTranslator(rdb.DATE), 
-    'DottedName': StringTranslator(rdb.String), 
+    'DottedName': StringTranslator(),
     'Float': FieldTranslator(rdb.Float), 
-    'Id': StringTranslator(rdb.String),
+    'Id': StringTranslator(),
     'Int': FieldTranslator(rdb.Integer),
     'Object': ObjectTranslator(),
-    'Password': StringTranslator(rdb.String),
-    'SourceText': StringTranslator(rdb.String),
-    'Text': StringTranslator(rdb.String),
-    'TextLine': StringTranslator(rdb.String),
-    'URI': StringTranslator(rdb.String),
+    'Password': StringTranslator(),
+    'SourceText': StringTranslator(),
+    'Text': StringTranslator(),
+    'TextLine': StringTranslator(),
+    'URI': StringTranslator(),
 }
 
 def transmute(zopeschema, metadata, tablename=""):

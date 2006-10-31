@@ -8,6 +8,7 @@ $Id$
 from sqlalchemy import BoundMetaData, DynamicMetaData
 from manager import register
 
+
 class ZopeBoundMetaData( BoundMetaData ):
     """ Metadata which automatically registers engine with zope transaction on usage
     """
