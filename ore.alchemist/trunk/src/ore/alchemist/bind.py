@@ -5,7 +5,8 @@ $Id$
 """
 
 from sqlalchemy.orm import attributes
-from zope.schema import ValueError
+from interfaces import IIModelInterface
+from zope import schema
 
 class ValidatedProperty( object ):
     """
