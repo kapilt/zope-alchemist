@@ -5,7 +5,7 @@ a decorating mapper for sqlalchemy that utilizes field properties for attribute 
 -- currently has issues with fk references
 """
 
-from sa2zs import bindClass
+from bind import bindClass
 from sqlalchemy import mapper
 
 def bind_mapper( klass, *args, **kw):
