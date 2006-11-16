@@ -4,11 +4,9 @@ Zope3 Schemas to SQLAlchemy
 $Id: sa2zs.py 1710 2006-10-26 17:39:37Z hazmat $
 """
 from zope import schema
-
-from sqlalchemy import types as rt
 import sqlalchemy as rdb
 
-class FieldTranslator(object):
+class FieldTranslator( object ):
     """ Translate a zope schema field to an sa  column
     """
 
@@ -34,10 +32,9 @@ class StringTranslator(FieldTranslator):
     
     def extractInfo( self, field, info ):
         d = super( StringTranslator, self ).extractInfo( field, info )
-        
         if schema.interfaces.IMinMaxLen.providedBy( field ):
             ti['length'] = field.max_length
-        
+        return d
 
 class ObjectTranslator(object):
     

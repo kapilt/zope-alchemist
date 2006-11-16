@@ -44,7 +44,10 @@ class IEngineVocabularyUtility( Interface ):
     engines = Iterable( title = u"RDB Engines",
                         description = u"Available RDB Engines")
 
+class IDomainVocabularyUtilty( Interface ):
 
+    domain_classes = Iterable( title=u"Domain Classes",
+                               description = u"Registered Domain Classes")
 
 class IAlchemistContainer( IContainer ):
     """
