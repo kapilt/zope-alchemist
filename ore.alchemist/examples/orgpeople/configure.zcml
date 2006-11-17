@@ -1,0 +1,65 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser"
+           xmlns:five="http://namespaces.zope.org/five">
+
+  <!-- setup some app / domain specific views -->
+
+  <!-- Container Views -->
+
+  <!-- listing view -->
+  <browser:page
+      for=".interfaces.IPersonContainer"
+      name="person_listing.html"
+      template="browser/person_listing.pt"
+      permission="zope2.ViewManagementScreens"
+      />
+
+  <!-- search view -->
+  <browser:page
+      for=".interfaces.IPersonContainer"
+      name="person_search.html"
+      template="browser/person_search.pt"
+      class=".browser.container.PersonContainerView"
+      permission="zope2.ViewManagementScreens"
+      />
+
+  <!-- person add view on container -->
+  <browser:page
+      for=".interfaces.IPersonContainer"
+      name="person_add.html"
+      template="browser/person_add.pt"
+      class=".view.PersonAddingView"
+      permission="zope2.ViewManagementScreens"
+      />
+	   
+  <!-- default container view is listing view -->
+  <browser:defaultView
+      for=".interfaces.IPersonContainer"
+      name="person_listing.html" />
+
+  <!-- Person Views -->
+
+  <!-- info view -->
+	  
+  <browser:page
+     for=".interfaces.IPersonTable"
+     name="browser/person_view.html"
+     class=".browser.person.PersonView"
+     permission="zope2.ViewManagementScreens"
+     />
+
+  <!-- edit view -->
+
+  <browser:page
+     for=".interfaces.IPersonTable"
+     name="person_edit.html"
+     class=".browser.person.PersonEditView"
+     permission="zope2.ViewManagementScreens" />
+  
+  <browser:defaultView
+     for=".interfaces.IPersonTable"
+     name="person_view.html" />
+  
+
+
+</configure>
