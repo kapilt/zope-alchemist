@@ -2,7 +2,7 @@
 <head></head>
 <body>
 <div metal:fill-slot="body">
-  <table tal:replace="structure view/table" />
+  <table tal:replace="structure view/getTable" />
 </div>
 </body>
 </html>
