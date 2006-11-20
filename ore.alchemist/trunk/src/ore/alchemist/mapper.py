@@ -10,10 +10,12 @@ from sqlalchemy import mapper
 
 from zope.component import getUtility
 from zope.schema.vocabulary import SimpleVocabulary
-from interfaces import IMapperVocabularyUtility
+from zope import interface
+import interfaces
 
 class DomainVocabularyUtility( object ):
-    implements( IDomainVocabularyUtility )
+    
+    interface.implements( interfaces.IDomainVocabularyUtility )
 
     def __init__( self ):
         self._domain_classes = []
@@ -24,10 +26,13 @@ class DomainVocabularyUtility( object ):
     def __iter__( self ):
         return iter( self._domain_classes )
 
+    def __call__( self ):
+        return self
+
 DomainUtility = DomainVocabularyUtility()
     
 def DomainVocabulary( context ):
-    utility = getUtility( IDomainVocabularyUtility )
+    utility = getUtility( interfaces.IDomainVocabularyUtility )
     return SimpleVocabulary.fromValues( utility )
 
 def bind_mapper( klass, *args, **kw):

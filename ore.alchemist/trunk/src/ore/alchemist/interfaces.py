@@ -23,7 +23,7 @@
 from zope.interface import Interface, Attribute
 from zope.interface.common.mapping import IEnumerableMapping
 from zope.app.container.interfaces import IContainer
-from zope.schema import TextLine, Iterable
+from zope import schema
 
 class TransmutationException( Exception ):
     """
@@ -41,31 +41,31 @@ class IAlchemistTransmutation( Interface ):
 
 class IEngineVocabularyUtility( Interface ):
 
-    engines = Iterable( title = u"RDB Engines",
-                        description = u"Available RDB Engines")
+    engines = schema.Iterable( title = u"RDB Engines",
+                               description = u"Available RDB Engines")
 
 class IDomainVocabularyUtility( Interface ):
 
-    domain_classes = Iterable( title=u"Domain Classes",
-                               description = u"Registered Domain Classes")
+    domain_classes = schema.Iterable( title=u"Domain Classes",
+                                      description = u"Registered Domain Classes")
 
 class IAlchemistContainer( IContainer ):
     """
     a domain record container
     """
 
-    title = TextLine(
+    title = schema.TextLine(
         title = u"Title",
         description =u"The title of the object",
         default = u"",
         required = False
         )
 
-    domain_class = TextLine(
+    domain_class = schema.Choice(
         title = u"Domain Class",
         description = u"The Python Path of the Domain Class",
-        default = u"Products.alchemist.domain.DomainRecord",
-        required = True
+        required = True,
+        vocabulary = "Alchemist Domain Classes"
         )
     
     domain_model = Attribute("domain_model", "The domain class")
