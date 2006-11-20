@@ -38,5 +38,5 @@ def DomainVocabulary( context ):
 def bind_mapper( klass, *args, **kw):
     klass_mapper = mapper( klass, *args, **kw )
     bindClass( klass, klass_mapper )
-    
+    DomainUtility.add( klass )    
     return klass_mapper
