@@ -45,4 +45,4 @@ IAddressTable = transmute( schema.AddressTable,
 
                   
 class IPersonContainer( Interface ):
-    """ marker iface for generic containers """
+    """ marker interface for adding app specific views and adapters to generic containers """

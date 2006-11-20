@@ -1,0 +1,15 @@
+-----------------
+Quick Start Intro
+-----------------
+
+- load up mysql tables
+
+- add alchemist generic container for 
+
+  Products.orgpeople.domain.Person
+
+- go to interfaces tab, add marker interface
+
+  Products.orgpeople.interfaces.IPersonContainer
+
+- view container
