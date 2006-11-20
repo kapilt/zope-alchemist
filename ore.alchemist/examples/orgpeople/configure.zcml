@@ -10,7 +10,8 @@
   <browser:page
       for=".interfaces.IPersonContainer"
       name="person_listing.html"
-      template="browser/person_listing.pt"
+      class=".browser.container.PersonContainerListing"
+      template="browser/person_list.pt"
       permission="zope2.ViewManagementScreens"
       />
 
@@ -28,7 +29,7 @@
       for=".interfaces.IPersonContainer"
       name="person_add.html"
       template="browser/person_add.pt"
-      class=".view.PersonAddingView"
+      class=".browser.person.PersonAddingView"
       permission="zope2.ViewManagementScreens"
       />
 	   
