@@ -25,29 +25,30 @@ $Id$
 
 from zope.component import getAdapter
 from zope.interface import implementedBy
+from zope.formlib import form
+from zope import schema
 from zc.table import table
 
-from ore.alchemist.interfaces import IModelAnnotation, IIModelInterface
+from ore.alchemist.interfaces import IModelAnnotation, IIModelInterface, IAlchemistContainer
 from ore.alchemist import named
 
 from Products.Five import BrowserView
+from Products.Five.formlib import formbase
 from Products.alchemist.container import AlchemistContainer
 
-class ContainerAddingView:
-
+class ContainerAddingView( formbase.AddFormBase ):
     """Add view for alchemist container view.
     """
 
-    def __call__(self, add_input_name='', domain_class='', title='', submit_add=''):
-        
-        if not submit_add or not domain_class:
-            return self.index()
+    form_fields = form.Fields( schema.ASCIILine( __name__='add_input_name',
+                                                 title=u'Id',
+                                                 description=u'Identifier' ),
+                               IAlchemistContainer )
 
-        obj = AlchemistContainer( add_input_name, domain_class, title  )
-        self.context.add(obj)
-        self.request.response.redirect(self.context.nextURL())
-        return ''
-
+    def create( self, data ):
+        container = AlchemistContainer( data['add_input_name'], data['domain_class'], data['title'] )
+        self.request['add_input_name'] = data['add_input_name']
+        return container
 
 class ContainerView( BrowserView ):
 
@@ -65,7 +66,7 @@ class ContainerView( BrowserView ):
         
         self.info = getAdapter( model_iface, IModelAnnotation, named( model_iface ) )
         
-    def _getTable( self ):
+    def getTable( self ):
         columns = self.info.getDisplayColumns()
         results = self.context.values()
 
@@ -75,6 +76,6 @@ class ContainerView( BrowserView ):
                                               visible_column_names = [c.name for c in columns],
                                               columns = columns )
                                               
-    table = property( _getTable )
+    table = property( getTable )
     
         

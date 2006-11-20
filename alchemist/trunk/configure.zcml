@@ -11,7 +11,7 @@
   <include package="zope.app.pagetemplate" />
   <include package="zc.resourcelibrary" />
   <include package="zc.table" />
-  <include package="ore.alchemist" />x
+  <include package="ore.alchemist" />
 
   <!-- Make Legacy Traversable -->
   <five:traversable class="OFS.Application.Application"/>
