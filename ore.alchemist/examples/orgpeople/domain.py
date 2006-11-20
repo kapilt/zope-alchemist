@@ -5,9 +5,10 @@ $Id$
 """
 
 from zope.interface import implements
+from OFS.SimpleItem import SimpleItem
 from interfaces import IPersonTable, IAddressTable
 
-class DomainRecord( object ): 
+class DomainRecord( SimpleItem ): 
     def __init__( self, **kw):
         for k,v in kw.items():
             setattr( self, k, v )
