@@ -5,9 +5,15 @@
   <utility provides=".interfaces.IEngineVocabularyUtility"
 	   factory=".engine.EngineUtility" />
 
+  <utility provides=".interfaces.IDomainVocabularyUtility"
+	   factory=".mapper.DomainUtility" />
+
   <vocabulary
            name="Alchemist Available Engines"
            factory=".engine.EngineVocabulary" />
 
+  <vocabulary
+           name="Alchemist Domain Classes"
+           factory=".mapper.DomainVocabulary" />
 
 </configure>
