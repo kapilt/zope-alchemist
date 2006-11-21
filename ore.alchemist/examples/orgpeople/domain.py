@@ -16,6 +16,11 @@ class DomainRecord( SimpleItem ):
 class Person( DomainRecord ):
 
     implements( IPersonTable )
+
+    id = property( lambda self: str(self.person_id) )
+
+    def Title( self ):
+        return "%s %s"%(self.first_name, self.last_name )
     
     def sayHello(self):
         """

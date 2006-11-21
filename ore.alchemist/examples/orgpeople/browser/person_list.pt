@@ -8,37 +8,12 @@
       >
 <head></head>
 <body>
-
-
-<div metal:fill-slot="main">
-
-
-
-<form action="#"
-      tal:attributes="action request/URL"
-      method="post"
-      class="edit-form"
-      enctype="multipart/form-data"
-      id="zc.page.browser_form">
-      
-
-      <style type="text/css">
-        .layout, .element { padding: 4px;}
-      </style>
-
-  <div tal:replace="structure view/renderListing"> Listing </div> 
-  <div id="actionsView">
-  <span class="actionButtons"
-        tal:condition="view/availableActions">
-    <input tal:repeat="action view/actions"
-           tal:replace="structure action/render"
-           />
-  </span>
-  </div>
-
- </form>
-</div>
-
+ <div metal:fill-slot="main">
+  <metal:block use-macro="context/@@form/form">
+   <metal:block fill-slot="form-body">
+    <div tal:replace="structure view/renderListing"> Listing </div> 
+   </metal:block>
+  </metal:block>
+ </div>
 </body>
-
 </html>
