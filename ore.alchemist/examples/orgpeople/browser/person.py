@@ -27,6 +27,7 @@ class PersonEditView( formbase.EditFormBase ):
     template = ZopeTwoPageTemplateFile('person_edit.pt')    
     prefix = 'edit'
 
+
 class PersonAddingView( formbase.AddFormBase ):
     
     form_fields = form.Fields( IPersonTable, for_input=True)
