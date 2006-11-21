@@ -9,6 +9,7 @@ what you need.
 import schema
 import transaction
 
+import pdb; pdb.set_trace()
 # create an insert statement against this table
 i = schema.PersonTable.insert()
 
@@ -41,6 +42,7 @@ using the object model api, we can just use simple attribute access
 
 """
 
+import pdb; pdb.set_trace()
 import domain
 import mapper
 
@@ -63,7 +65,7 @@ print "Person name", address.person.last_name == 'wolf'
 # commit the transaction
 transaction.commit()
 
-
+import pdb; pdb.set_trace()
 #################################
 # Querying Objects
 #################################
@@ -80,4 +82,4 @@ query = object_session.query( domain.Person )
 
 # query by email
 print query.select_by_email(u'mrwolf@example.com')[0].last_name
-
+import pdb; pdb.set_trace()

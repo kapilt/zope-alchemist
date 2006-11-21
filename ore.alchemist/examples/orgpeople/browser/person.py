@@ -17,18 +17,21 @@ from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
 class PersonView( formbase.DisplayForm ):
     form_fields = form.Fields( IPersonTable, for_display=True, render_context=True )
     form_fields = form_fields.omit('person_id')        
+    template = ZopeTwoPageTemplateFile('person_view.pt')
     prefix = 'view'
+
 
 class PersonEditView( formbase.EditFormBase ):
     form_fields = form.Fields( IPersonTable )
     form_fields = form_fields.omit('person_id', 'address_id')
+    template = ZopeTwoPageTemplateFile('person_edit.pt')    
     prefix = 'edit'
 
 class PersonAddingView( formbase.AddFormBase ):
     
     form_fields = form.Fields( IPersonTable, for_input=True)
     form_fields = form_fields.omit('person_id', 'address_id')
-    
+    template = ZopeTwoPageTemplateFile('person_add.pt')        
     prefix = 'add'
     
     def createAndAdd(self, data):

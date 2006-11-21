@@ -28,6 +28,7 @@ class PersonContainerView( object ):
 
 ListingColumns = [
     column.SelectionColumn( lambda item: str(item.person_id), name='selection' ),
+    column.GetterColumn( title="Id", getter=lambda p,f: p.person_id or ''),    
     column.GetterColumn( title="First Name", getter=lambda p,f: p.first_name or ''),
     column.GetterColumn( title="Last Name", getter=lambda p,f: p.last_name or ''),
     column.GetterColumn( title="Email", getter=lambda p,f: p.email or ''),
@@ -72,6 +73,8 @@ class PersonContainerListing( formbase.EditFormBase ):
         session = get_session()
         for object in selected:
             session.delete( object )
+        # we need to flush the session explicitly now
+        session.flush()
 
     def _getSelected( self, action, data ):
         selected = SelectionColumn.getSelected( self.context.values(), self.request )
