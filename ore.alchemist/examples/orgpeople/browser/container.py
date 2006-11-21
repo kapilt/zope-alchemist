@@ -2,44 +2,89 @@
 $Id$
 """
 
+import copy
 from zope.formlib import form
-from ore.alchemist.manager import get_session
+from zope import schema
 from zc.table import column
 from zc.table import table
+
+from ore.alchemist.manager import get_session
+
 from Products.Five.formlib import formbase
 from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
 
-class PersonContainerView( object ):
-    """ view for container
-    """
-    def __init__(self, context, request):
-        self.context, self.request = context, request
+from Products.orgpeople.interfaces import IPersonTable
 
-    def search( self ):
+#################################
+# Table Columns
+
+def idLink( person, formatter ):
+    return '<a href="%s">%s</a>'%(person.absolute_url(), person.person_id)
+    
+SearchColumns = [
+    column.GetterColumn( title="Id", getter=idLink),    
+    column.GetterColumn( title="First Name", getter=lambda p,f: p.first_name or ''),
+    column.GetterColumn( title="Last Name", getter=lambda p,f: p.last_name or ''),
+    column.GetterColumn( title="Email", getter=lambda p,f: p.email or ''),
+    column.GetterColumn( title="Phone", getter=lambda p,f: p.phone_number or '')
+    ]
+
+ListingColumns = list(SearchColumns)
+
+SelectionColumn = column.SelectionColumn( lambda item: str(item.person_id), name='selection' )
+
+ListingColumns.insert(0, SelectionColumn )
+
+def searchFields( iface ):
+    fields = []
+    for name, field in schema.getFieldsInOrder( iface ):
+        if field.required:
+            field = copy.deepcopy( field )
+            field.required = False
+        fields.append( field )
+    return fields
+
+#################################
+# Views
+
+class PersonSearchView( formbase.FormBase ):
+    """ person searching view """
+
+    form_fields = form.Fields( *searchFields( IPersonTable ) )
+    form_fields = form.Fields( form_fields, for_input=True)
+    form_fields = form_fields.omit('person_id', 'address_id', 'created')
+    template = ZopeTwoPageTemplateFile('person_search.pt')
+    results = None
+    
+    @form.action("Search", condition=form.haveInputWidgets)
+    def handle_search( self, action, data ):
+        self.results = self.search( data )
+
+    def search( self, data ):
         domain_class = self.context.domain_model
         d = {}
         for name in domain_class.c.keys():
-            v = self.request.form.get(name)
+            v = data.get(name)
             if v:
                 d[name] = v
         if not d:
             return []
         return self.context.query(**d)
 
-ListingColumns = [
-    column.SelectionColumn( lambda item: str(item.person_id), name='selection' ),
-    column.GetterColumn( title="Id", getter=lambda p,f: p.person_id or ''),    
-    column.GetterColumn( title="First Name", getter=lambda p,f: p.first_name or ''),
-    column.GetterColumn( title="Last Name", getter=lambda p,f: p.last_name or ''),
-    column.GetterColumn( title="Email", getter=lambda p,f: p.email or ''),
-    column.GetterColumn( title="Phone", getter=lambda p,f: p.phone_number or '')            
-    ]
-
-SelectionColumn = ListingColumns[0]
+    def renderResults( self ):
+        columns = SearchColumns
+        formatter = table.StandaloneFullFormatter( self.context,
+                                                   self.request,
+                                                   self.results or (),
+                                                   prefix="form",
+                                                   visible_column_names = [c.name for c in columns],
+                                                   columns = columns )
+        formatter.cssClasses['table'] = 'listing'
+        return formatter()
 
 class PersonContainerListing( formbase.EditFormBase ):
-    """ hello world
-    """
+    """ person listing view """
+    
     form_fields = form.Fields()
     prefix = "plist"
 

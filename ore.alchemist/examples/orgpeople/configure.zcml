@@ -22,7 +22,7 @@
       for=".interfaces.IPersonContainer"
       name="person_search.html"
       template="browser/person_search.pt"
-      class=".browser.container.PersonContainerView"
+      class=".browser.container.PersonSearchView"
       menu="object"
       title="Search"
       permission="zope2.ViewManagementScreens"
