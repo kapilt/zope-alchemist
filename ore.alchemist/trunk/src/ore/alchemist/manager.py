@@ -33,6 +33,8 @@ from transaction.interfaces import IDataManager, ISynchronizer
 import transaction
 import patches
 
+#from Products.Archetypes.debug import ClassLog
+#log = ClassLog()
 
 def get_session( ):
     """ return the current active session in this thread.
@@ -50,7 +52,6 @@ class AlchemyObserver( object ):
 
     def newTransaction( self, transaction ):
         pass
-        #self.attach( transaction )
         
     def afterCompletion( self, transaction ):
         if hasattr( objectstore.session, 'zope_tpc'):
@@ -64,12 +65,15 @@ class AlchemyObserver( object ):
             self.attach( transaction )            
     
     def attach( self, transaction ):
-        from engine import iter_engines
+        zope_tpc = observer.getDataManager()
+        if zope_tpc is not None:
+            return
         dm = AlchemyDataManager()
         transaction.join( dm )
-        zope_tpc = observer.getDataManager()
+        from engine import iter_engines
         # attach extant engines
-        map( zope_tpc.transaction.get_or_add, iter_engines() )
+        #print "observer attach"
+        map( dm.transaction.get_or_add, iter_engines() )
              
     def getDataManager( self ):
         return getattr( objectstore.session, 'zope_tpc', None )
@@ -82,11 +86,12 @@ def register( engine ):
     # register alchemy data manager for transaction if not registered
     zope_tpc  = observer.getDataManager()
     if zope_tpc is None:
+        #log.log( "cl register attach" )
         observer.attach( transaction.get() )
         zope_tpc = observer.getDataManager()
-        
     # register engine if not registered (begins connection's transaction)
-    zope_tpc.transaction.get_or_add( engine )
+    #print "register begin"
+    #zope_tpc.transaction.get_or_add( engine )
         
 class AlchemyDataManager( object ):
     """
@@ -120,6 +125,7 @@ class AlchemyDataManager( object ):
         errors occur, the data manager should be prepared to make the
         changes persist when tpc_finish is called.
         """
+        #print "commit", transaction._resources
         objectstore.flush()
 
     def tpc_finish(self, transaction):
@@ -134,6 +140,7 @@ class AlchemyDataManager( object ):
         database is not expected to maintain consistency; it's a
         serious error.
         """
+        #print "tpc commit"
         self.transaction.commit()
         
     def tpc_abort(self, transaction):

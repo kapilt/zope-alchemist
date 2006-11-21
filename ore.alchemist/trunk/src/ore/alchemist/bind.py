@@ -22,6 +22,10 @@ class ValidatedProperty( object ):
         if inst is None:
             return self
         return self.__prop.__get__( inst, klass )
+
+    def __getattr__(self, name):
+        # delegate to sa props
+        return getattr( self.__prop, name )
     
     def __set__(self, inst, value):
         field = self.__field.bind(inst)
