@@ -20,7 +20,6 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ##################################################################
 """
-
 this module provides an alternative creation and lookup mechanism for SA
 engines, such that they are properly integrated with zope transaction
 management, cached by dburi, and use a zope compatible strategy.
@@ -58,6 +57,7 @@ def create_engine(*args, **kwargs):
     engine = EngineProxy( EngineFactory( *args, **kwargs ) )
     name_or_url = args[0]
     _engines[ name_or_url ] = engine
+    #print "create attach"
     register( engine )
     return EngineProxy( engine )
 
@@ -65,6 +65,7 @@ def get_engine( dburi, **kwargs ):
     engine =  _engines.get( dburi )
     if engine is None:
         engine = create_engine( dburi, **kwargs )
+    #print "get attach"
     register( engine )
     return engine
 
@@ -82,6 +83,7 @@ class EngineProxy( object ):
         self._engine = engine
 
     def _execute_many( self, *args, **kw):
+        #print "proxy attach"
         register( self._engine )
         return self._engine.execute_many( *args, **kw )
 
@@ -91,7 +93,6 @@ class EngineProxy( object ):
     def __setattr__(self, name, value ):
         if name == '_engine':
             return super( EngineProxy, self).__setattr__( name, value )
-            
         return setattr( self._engine, name, value )
 
 class EngineUtility( object ):

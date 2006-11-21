@@ -48,7 +48,7 @@ class ColumnTranslator( object ):
         
     def extractInfo( self, column, info ):
         d = {}
-        d['title'] = unicode( info.get('title', column.name )  )
+        d['title'] = unicode( info.get('label', column.name )  )
         d['description'] = unicode( info.get('description', '' ) )
         d['required'] = not column.nullable
 
@@ -71,7 +71,8 @@ class ColumnTranslator( object ):
         return d
 
     def __call__( self, column, annotation ):
-        d = self.extractInfo( column, annotation)
+        info = annotation.get( column.name, {} )
+        d = self.extractInfo( column, info)
         return self.schema_field( **d )
 
 class SizedColumnTranslator( ColumnTranslator ):
