@@ -1,22 +1,52 @@
 =========================================
-building relational applications wih zope
+building relational applications wih zope 
 =========================================
 
-define or introspect database structures ( person.sql )
 
-define database structure metadata for consumption by the application ( schema.py )
+Requirements
+------------
 
-translate our database metadata into an application consumable form by converting them
-to interfaces so we can address them and utilize platform infrastructure ( interfaces.py )
+ zope2 products
 
-define classes consisting of the application domain model ( model.py )
+ - plone 2.5
+ - alchemist
+ - Five 1.4
+ - CMFonFive ( for actions support )
 
-map classes to database structures ( mapper.py )
+ zope3 python libraries
 
-we now have a core application model that we where we can manipulate objects to change the database.
+ - ore.alchemist
+ - zc.table
+ - zc.resourcelibrary
+ - zc.datetime
+ 
 
-everything we done this to point is zope agnostic, and we can utilize standalone python scripts to 
-manipulate the model and we haven't needed to write a single line of sql.
+Defining the Model
+------------------
+
+ a walkthrough by file of defining the application's object model.
+
+ - define the application's database tables/structure( person.sql )
+
+ - introspect the database to load into the application the database
+   tables/structure metadata. ( schema.py )
+
+ - translate our database metadata into an application consumable form by converting them
+   to zope3 interfaces so we can address them and utilize platform
+   infrastructure. additionally we use annotations on the database
+   structures to add additional semantic information 
+   useful for the user interface. ( interfaces.py )
+
+ - define classes consisting of the application domain model ( domain.py )
+
+ - map classes to database structures ( mapper.py )
+
+we now have a core application model that we where we can manipulate
+objects to change the database. 
+
+everything we done this to point is zope agnostic, and we can utilize
+standalone python scripts to manipulate the model and we haven't
+needed to write a single line of sql.
 
 Accessing Objects through the web
 ---------------------------------
