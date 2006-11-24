@@ -130,8 +130,11 @@ class SQLAlchemySchemaTranslator( object ):
         for column in table.columns:
             if annotation.get( column.name, {}).get('omit', False ):
                 continue
-            for column in table.columns:
-                d[ column.name ] = visitor.visit( column )
+            d[ column.name ] = visitor.visit( column )
+
+        if 'properties' in kw:
+            for name, iface_schema in kw['properties'].items():
+                d[ name ] = schema.Object( iface_schema, required=False )
 
         DerivedTableSchema = InterfaceClass( iname,
                                              (ITableSchema,),
