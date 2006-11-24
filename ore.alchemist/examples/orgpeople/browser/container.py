@@ -52,7 +52,7 @@ class PersonSearchView( formbase.FormBase ):
 
     form_fields = form.Fields( *searchFields( IPersonTable ) )
     form_fields = form.Fields( form_fields, for_input=True)
-    form_fields = form_fields.omit('person_id', 'address_id', 'created')
+    form_fields = form_fields.omit('person_id', 'address_id', 'created', 'address')
     template = ZopeTwoPageTemplateFile('person_search.pt')
     results = None
     

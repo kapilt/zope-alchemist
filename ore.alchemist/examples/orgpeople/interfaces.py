@@ -12,6 +12,7 @@ $Id$
 from zope.interface import Interface
 from ore.alchemist.annotation import TableAnnotation
 from ore.alchemist.sa2zs import transmute
+from zope import schema as zschema
 
 import schema
 
@@ -29,20 +30,23 @@ PersonAnnotation = TableAnnotation(
 AddressAnnotation = TableAnnotation(
     "Address",
     columns = [
-        dict( name="address_1", label = "Address Line 1"),
-        dict( name="address_2", label = "Address Line 2"),
+        dict( name="address_id", omit = True ),
+        dict( name="address_1", label = "address line 1"),
+        dict( name="address_2", label = "address line 2"),
         ]
     )
 
-
-IPersonTable = transmute( schema.PersonTable,
-                          PersonAnnotation,
-                          __module__="Products.orgperson.interfaces" )
 
 IAddressTable = transmute( schema.AddressTable,
                            AddressAnnotation,
                            __module__="Products.orgperson.interfaces" )
 
-                  
+
+IPersonTable = transmute( schema.PersonTable,
+                          PersonAnnotation,
+                          properties = {'address':IAddressTable},
+                          __module__="Products.orgperson.interfaces" )
+
+
 class IPersonContainer( Interface ):
     """ marker interface for adding app specific views and adapters to generic containers """
