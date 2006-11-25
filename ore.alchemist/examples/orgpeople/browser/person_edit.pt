@@ -6,9 +6,28 @@
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
       metal:use-macro="context/main_template/macros/master"
       >
-<head></head>
-<body>
+<head metal:fill-slot="head_slot"
+      tal:define="template_id string:ipersontable_@@edit">
 
+</head>
+
+<metal:block fill-slot="style_slot">
+  <style type="text/css" media="all"
+	 tal:content="string:@import url($portal_url/++resource++calendar-system.css);">
+  </style>
+</metal:block>
+<metal:block fill-slot="javascript_head_slot">
+  <script type="text/javascript"
+          src="" tal:attributes="src string:$portal_url/++resource++calendar.js"></script>
+  <script type="text/javascript"
+          src="" tal:attributes="src string:$portal_url/++resource++datetimewidget.js"></script>
+  <script type="text/javascript"
+          src="" tal:attributes="src string:$portal_url/++resource++calendar-en.js"></script>
+  <script type="text/javascript"
+          src="" tal:attributes="src string:$portal_url/++resource++calendar-setup.js"></script>
+</metal:block>
+
+<body>
 <div metal:fill-slot="main">
   <metal:block use-macro="context/@@form/form">
      Edit Form

@@ -39,12 +39,12 @@ AddressAnnotation = TableAnnotation(
 
 IAddressTable = transmute( schema.AddressTable,
                            AddressAnnotation,
+                           properties = {'state':zschema.Choice( title=u"state", vocabulary="OrgPeople States" ) },
                            __module__="Products.orgperson.interfaces" )
-
 
 IPersonTable = transmute( schema.PersonTable,
                           PersonAnnotation,
-                          properties = {'address':IAddressTable},
+                          properties = {'address':zschema.Object( IAddressTable, required=False ) },
                           __module__="Products.orgperson.interfaces" )
 
 

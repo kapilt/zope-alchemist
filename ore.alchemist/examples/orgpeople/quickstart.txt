@@ -1,0 +1,19 @@
+-----------------
+Quick Start Intro
+-----------------
+
+- load up mysql tables 
+  
+  mysql -u root < person.sql
+
+- add orgpeople to zope instance products directory and restart zope
+
+- in the zmi, add an alchemist generic container 
+
+  Products.orgpeople.domain.Person
+
+- go to interfaces tab, add the following marker interface
+
+  Products.orgpeople.interfaces.IPersonContainer
+
+- view the container 

@@ -6,7 +6,9 @@
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
       metal:use-macro="context/main_template/macros/master"
       >
-<head></head>
+<head metal:use-macro="head_slot"
+      tal:define="template_id string:ipersoncontainer_@@search">
+</head>
 <body>
  <div metal:fill-slot="main">
   <metal:block use-macro="context/@@form/form">

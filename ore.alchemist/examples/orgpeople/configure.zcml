@@ -2,14 +2,21 @@
            xmlns:browser="http://namespaces.zope.org/browser"
            xmlns:five="http://namespaces.zope.org/five">
 
+  <!-- setup app specific vocabulary table -->
+  
+  <vocabulary 
+     name="OrgPeople States"
+     factory=".vocabulary.StateVocabulary" />
+
   <!-- setup some app / domain specific views -->
+
 
   <!-- Container Views -->
 
   <!-- listing view -->
   <browser:page
       for=".interfaces.IPersonContainer"
-      name="person_listing.html"
+      name="listing"
       class=".browser.container.PersonContainerListing"
       template="browser/person_list.pt"
       menu="object"
@@ -20,7 +27,7 @@
   <!-- search view -->
   <browser:page
       for=".interfaces.IPersonContainer"
-      name="person_search.html"
+      name="search"
       template="browser/person_search.pt"
       class=".browser.container.PersonSearchView"
       menu="object"
@@ -31,7 +38,7 @@
   <!-- person add view on container -->
   <browser:page
       for=".interfaces.IPersonContainer"
-      name="person_add.html"
+      name="add"
       template="browser/person_add.pt"
       class=".browser.person.PersonAddingView"
       permission="zope2.ViewManagementScreens"
@@ -40,7 +47,7 @@
   <!-- default container view is listing view -->
   <browser:defaultView
       for=".interfaces.IPersonContainer"
-      name="person_listing.html" />
+      name="listing" />
 
   <!-- Person Views -->
 
@@ -57,7 +64,7 @@
   <!-- info view -->
   <browser:page
      for=".interfaces.IPersonTable"
-     name="person_view.html"
+     name="view"
      class=".browser.person.PersonView"
      menu="object"
      title="View"
@@ -68,7 +75,7 @@
 
   <browser:page
      for=".interfaces.IPersonTable"
-     name="person_edit.html"
+     name="edit"
      class=".browser.person.PersonEditView"
      menu="object"
      title="Edit"
@@ -76,7 +83,7 @@
   
   <browser:defaultView
      for=".interfaces.IPersonTable"
-     name="person_view.html" />
+     name="view" />
   
 
 
