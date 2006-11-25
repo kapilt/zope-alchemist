@@ -18,9 +18,15 @@ AddressTable = Table(
     autoload = True
     )
 
-# incidenally if we autoload person table first sqlalchemy will autoload addrreesses becaues
+# incidentally if we autoload person table first sqlalchemy will autoload addrreesses becaues
 # of the fk relationship. so we could just use the below.. but we won't have an addressable
 # table, though its retrievable from the metadata.
+
+StateTable = Table(
+    'States',
+    rdb_schema,
+    autoload = True
+    )
 
 PersonTable = Table(
     'Persons',

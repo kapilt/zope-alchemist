@@ -9,6 +9,7 @@ from OFS.SimpleItem import SimpleItem
 from interfaces import IPersonTable, IAddressTable
 
 class DomainRecord( SimpleItem ):
+#class DomainRecord( object ):    
     def __init__( self, **kw):
         for k,v in kw.items():
             setattr( self, k, v )
