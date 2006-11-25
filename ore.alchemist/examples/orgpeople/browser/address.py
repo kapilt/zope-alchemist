@@ -30,11 +30,21 @@ class AddressDisplayWidgetClass( ObjectDisplayWidgetClass ):
         super( AddressDisplayWidgetClass, self).__init__( *args, **kw )
         self.view = AddressWidgetView( self, self.request )
 
+
 class AddressWidgetClass( ObjectWidgetClass ):
     def __init__(self, *args, **kw):
         super( AddressWidgetClass, self ).__init__( *args, **kw )
         self.view = AddressWidgetView( self, self.request )
 
+    def getInputValue( self, *args, **kw ):
+        # hmmm.. formlib doesn't call apply changes, it always setups a new value
+        # on edits, try to make things update in place when a subobject value is present,
+        # by calling directly to applyChanges
+    
+        content = self.context.context
+        changes = super( AddressWidgetClass, self).applyChanges( content )
+        value = self.context.get( content )
+        return value
 
 def AddressDisplayWidget( context, request, factory, **kw):
     return AddressDisplayWidgetClass( context, request, factory, **kw).__of__( context.context )
