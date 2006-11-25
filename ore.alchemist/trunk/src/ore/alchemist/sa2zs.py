@@ -127,19 +127,29 @@ class SQLAlchemySchemaTranslator( object ):
         iname ='I%sTable'%table.name
 
         d = {}
+        order_max = 0
         for column in table.columns:
             if annotation.get( column.name, {}).get('omit', False ):
                 continue
             d[ column.name ] = visitor.visit( column )
-
+            order_max = max( order_max, d[ column.name ].order )
         if 'properties' in kw:
-            for name, iface_schema in kw['properties'].items():
-                d[ name ] = schema.Object( iface_schema, required=False )
+            for name, field in kw['properties'].items():
+                # append new fields
+                if name not in d:
+                    order_max = order_max + 1
+                    field.order = order_max
+                # replace in place old fields
+                else:
+                    field.order = d[name].order
+                d[ name ] = field
 
         DerivedTableSchema = InterfaceClass( iname,
                                              (ITableSchema,),
                                              attrs=d,
                                              __module__ = __module__ )
+
+#        pprint.pprint(schema.getFieldsInOrder( DerivedTableSchema ))
         return DerivedTableSchema
         
 def transmute(  table, annotation=None, __module__=None, **kw):
