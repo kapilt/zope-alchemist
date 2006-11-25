@@ -2,6 +2,13 @@
     xmlns="http://namespaces.zope.org/zope"
     >
 
+  <adapter
+     for=".interfaces.ITableSchema"
+     provides="zope.app.keyreference.interfaces.IKeyReference"
+     factory=".keyreference.AlchemistKeyReference"
+     trusted="y"
+     />
+
   <utility provides=".interfaces.IEngineVocabularyUtility"
 	   factory=".engine.EngineUtility" />
 
@@ -9,11 +16,11 @@
 	   factory=".mapper.DomainUtility" />
 
   <vocabulary
-           name="Alchemist Available Engines"
-           factory=".engine.EngineVocabulary" />
+     name="Alchemist Available Engines"
+     factory=".engine.EngineVocabulary" />
 
   <vocabulary
-           name="Alchemist Domain Classes"
-           factory=".mapper.DomainVocabulary" />
+     name="Alchemist Domain Classes"
+     factory=".mapper.DomainVocabulary" />
 
 </configure>
