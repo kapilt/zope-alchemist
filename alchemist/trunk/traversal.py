@@ -25,7 +25,9 @@ $Id$
 
 from zope.app.traversing.interfaces import ITraversable, TraversalError
 from zope.component import ComponentLookupError
-from zope.interface import implements 
+from zope.interface import implements
+from zope.i18n.locales import locales
+
 from zExceptions import NotFound
 
 from Products.Five.traversable import FiveTraversable
@@ -36,9 +38,11 @@ class ContainerTraversal( FiveTraversable ):
 
     def __init__(self, context ):
         self._subject = context
+        # setup locales
+        if not getattr( context.REQUEST, 'locale', None):
+            context.REQUEST.locale = locales.getLocale( None, None, None )
 
     def traverse( self, name, furtherPath ):
-
         # first try to find a view
         try:
             next = super( ContainerTraversal, self).traverse( name, furtherPath )
