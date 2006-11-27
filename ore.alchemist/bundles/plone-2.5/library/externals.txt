@@ -1,0 +1,2 @@
+sqlalchemy http://svn.sqlalchemy.org/sqlalchemy/tags/rel_0_3_1/lib/sqlalchemy
+ore https://svn.objectrealms.net/svn/public/ore.alchemist/trunk/src/ore/
