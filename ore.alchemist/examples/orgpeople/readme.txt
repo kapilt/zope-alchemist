@@ -6,6 +6,9 @@ building relational applications wih zope
 Requirements
 ------------
 
+ runtime environment
+ - mysql 5.+ ( 4.1 might work, but not officially supported )
+
  zope2 products
 
  - plone 2.5
