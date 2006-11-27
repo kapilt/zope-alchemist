@@ -52,7 +52,7 @@ person = domain.Person()
 person.last_name = u"wolf"
 person.email = u"mrwolf@example.com"
 
-address = domain.Address( name=u"conference", city=u"Seattle", state=u"WA")
+address = domain.Address( name=u"conference", city=u"Alexandria", state=u"VA")
 
 person.address = address
 

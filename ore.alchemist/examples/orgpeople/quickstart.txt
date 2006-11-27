@@ -6,14 +6,9 @@ Quick Start Intro
   
   mysql -u root < person.sql
 
-- add orgpeople to zope instance products directory and restart zope
+- add orgpeople ( and dependencies listed in readme) to zope instance
+  products directory and restart zope
 
-- in the zmi, add an alchemist generic container 
+- in the plone control panel install the orgpeople product
 
-  Products.orgpeople.domain.Person
-
-- go to interfaces tab, add the following marker interface
-
-  Products.orgpeople.interfaces.IPersonContainer
-
-- view the container 
+- visit http://portal_url/people in a browser

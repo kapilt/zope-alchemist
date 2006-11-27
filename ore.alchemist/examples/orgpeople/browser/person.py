@@ -31,13 +31,8 @@ class PersonEditView( formbase.EditFormBase ):
     prefix = 'edit'
 
     def update( self, *args, **kw):
-        try:
-            super( PersonEditView, self).update( *args, **kw )
-        except:
-            import pdb, sys, traceback
-            traceback.print_exc()
-            pdb.post_mortem( sys.exc_info()[-1] )
-            raise
+        super( PersonEditView, self).update( *args, **kw )
+        self.request.set('portal_status_message', self.status )
 
 class PersonAddingView( formbase.AddFormBase ):
     form_fields = form.Fields( IPersonTable, for_input=True)

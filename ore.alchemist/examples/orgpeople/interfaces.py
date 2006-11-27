@@ -9,10 +9,11 @@ modifies the domain classes to attach the schema interface
 $Id$
 """
 
-from zope.interface import Interface
+from zope.interface import Interface, directlyProvides
 from ore.alchemist.annotation import TableAnnotation
 from ore.alchemist.sa2zs import transmute
 from zope import schema as zschema
+from zope.schema.interfaces import IContextSourceBinder
 
 import schema
 
@@ -37,9 +38,11 @@ AddressAnnotation = TableAnnotation(
     )
 
 
+from vocabulary import StateVocabulary
+                  
 IAddressTable = transmute( schema.AddressTable,
                            AddressAnnotation,
-                           properties = {'state':zschema.Choice( title=u"state", vocabulary="OrgPeople States" ) },
+                           properties = {'state':zschema.Choice( title=u"state", vocabulary=StateVocabulary() ) },
                            __module__="Products.orgperson.interfaces" )
 
 IPersonTable = transmute( schema.PersonTable,
