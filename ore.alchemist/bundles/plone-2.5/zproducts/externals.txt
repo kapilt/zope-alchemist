@@ -1,0 +1,6 @@
+# plone 2.5 / zope 2.9
+
+alchemist  https://svn.objectrealms.net/svn/public/alchemist/trunk 
+orgpeople  https://svn.objectrealms.net/svn/public/ore.alchemist/examples/orgpeople
+Five       svn://svn.zope.org/repos/main/Products.Five/branches/1.4
+CMFonFive  http://codespeak.net/svn/z3/CMFonFive/trunk/
