@@ -23,5 +23,4 @@ class VocabularyTable( object ):
         return getattr( self.vocabulary, name )
     
     def __call__( self, *args, **kw):
-        print "vocab created"
         return self.vocabulary
