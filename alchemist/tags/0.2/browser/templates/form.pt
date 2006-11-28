@@ -1,0 +1,88 @@
+<metal:block define-macro="form">
+  <form action="."
+      tal:attributes="action request/URL" method="post"
+      enctype="multipart/form-data">
+    
+      <metal:block define-slot="form-body">
+        <tal:block replace="nothing">
+          """
+          By default, one form ("the one form" on the view) is rendered.
+
+          If there's more forms to render, fill the form-body slot instead.
+          """
+        </tal:block>      
+        <metal:block use-macro="context/@@form/form-body" /> 
+      </metal:block>
+
+   <div id="actionsView">
+    <span class="actionButtons"
+          tal:condition="view/availableActions">
+      <input tal:repeat="action view/actions"
+             tal:replace="structure action/render"
+           />
+    </span>
+   </div>
+    
+  </form>
+</metal:block>
+
+<metal:block define-macro="widget_row">
+    <div class="field"
+         tal:define="description widget/hint;
+                     error widget/error"
+         tal:attributes="class python:'field'+(error and ' error' or '')">
+          <label tal:attributes="for widget/name">
+            <span i18n:translate=""
+                  tal:content="widget/label">label</span>
+          </label>
+          <span class="fieldRequired" title="Required" tal:condition="widget/required">
+            (Required)
+          </span>
+          
+          <div class="formHelp"
+               i18n:translate=""
+               tal:content="description"
+               tal:condition="description"
+               >field description</div>
+          <div tal:condition="error" tal:content="error">
+            The Error
+          </div>
+          <div class="widget" tal:content="structure widget">
+            <input type="text" />
+	  </div>
+    </div>
+</metal:block>
+
+<metal:block define-macro="form-body">
+  <fieldset>
+    <legend tal:define="form_name view/form_name|nothing"
+            tal:condition="form_name"
+            tal:content="form_name">Form name</legend>
+  <tal:block tal:repeat="widget view/widgets">
+    <div class="field"
+         tal:define="description widget/hint;
+                     error widget/error"
+         tal:attributes="class python:'field'+(error and ' error' or '')">
+          <label tal:attributes="for widget/name">
+            <span i18n:translate=""
+                  tal:content="widget/label">label</span>
+          </label>
+          <span class="fieldRequired" title="Required" tal:condition="widget/required">
+            (Required)
+          </span>
+          
+          <div class="formHelp"
+               i18n:translate=""
+               tal:content="description"
+               tal:condition="description"
+               >field description</div>
+          <div tal:condition="error" tal:content="error">
+            The Error
+          </div>
+          <div class="widget" tal:content="structure widget">
+            <input type="text" />
+	  </div>
+    </div>
+   </tal:block>
+  </fieldset>
+</metal:block>

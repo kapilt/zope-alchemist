@@ -1,0 +1,64 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser"
+           xmlns:five="http://namespaces.zope.org/five">
+
+
+  <!-- include meta dependencies -->
+  <include package="zope.app.pagetemplate" file="meta.zcml" />
+  <include package="zc.resourcelibrary" file="meta.zcml" />
+
+  <!-- For DateTime Widgetry
+  <include package="zc.datetimewidget" file="configure.zcml" />
+  <include package="zc.datetimewidget" file="z2-configure.zcml" />
+  -->
+
+  <!-- include dependencies -->
+  <include package="zope.app.pagetemplate" />
+  <include package="zc.resourcelibrary" />
+  <include package="zc.table" />
+  <include package="ore.alchemist" />
+
+  <!-- Make Legacy Traversable -->
+  <five:traversable class="OFS.Application.Application"/>
+  <five:traversable class="OFS.Folder.Folder" />
+
+  <!-- Introspector Stuff 
+  <five:registerClass
+      class=".introspector.AlchemistIntrospector"
+      meta_type="Alchemist Introspector"
+      addview="add-introspector"
+      icon="introspector.png"
+      permission="zope2.ViewManagementScreens"
+     />
+
+  <five:traversable class=".introspector.AlchemistIntrospector" />
+  <five:defaultViewable class=".introspector.AlchemistIntrospector" />
+  -->
+
+  <!-- Container Stuff -->
+  <five:registerClass
+      class=".container.AlchemistContainer"
+      meta_type="Alchemist Container"
+      addview="add-container"
+      icon="container.png"
+      permission="zope2.ViewManagementScreens"
+      />
+
+  <adapter
+      for="ore.alchemist.interfaces.IAlchemistContainer"
+      provides="zope.app.traversing.interfaces.ITraversable"
+      factory=".traversal.ContainerTraversal" />
+
+  <five:traversable class=".container.AlchemistContainer" />
+  <five:defaultViewable class=".container.AlchemistContainer" />
+
+  <!-- Domain Record Stuff -->
+  <five:traversable class=".domain.DomainRecord" />
+  <five:defaultViewable 
+      class=".domain.DomainRecord" />
+
+
+  <!-- Include Browser Packages -->
+  <include package=".browser"/>
+
+</configure>
