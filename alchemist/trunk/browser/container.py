@@ -23,11 +23,14 @@
 $Id$
 """
 
+import copy
+from zope import schema
 from zope.component import getAdapter
 from zope.interface import implementedBy
 from zope.formlib import form
-from zope import schema
+
 from zc.table import table
+from zc.table import column
 
 from ore.alchemist.interfaces import IModelAnnotation, IIModelInterface, IAlchemistContainer
 from ore.alchemist import named
@@ -35,6 +38,8 @@ from ore.alchemist import named
 from Products.Five import BrowserView
 from Products.Five.formlib import formbase
 from Products.alchemist.container import AlchemistContainer
+
+
 
 class ContainerAddingView( formbase.AddFormBase ):
     """Add view for alchemist container view.
