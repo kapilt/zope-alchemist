@@ -26,7 +26,7 @@ $Id$
 import copy
 from zope import schema
 from zope.component import getAdapter
-from zope.interface import implementedBy
+from zope.interface import providedBy
 from zope.formlib import form
 
 from zc.table import table
@@ -62,7 +62,7 @@ class ContainerView( BrowserView ):
 
         model_iface = None
         # xxx single model interface domains implementations..
-        for iface in implementedBy( context.domain_model ):
+        for iface in providedBy( context.domain_model ):
             if IIModelInterface.isImplementedBy( iface ):
                 model_iface = iface
                 break
