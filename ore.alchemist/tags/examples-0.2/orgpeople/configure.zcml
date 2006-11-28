@@ -1,0 +1,81 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser"
+           xmlns:five="http://namespaces.zope.org/five">
+
+  <!-- setup app specific vocabulary table -->
+  
+  <vocabulary 
+     name="OrgPeople States"
+     factory=".vocabulary.StateVocabulary" />
+
+  <!-- setup some app / domain specific views -->
+
+
+  <!-- Container Views -->
+
+  <!-- listing view -->
+  <browser:page
+      for=".interfaces.IPersonContainer"
+      name="listing"
+      class=".browser.container.PersonContainerListing"
+      menu="object"
+      title="Listing"
+      permission="zope2.ViewManagementScreens"
+      />
+
+  <!-- search view -->
+  <browser:page
+      for=".interfaces.IPersonContainer"
+      name="search"
+      class=".browser.container.PersonSearchView"
+      menu="object"
+      title="Search"
+      permission="zope2.ViewManagementScreens"
+      />
+
+  <!-- person add view on container -->
+  <browser:page
+      for=".interfaces.IPersonContainer"
+      name="add"
+      class=".browser.person.PersonAddingView"
+      permission="zope2.ViewManagementScreens"
+      />
+	   
+  <!-- default container view is listing view -->
+  <browser:defaultView
+      for=".interfaces.IPersonContainer"
+      name="listing" />
+
+  <!-- Person Views -->
+
+  <five:defaultViewable class=".domain.Person"/>
+
+  <!-- generic form macros -->
+
+  <!-- info view -->
+  <browser:page
+     for=".interfaces.IPersonTable"
+     name="view"
+     class=".browser.person.PersonView"
+     menu="object"
+     title="View"
+     permission="zope2.ViewManagementScreens"
+     />
+
+  <!-- edit view -->
+
+  <browser:page
+     for=".interfaces.IPersonTable"
+     name="edit"
+     class=".browser.person.PersonEditView"
+     menu="object"
+     title="Edit"
+     permission="zope2.ViewManagementScreens" />
+  
+  <browser:defaultView
+     for=".interfaces.IPersonTable"
+     name="view" />
+  
+
+
+</configure>

@@ -1,0 +1,14 @@
+-----------------
+Quick Start Intro
+-----------------
+
+- load up mysql tables 
+  
+  mysql -u root < person.sql
+
+- add orgpeople ( and dependencies listed in readme) to zope instance
+  products directory and restart zope
+
+- in the plone control panel install the orgpeople product
+
+- visit http://portal_url/people in a browser
