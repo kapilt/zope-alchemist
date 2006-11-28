@@ -52,7 +52,7 @@ class PersonSearchView( formbase.FormBase ):
 
     form_fields = form.Fields( *searchFields( IPersonTable ) )
     form_fields = form.Fields( form_fields, for_input=True)
-    form_fields = form_fields.omit('person_id', 'address_id', 'created', 'address')
+    form_fields = form_fields.omit( 'created', 'address')
     template = ZopeTwoPageTemplateFile('person_search.pt')
     results = None
     
@@ -89,6 +89,7 @@ class PersonContainerListing( formbase.EditFormBase ):
     prefix = "plist"
 
     template = ZopeTwoPageTemplateFile('person_list.pt')
+
     
     def renderListing( self ):
         columns = ListingColumns

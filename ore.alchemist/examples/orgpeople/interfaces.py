@@ -20,18 +20,20 @@ import schema
 PersonAnnotation = TableAnnotation(
     "Person",
     columns = [
-         dict( name="first_name", label = "First Name", table_column=True ),
-         dict( name="middle_initial", label = "Middle Initial", table_column=True ),         
-         dict( name="last_name", label = "Last Name",  table_column=True ),
-         dict( name="email", label = "Email Address", table_column=True ),
-         dict( name="phone_number", label = "Home Phone Number"),
+         dict( name="first_name", label = "First Name" ),
+         dict( name="middle_initial", label = "Middle Initial" ),         
+         dict( name="last_name", label = "Last Name" ),
+         dict( name="email", label = "Email Address" ),
+         dict( name="phone_number", label = "Home Phone Number" ),
+         dict( name="address_id", omit = True ),
+         dict( name="person_id", omit = True )
          ]
     )
 
 AddressAnnotation = TableAnnotation(
     "Address",
     columns = [
-        dict( name="address_id", omit = True ),
+        dict( name="address_id", omit = True ), # omit means that the we never see the id in the schema
         dict( name="address_1", label = "address line 1"),
         dict( name="address_2", label = "address line 2"),
         ]
