@@ -1,0 +1,6 @@
+"""
+$Id$
+"""
+
+import mapper
+

@@ -1,0 +1,23 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="context/main_template/macros/master"
+      >
+<head metal:use-macro="head_slot"
+      tal:define="template_id string:ipersoncontainer_@@search">
+</head>
+<body>
+ <div metal:fill-slot="main">
+  <metal:block use-macro="context/@@form/form">
+  </metal:block>
+
+  <tal:block condition="view/results">
+    <tal:block tal:replace="structure view/renderResults" />
+  </tal:block>
+
+ </div>
+</body>
+</html>
