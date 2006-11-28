@@ -1,0 +1,5 @@
+<html>
+<body>
+<p>Coolness you got a <b tal:content="context/meta_type">rabbit</b>woot</p>
+</body>
+</html>
