@@ -1,0 +1,30 @@
+
+mappings:
+
+  persons:
+     interface module : Products.AddressBook.interfaces
+    
+     columns:
+       first_name :
+         label : First Name
+       address_id :
+         attribute : address
+         backref : person
+
+  addresses:
+      interface module : Products.AddressBook.interfaces
+
+      columns:
+        address_1 :
+          label : Street Address
+        address_2 :
+          label : Street Address #2
+        city :
+          label : City 
+        state :
+          label : State
+        zip : 
+          label : Zip
+
+
+ 
