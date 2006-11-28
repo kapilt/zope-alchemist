@@ -1,2 +1,2 @@
 table svn://svn.zope.org/repos/main/zc.table/trunk/src/zc/table
-resourcelibrary svn://svn.zope.org/repos/main/zc.resourcelibrary/tags/zc.resourcelibrary-0.5.2
+resourcelibrary svn://svn.zope.org/repos/main/zc.resourcelibrary/tags/zc.resourcelibrary-0.5/src/zc/resourcelibrary
