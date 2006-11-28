@@ -155,7 +155,7 @@ class AlchemyDataManager( object ):
 
         This should never fail.
         """
-        self.transaction.abort()
+        self.transaction.rollback()
         objectstore.clear()
         
     def sortKey(self):
