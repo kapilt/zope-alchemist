@@ -18,7 +18,6 @@
       for=".interfaces.IPersonContainer"
       name="listing"
       class=".browser.container.PersonContainerListing"
-      template="browser/person_list.pt"
       menu="object"
       title="Listing"
       permission="zope2.ViewManagementScreens"
@@ -28,7 +27,6 @@
   <browser:page
       for=".interfaces.IPersonContainer"
       name="search"
-      template="browser/person_search.pt"
       class=".browser.container.PersonSearchView"
       menu="object"
       title="Search"
@@ -39,7 +37,6 @@
   <browser:page
       for=".interfaces.IPersonContainer"
       name="add"
-      template="browser/person_add.pt"
       class=".browser.person.PersonAddingView"
       permission="zope2.ViewManagementScreens"
       />
@@ -54,12 +51,6 @@
   <five:defaultViewable class=".domain.Person"/>
 
   <!-- generic form macros -->
-  <browser:page
-      for="*"
-      name="form"
-      template="browser/form.pt"
-      permission="zope2.View"
-      />
 
   <!-- info view -->
   <browser:page

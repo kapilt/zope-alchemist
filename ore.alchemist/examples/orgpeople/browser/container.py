@@ -104,13 +104,13 @@ class PersonContainerListing( formbase.EditFormBase ):
 
     @form.action("Add")
     def handle_add( self, action, data ):
-        return self.request.RESPONSE.redirect( "./add" )
+        return self.request.RESPONSE.redirect( "./@@add" )
 
     @form.action("Edit")
     def handle_edit( self, action, data ):
         selected = self._getSelected( action, data )
         node = selected[0]
-        return self.request.RESPONSE.redirect( "./%s/edit"%(node.person_id))
+        return self.request.RESPONSE.redirect( "./%s/@@edit"%(node.person_id))
 
     @form.action("Delete")
     def handle_delete( self, action, data ):

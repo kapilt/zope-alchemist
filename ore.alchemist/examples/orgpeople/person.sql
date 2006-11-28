@@ -1,5 +1,5 @@
 -- database definition 
-create database if not exists orgperson;
+create database if not exists orgperson character set utf8;
 connect orgperson;
 
 
