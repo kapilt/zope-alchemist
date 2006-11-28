@@ -1,0 +1,9 @@
+
+
+changeset - use migrate schema generator support
+
+validated properties - automatically 
+
+sa2zs.py - fk support, automatically convert to object references, depends on ordering and keeping
+           track of mappers
+
