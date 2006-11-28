@@ -120,36 +120,77 @@ class ColumnVisitor( object ):
 
 class SQLAlchemySchemaTranslator( object ):
 
-    def translate( self, table, annotation, __module__, **kw):
+    def applyProperties( self, field_map, properties ):
+        # apply manually overridden fields/properties
+        order_max = max( [field.order for field in field_map.values()] )
+        for name in properties:
+            field = properties[ name ]
+            # append new fields
+            if name not in field_map:
+                order_max = order_max + 1
+                field.order = order_max
+            # replace in place old fields
+            else:
+                field.order = field_map[name].order
+            field_map[ name ] = field
 
-        annotation = annotation or {}
-        visitor = ColumnVisitor(annotation)
-        iname ='I%sTable'%table.name
-
+    def applyOrdering( self, field_map, schema_order ):
+        """ apply global ordering to all fields, any fields not specified have ordering
+            preserved, but are now located after fields specified in the schema order, which is
+            a list of field names.
+        """
+        self.verifyNames( field_map, schema_order ) # verify all names are in present
+        visited = set() # keep track of fields modified
+        order = 1  # start off ordering values
+        for s in schema_order:
+            field_map[s].order = order
+            visited.add( s )
+            order += 1
+        remainder = [ (field.order, field) for field_name, field in field_map.items() if field_name not in visited ]
+        remainder.sort()
+        for order, field in remainder:
+            field.order = order
+            order += 1
+            
+    def verifyNames( self, field_map, names ):
+        for n in names:
+            if not n in field_map:
+                raise AssertionError("invalid field specified  %s"%( n ) )
+        
+    def generateFields( self, table, annotation ):
+        visitor = ColumnVisitor(annotation)        
         d = {}
-        order_max = 0
         for column in table.columns:
             if annotation.get( column.name, {}).get('omit', False ):
                 continue
             d[ column.name ] = visitor.visit( column )
-            order_max = max( order_max, d[ column.name ].order )
-        if 'properties' in kw:
-            for name, field in kw['properties'].items():
-                # append new fields
-                if name not in d:
-                    order_max = order_max + 1
-                    field.order = order_max
-                # replace in place old fields
-                else:
-                    field.order = d[name].order
-                d[ name ] = field
+        return d
+    
+    def translate( self, table, annotation, __module__, **kw):
+        annotation = annotation or {}
+        iname ='I%sTable'%table.name
+
+        field_map = self.generateFields( table, annotation )
+
+        # apply manually overridden fields/properties
+        properties = kw.get('properties', None) or annotation.properties
+        if properties:
+            self.applyProperties( field_map, properties )
+        
+        # apply global schema ordering
+        schema_order = kw.get('schema_order', None) or annotation.schema_order
+        if schema_order:
+            self.applyOrdering( field_map, schema_order )
+
+        # verify table columns
+        if annotation.table_columns:
+            self.verifyNames( field_map, annotation.table_columns )
 
         DerivedTableSchema = InterfaceClass( iname,
                                              (ITableSchema,),
-                                             attrs=d,
+                                             attrs=field_map,
                                              __module__ = __module__ )
 
-#        pprint.pprint(schema.getFieldsInOrder( DerivedTableSchema ))
         return DerivedTableSchema
         
 def transmute(  table, annotation=None, __module__=None, **kw):
@@ -158,10 +199,15 @@ def transmute(  table, annotation=None, __module__=None, **kw):
     if __module__ is None:
         __module__ = sys._getframe(1).f_globals['__name__']
 
-    z3iface = SQLAlchemySchemaTranslator().translate( table,
-                                                      annotation,
-                                                      __module__,
-                                                      **kw )
+    try:
+        z3iface = SQLAlchemySchemaTranslator().translate( table,
+                                                          annotation,
+                                                          __module__,
+                                                          **kw )
+    except:
+        import pdb, sys, traceback
+        traceback.print_exc()
+        pdb.post_mortem( sys.exc_info()[-1])
 
     # mark the interface itself as being model driven
     directlyProvides( z3iface, IIModelInterface)
