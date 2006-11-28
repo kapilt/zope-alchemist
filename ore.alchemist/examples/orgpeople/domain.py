@@ -9,7 +9,14 @@ from OFS.SimpleItem import SimpleItem
 from interfaces import IPersonTable, IAddressTable
 
 class DomainRecord( SimpleItem ):
-#class DomainRecord( object ):    
+#class DomainRecord( object ):
+
+    def foolish( self ):
+        import pdb; pdb.set_trace()
+        return None
+
+    _p_jar = property( lambda self: None, foolish )
+    
     def __init__( self, **kw):
         for k,v in kw.items():
             setattr( self, k, v )
@@ -32,6 +39,7 @@ class Person( DomainRecord ):
 class Address( DomainRecord ):
 
     implements( IAddressTable )
+
 
 
 
