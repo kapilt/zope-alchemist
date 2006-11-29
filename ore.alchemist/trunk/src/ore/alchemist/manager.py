@@ -142,6 +142,7 @@ class AlchemyDataManager( object ):
         """
         #print "tpc commit"
         self.transaction.commit()
+        objectstore.clear()
         
     def tpc_abort(self, transaction):
         """Abort a transaction.
