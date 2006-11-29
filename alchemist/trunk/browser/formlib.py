@@ -1,5 +1,10 @@
 """
-Form Lib Variants which play nice with alchemist data models
+Form Lib Variants which play nice with alchemist data models.
+
+random thought -- some of the work here and objectwidget for avoiding db mods
+might have been easier as a failure action, at least for edits.
+
+author - Kapil Thangavelu <hazmat@objectrealms.net>
 """
 
 import pytz
@@ -15,6 +20,9 @@ from zope.formlib.i18n import _
 from zope.formlib import form
 from zope.app.form import CustomWidgetFactory
 
+from sqlalchemy.orm.session import attribute_manager
+
+from Acquisition import aq_base
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
 from Products.Five.formlib import formbase
@@ -101,10 +109,29 @@ def applyChanges(context, form_fields, data, adapters=None):
         newvalue = data.get(name, form_field) # using form_field as marker
         
         if IObject.providedBy( field ) and ITableSchema.providedBy( newvalue ):
-            session = get_session()
-            if newvalue in session.dirty:
-                changed = True
+            # we expunge objects from session, to prevent spurious db changes on caught
+            # form exceptions. if we get to the application of form data, then we passed
+            # through validation, and values should be reattached to the session, for
+            # persistence.
+            if not attribute_manager.is_modified( newvalue ):
                 continue
+            
+            newvalue = aq_base( newvalue )
+            session_id = getattr( newvalue, '_sa_session_id', None)
+            
+            if session_id is None:
+                session = get_session()
+                # if the object has a instance key, its being updated
+                if getattr( newvalue, '_instance_key', None):
+                    session._attach( newvalue )
+                    # this doesn't work as well we would expect, it resets state on updates
+                    # session.save_or_update( newvalue )
+                    assert newvalue in session.dirty
+                    changed = True
+                    continue 
+                # else its new
+                session.save( newvalue )                    
+                changed = True
 
         if (newvalue is not form_field) and (field.get(adapter) != newvalue):
             changed = True
