@@ -58,7 +58,7 @@ class TableAnnotation( object ):
 
     #__slots__ = ("table_name", "_annot", "_options")
 
-    def __init__(self, table_name, columns=(), properties=(), schema_order=(), table_columns=()):
+    def __init__(self, table_name, columns=(), properties=(), schema_order=(), table_columns=(), order_by=()):
         self.table_name = table_name
         self._options = {}
         self._annot = OrderedDict()
@@ -67,8 +67,9 @@ class TableAnnotation( object ):
             self._annot[ info['name'] ] = info
 
         self.properties = properties
+        self.schema_order = schema_order        
         self.table_columns = table_columns
-        self.schema_order = schema_order
+        self.order_by = order_by
 
     def setOption( self, name, value ):
         self._options[ name ] = value

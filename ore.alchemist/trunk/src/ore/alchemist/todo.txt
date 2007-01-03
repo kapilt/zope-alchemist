@@ -1,4 +1,12 @@
 
+Products.alchemist.container
+-----
+
+ - batching, ordering support
+
+ - generic container ui based on annotation values.
+
+--
 
 changeset - use migrate schema generator support
 
