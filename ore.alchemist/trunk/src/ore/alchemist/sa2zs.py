@@ -39,6 +39,8 @@ import sqlalchemy as rdb
 from interfaces import ITableSchema, TransmutationException, IAlchemistTransmutation, \
      IModelAnnotation, IIModelInterface
 
+from annotation import TableAnnotation
+
 moduleProvides( IAlchemistTransmutation )
 
 class ColumnTranslator( object ):
@@ -167,7 +169,7 @@ class SQLAlchemySchemaTranslator( object ):
         return d
     
     def translate( self, table, annotation, __module__, **kw):
-        annotation = annotation or {}
+        annotation = annotation or TableAnnotation( table.name ) 
         iname ='I%sTable'%table.name
 
         field_map = self.generateFields( table, annotation )
@@ -186,9 +188,15 @@ class SQLAlchemySchemaTranslator( object ):
         if annotation.table_columns:
             self.verifyNames( field_map, annotation.table_columns )
 
+
+        # extract base interfaces
+        if 'bases' in kw:
+            bases = (ITableSchema,) + kw.get('bases')
+        else:
+            bases = (ITableSchema,)
         DerivedTableSchema = InterfaceClass( iname,
-                                             (ITableSchema,),
-                                             attrs=field_map,
+                                             attrs = field_map,
+                                             bases = bases,
                                              __module__ = __module__ )
 
         return DerivedTableSchema
@@ -197,6 +205,7 @@ def transmute(  table, annotation=None, __module__=None, **kw):
 
     # if no module given, use the callers module
     if __module__ is None:
+        import sys
         __module__ = sys._getframe(1).f_globals['__name__']
 
     try:
