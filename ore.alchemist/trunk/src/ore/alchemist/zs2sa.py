@@ -44,13 +44,16 @@ class FieldTranslator( object ):
         return d
     
     def __call__(self, field, annotation):
-        d = self.extractInfo( field, info )
+        d = self.extractInfo( field, annotation )
         return rdb.Column( **d)
 
 class StringTranslator(FieldTranslator):
     
     column_type = rdb.String
-    
+
+    def __init__(self, column_type=None):
+        self.column_type = column_type or self.column_type
+        
     def extractInfo( self, field, info ):
         d = super( StringTranslator, self ).extractInfo( field, info )
         if schema.interfaces.IMinMaxLen.providedBy( field ):
@@ -88,7 +91,7 @@ fieldmap = {
     'URI': StringTranslator(),
 }
 
-def transmute(zopeschema, metadata, tablename=""):
+def transmute(zopeschema, metadata, tablename="", add_primary=True):
 
     columns = []
 
@@ -103,14 +106,15 @@ def transmute(zopeschema, metadata, tablename=""):
 
     if not tablename:
         tablename = zopeschema.getName()[1:]
-
-    columns.insert(0, rdb.Column(get_pk_name(tablename), Integer,
-        primary_key=True)
-    )
+        
+    if add_primary:
+        columns.insert(0, rdb.Column(get_pk_name(tablename), rdb.Integer,
+                                     primary_key=True)
+                       )
 
     return rdb.Table(tablename, metadata, *columns)
 
 def get_pk_name(tablename):
 
-    return "%s_id" % tableṅame.lower()
+    return "%s_id" % tablename.lower()
 

@@ -4,10 +4,14 @@ from datetime import datetime
 
 from ore.alchemist.sa2zs import transmute
 from zope import schema, interface
+from zope.app.container.constraints import containers
+from zope.app.container.interfaces import IContained, IContainer
 
 import sqlalchemy as rdb
 
 metadata = rdb.DynamicMetaData("principals")
+
+class IUserContainer( IContainer ): pass
         
 users = rdb.Table('users', metadata,
                   rdb.Column('user_id',
@@ -34,14 +38,20 @@ class SQLAlchemy2ZopeSchemaTests( TestCase ):
         self.assertEqual( fields['user_name'].default, u'hello world')
 
     def testInheritance( self ):
-        class IUserBase( interface.Interface ):
+        class IUserBase( IContained ):
 
             def hello( ): pass
         iusers = transmute( users, bases=(IUserBase,) )
         class bar( object ):
             interface.implements( iusers )
+            containers( IUserContainer )
         b = bar()
         self.assertTrue( IUserBase.providedBy( b ) )
+
+        fields =  schema.getFieldsInOrder( iusers )
+
+        for i in fields:
+            print i
 
 if __name__ == '__main__':
     main()
