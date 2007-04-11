@@ -215,6 +215,7 @@ def transmute(  table, annotation=None, __module__=None, **kw):
                                                           __module__,
                                                           **kw )
     except:
+        raise
         import pdb, sys, traceback
         traceback.print_exc()
         pdb.post_mortem( sys.exc_info()[-1])
