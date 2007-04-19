@@ -114,6 +114,7 @@ class ColumnVisitor( object ):
                     # allow for instance method customization
                     handler = getattr( self, handler )
                 column_handler = handler
+                break
 
         if column_handler is None:
             raise TransmutationException("no column handler for %r"%column)
