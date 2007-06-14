@@ -3,6 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name="ore.alchemist",
     version="0.1.0",
+    install_requires=['setuptools'],
     packages=find_packages('src', exclude=["*.tests"]),
     package_dir= {'':'src'},
     namespace_packages=['ore'],

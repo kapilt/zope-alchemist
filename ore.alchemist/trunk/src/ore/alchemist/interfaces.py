@@ -81,6 +81,9 @@ class ITableSchema( Interface ):
     from sqlalchemy table definitions
     """
     
+class ISQLAlchemyMetadata( Interface ):
+    """ marker for sqlalchemy.BoundMetaData objects
+    """
 
 class ISchemaIntrospector( IEnumerableMapping ):
     """ a read dictionary interfaces to tables """

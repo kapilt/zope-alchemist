@@ -20,27 +20,32 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ##################################################################
 """
-Schema Introspecion
+Schema Introspection
 
 $Id$
 """
 
-from zope.interface import Interface, Attribute, implements
+from zope.interface import Interface, Attribute, implements, classImplements
 from zope.interface.common.mapping import IEnumerableMapping
+
+
 from sqlalchemy.databases import information_schema
 from sqlalchemy.schema import BoundMetaData, Table
 from sqlalchemy import sql
 
-from interfaces import ISchemaIntrospector
-                                        
+from interfaces import ISchemaIntrospector, ISQLAlchemyMetadata
+
+classImplements( BoundMetaData, ISQLAlchemyMetadata )
+
 
 class TableSchemaIntrospector( object ):
 
     implements( ISchemaIntrospector )
     
-    def __init__(self):
-        self._metadata = None
-
+    def __init__(self, context=None ):
+        self._metadata = context
+        self._information_schema = None
+        
     def keys( self ):
         return self._listTables()
 
@@ -92,7 +97,7 @@ class TableSchemaIntrospector( object ):
             raise AttributeError( "_metadata" )
         return self._metadata
 
-    metadata = property( _getMetadata )
+    metadata = property( _getMetadata, bindMetadata )
     context = metadata
 
     def _getInformationSchema( self ):
