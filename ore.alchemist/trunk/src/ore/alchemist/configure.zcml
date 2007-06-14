@@ -3,6 +3,12 @@
     >
 
   <adapter
+     for=".interfaces.ISQLAlchemyModel"
+     provides=".interfaces.ISchemaIntrospector"
+     factory=".introspector.TableSchemaIntrospector" 
+     />
+
+  <adapter
      for=".interfaces.ITableSchema"
      provides="zope.app.keyreference.interfaces.IKeyReference"
      factory=".keyreference.AlchemistKeyReference"
