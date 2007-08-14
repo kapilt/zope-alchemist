@@ -1,0 +1,13 @@
+
+todo 
+
+ - generate an audit record interface and archetype for each archetype
+   object we see, generate per type tables, interfaces, and mappings,
+   automatically create tables as needed.
+
+ - preferences configuration.. which types are logged, whether or not
+   to log the whole object state to the relational database.
+
+ - encapsulate database into utility so db connection defined in zcml
+
+
