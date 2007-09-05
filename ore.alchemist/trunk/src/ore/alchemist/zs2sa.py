@@ -57,7 +57,7 @@ class StringTranslator(FieldTranslator):
     def extractInfo( self, field, info ):
         d = super( StringTranslator, self ).extractInfo( field, info )
         if schema.interfaces.IMinMaxLen.providedBy( field ):
-            ti['length'] = field.max_length
+            d['type'].length = field.max_length
         return d
 
 class ObjectTranslator(object):
