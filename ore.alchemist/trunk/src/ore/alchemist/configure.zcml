@@ -3,7 +3,7 @@
     >
 
   <adapter
-     for=".interfaces.ISQLAlchemyModel"
+     for=".interfaces.ISQLAlchemyMetadata"
      provides=".interfaces.ISchemaIntrospector"
      factory=".introspector.TableSchemaIntrospector" 
      />
