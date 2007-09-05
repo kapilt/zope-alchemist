@@ -1,0 +1,4 @@
+alchemist  https://svn.objectrealms.net/svn/public/Products.alchemist/trunk 
+orgpeople  https://svn.objectrealms.net/svn/public/ore.alchemist/examples/orgpeople
+CMFonFive  http://codespeak.net/svn/z3/CMFonFive/trunk/
+
