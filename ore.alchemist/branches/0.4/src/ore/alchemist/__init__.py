@@ -23,6 +23,7 @@
 $Id$
 """
 
+__all__ = [ 'Session', 'create_engine']
 
 def named( klass ):
     return "%s.%s"%( klass.__module__, klass.__name__ )

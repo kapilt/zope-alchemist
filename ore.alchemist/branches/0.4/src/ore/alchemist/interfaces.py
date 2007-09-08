@@ -35,8 +35,8 @@ class IAlchemistTransmutation( Interface ):
     def transmute( schema, **kw ):
         """
         translates the schema and returns the translation.
-
-        kw are specific to the translation
+        
+        translations and kw are specific to the translation being performed.
         """
 
 class IEngineVocabularyUtility( Interface ):
