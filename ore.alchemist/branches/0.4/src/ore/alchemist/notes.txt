@@ -1,0 +1,26 @@
+
+
+- Relational Database Support
+
+  everything sqlalchemy supports, with the additional restriction that
+  mysql < 5 need not apply. we heavily rely on introspection features.
+
+  need to check unicode settings against database.
+
+- sa2zs.py
+
+  fairly good individual column support, support for fk relationships
+  non existent atm.
+
+  conversion to object fields and many2many relations depending on
+  property settings.
+
+  relations are mapper based, we do translation based on table
+  structures, we need to move to mapper based definitions.
+
+  could do just do an overlay on top of 
+
+  needs tests for binding, date fields
+
+  
+
