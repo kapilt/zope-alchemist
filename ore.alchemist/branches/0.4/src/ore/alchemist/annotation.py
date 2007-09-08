@@ -21,7 +21,6 @@
 ##################################################################
 """
 Annotations for Table objects, to annotate as needed, the notion
-
 is that the annotation keys correspond to column, and values correspond
 to application specific column metadata.
 
@@ -29,34 +28,9 @@ $Id$
 """
 
 from zope.interface import implements
-from interfaces import IModelAnnotation
 from sqlalchemy.util import OrderedDict
-    
-class ModelAnnotation( object ):
-    
-    implements( IModelAnnotation )
-    
-    def __init__(self, context, annotation):
-        self.context = context
-        self.annotation = annotation
-
-    def getDisplayColumns(self):
-        from zc.table.column import GetterColumn        
-        columns = []
-        for i in self.annotation.values():
-            if i.get('table_column') is not True:
-                continue
-            def getter( ob, format, name=i['name']):
-                return getattr( ob, name )
-            column = GetterColumn( title = i['label'],
-                                   name = i['name'],
-                                   getter = getter )
-            columns.append( column )
-        return columns
 
 class TableAnnotation( object ):
-
-    #__slots__ = ("table_name", "_annot", "_options")
 
     def __init__(self, table_name, columns=(), properties=(), schema_order=(), table_columns=(), order_by=()):
         self.table_name = table_name
