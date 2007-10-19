@@ -15,18 +15,24 @@ class ITestInterface( Interface ):
     Bool = schema.Bool(title=u'Bool')
 
 
-class SQLAlchemy2ZopeSchemaTests( TestCase ):
+class ZopeSchemaTransformTests( TestCase ):
 
     def testZS2SA( self ):
 
-        db = get_engine('mysql://root@localhost/alc2', echo=True )
-        meta = rdb.BoundMetaData( db )
+        meta = rdb.MetaData
         table = transmute(ITestInterface, meta)
         meta.create_all()
 
         self.assertEqual(table.columns.ASCII.type.__class__, rdb.TEXT)
         self.assertEqual(table.columns.ASCIILine.type.__class__, rdb.TEXT)
         self.assertEqual(table.columns.Bool.type.__class__, rdb.BOOLEAN)
+
+
+def test_suite():
+    from unittest import TestSuite, makeSuite
+    suite=TestSuite()
+    suite.addTest(makeSuite(ZopeSchemaTransformTests))
+    return suite
 
 
 if __name__ == '__main__':

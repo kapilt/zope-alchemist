@@ -25,13 +25,10 @@ zope transaction manager integration for sqlalchemy
 $Id$
 """
 
-import sqlalchemy.mods.threadlocal
-from sqlalchemy import objectstore
 from zope.interface import implements
 from transaction.interfaces import IDataManager, ISynchronizer
 
 import transaction
-import patches
 
 #from Products.Archetypes.debug import ClassLog
 #log = ClassLog()

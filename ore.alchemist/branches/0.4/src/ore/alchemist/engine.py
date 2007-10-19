@@ -35,11 +35,7 @@ $Id$
 import sqlalchemy
 import transaction
 
-# install thread local module
-import sqlalchemy.mods.threadlocal
-import strategy
-
-from sqlalchemy import objectstore, create_engine as EngineFactory
+from sqlalchemy import create_engine as EngineFactory
 
 from zope.interface import implements
 from zope.component import getUtility
@@ -53,7 +49,6 @@ __all__ = [ 'create_engine', 'get_engine', 'list_engines' ]
 _engines = {}
 
 def create_engine(*args, **kwargs):
-    kwargs['strategy'] = 'zope'
     engine = EngineProxy( EngineFactory( *args, **kwargs ) )
     name_or_url = args[0]
     _engines[ name_or_url ] = engine
