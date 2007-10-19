@@ -1,7 +1,7 @@
 
 
-from ore.alchemist.model import ModelFactory
-from ore.alchemist.modelio import ModelLoader
+#from ore.alchemist.model import ModelFactory
+#from ore.alchemist.modelio import ModelLoader
 import transaction
 from unittest import TestCase, main
 

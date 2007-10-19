@@ -9,7 +9,7 @@ from zope.app.container.interfaces import IContained, IContainer
 
 import sqlalchemy as rdb
 
-metadata = rdb.DynamicMetaData("principals")
+metadata = rdb.MetaData()
 
 class IUserContainer( IContainer ): pass
         
@@ -21,7 +21,7 @@ users = rdb.Table('users', metadata,
                   rdb.Column('user_name', rdb.String(40), default=u'hello world' )
                   )
 
-class SQLAlchemy2ZopeSchemaTests( TestCase ):
+class SASchemaTests( TestCase ):
 
     def testSA2ZS( self ):
         
@@ -39,19 +39,28 @@ class SQLAlchemy2ZopeSchemaTests( TestCase ):
 
     def testInheritance( self ):
         class IUserBase( IContained ):
-
             def hello( ): pass
+            
         iusers = transmute( users, bases=(IUserBase,) )
         class bar( object ):
             interface.implements( iusers )
             containers( IUserContainer )
         b = bar()
+        
         self.assertTrue( IUserBase.providedBy( b ) )
-
         fields =  schema.getFieldsInOrder( iusers )
 
-        for i in fields:
-            print i
+        for name, field in fields:
+            assert name in ('user_id', 'user_name', '__name__')
+
+
+
+
+def test_suite():
+    from unittest import TestSuite, makeSuite
+    suite=TestSuite()
+    suite.addTest(makeSuite(SASchemaTests))
+    return suite
 
 if __name__ == '__main__':
     main()
