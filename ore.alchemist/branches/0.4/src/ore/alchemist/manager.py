@@ -1,6 +1,6 @@
 ##################################################################
 #
-# (C) Copyright 2006 ObjectRealms, LLC
+# (C) Copyright 2005-2007 ObjectRealms, LLC
 # All Rights Reserved
 #
 # This file is part of Alchemist.
@@ -25,144 +25,54 @@ zope transaction manager integration for sqlalchemy
 $Id$
 """
 
-from zope.interface import implements
-from transaction.interfaces import IDataManager, ISynchronizer
+from zope import interface
 
 import transaction
+import transaction.interfaces
 
-#from Products.Archetypes.debug import ClassLog
-#log = ClassLog()
-
-def get_session( ):
-    """ return the current active session in this thread.
-    """
-    return objectstore.session
-
-class AlchemyObserver( object ):
-    """
-    a transaction synchronizer/observer that ensures alchemy transactions
-    are begun when zope transactions are.
-
-    XXX not really nescesary, the engine registration handles for us.
-    """
-    implements( ISynchronizer )
-
-    def newTransaction( self, transaction ):
-        pass
-        
-    def afterCompletion( self, transaction ):
-        if hasattr( objectstore.session, 'zope_tpc'):
-            del objectstore.session.zope_tpc
-        #if getattr( objectstore.context.current, 'transaction', None) is not None:
-        #    objectstore.context.current.transaction = None
-            
-    def beforeCompletion( self, transaction ):
-        sess = objectstore.session
-        if sess.dirty or sess.new or sess.deleted:
-            self.attach( transaction )            
-    
-    def attach( self, transaction ):
-        zope_tpc = observer.getDataManager()
-        if zope_tpc is not None:
-            return
-        dm = AlchemyDataManager()
-        transaction.join( dm )
-        from engine import iter_engines
-        # attach extant engines
-        #print "observer attach"
-        map( dm.transaction.get_or_add, iter_engines() )
-             
-    def getDataManager( self ):
-        return getattr( objectstore.session, 'zope_tpc', None )
-
-# install the observer with zope's transaction manager        
-observer = AlchemyObserver()
-transaction.manager.registerGlobalSynch( observer )
-
-def register( engine ):
-    # register alchemy data manager for transaction if not registered
-    zope_tpc  = observer.getDataManager()
-    if zope_tpc is None:
-        #log.log( "cl register attach" )
-        observer.attach( transaction.get() )
-        zope_tpc = observer.getDataManager()
-    # register engine if not registered (begins connection's transaction)
-    #print "register begin"
-    #zope_tpc.transaction.get_or_add( engine )
-        
-class DataManager( object ):
+class SessionDataManager( object ):
     """
     a data manager facade for sqlalchemy sessions participating in
     zope transactions.    
     """
-    implements( IDataManager )
+    
+    interface.implements( transaction.interfaces.IDataManager )
 
-    def __init__(self):
-        self.transaction = objectstore.create_transaction( autoflush = False )
-        objectstore.session.zope_tpc = self
-        
+    def __init__(self, session):
+        self.session = session
+        self.joined = False
+
+    def _check( self ):
+        return bool( self.session.new or self.session.deleted or self.session.dirty )
+    
     def abort(self, transaction):
-        self.transaction.rollback()
-        objectstore.clear()
+        if self._check():
+            self.session.transaction.rollback()
         
     def commit(self, transaction):
-        """Commit modifications to registered objects.
-
-        Save changes to be made persistent if the transaction commits (if
-        tpc_finish is called later).  If tpc_abort is called later, changes
-        must not persist.
-
-        This includes conflict detection and handling.  If no conflicts or
-        errors occur, the data manager should be prepared to make the
-        changes persist when tpc_finish is called.
-        """
-        #print "commit", transaction._resources
-        objectstore.flush()
+        if self.session.autoflush:
+            return
+        if self._check():
+            self.session.flush()
 
     def tpc_finish(self, transaction):
-        """Indicate confirmation that the transaction is done.
-
-        Make all changes to objects modified by this transaction persist.
-
-        transaction is the ITransaction instance associated with the
-        transaction being committed.
-
-        This should never fail.  If this raises an exception, the
-        database is not expected to maintain consistency; it's a
-        serious error.
-        """
-        #print "tpc commit"
-        self.transaction.commit()
-        objectstore.clear()
+        self.session.transaction.commit()
         
     def tpc_abort(self, transaction):
-        """Abort a transaction.
-
-        This is called by a transaction manager to end a two-phase commit on
-        the data manager.  Abandon all changes to objects modified by this
-        transaction.
-
-        transaction is the ITransaction instance associated with the
-        transaction being committed.
-
-        This should never fail.
-        """
-        self.transaction.rollback()
-        objectstore.clear()
+        self.session.transaction.rollback()
+        self.session.clear()
         
     def sortKey(self):
-        """Return a key to use for ordering registered DataManagers.
-
-        ZODB uses a global sort order to prevent deadlock when it commits
-        transactions involving multiple resource managers.  The resource
-        manager must define a sortKey() method that provides a global ordering
-        for resource managers.
-        """
         return "100-alchemist"
     
-
     def null( self, *args, **kw): pass
 
     tpc_vote = tpc_begin = null
 
+    def register( self ):
+        if self.joined:
+            return
+        txn = transaction.get()
+        txn.join( self )
+        self.joined = True
         
