@@ -90,9 +90,10 @@ def register( engine ):
     #print "register begin"
     #zope_tpc.transaction.get_or_add( engine )
         
-class AlchemyDataManager( object ):
+class DataManager( object ):
     """
-    a data manager facade for alchemy sessions participating in zope transactions
+    a data manager facade for sqlalchemy sessions participating in
+    zope transactions.    
     """
     implements( IDataManager )
 
@@ -101,13 +102,6 @@ class AlchemyDataManager( object ):
         objectstore.session.zope_tpc = self
         
     def abort(self, transaction):
-        """Abort a transaction and forget all changes.
-
-        Abort must be called outside of a two-phase commit.
-
-        Abort is called by the transaction manager to abort transactions
-        that are not yet in a two-phase commit.
-        """
         self.transaction.rollback()
         objectstore.clear()
         

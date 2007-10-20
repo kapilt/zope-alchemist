@@ -10,6 +10,8 @@
 
   Core 
 
+   - all the power of sqlalchemy in zope.
+
    - sqlalchemy zope transaction integration
 
    - on the fly creation of zope3 schemas from sqlalchemy tables
@@ -25,6 +27,23 @@
    - no inheritance requirements for domain classes, all zope integration is interface based.
 
    - designed to work with existing databases.
+
+  For Zope Developers
+
+   - 
+
+  For SQLAlchemy Users
+
+   - 
+
+  Comparisons
+
+   - There are numerous (5) integrations of zope and sqlalchemy, most
+     of them suffer badly in terms of features, and force you to use
+     their adhoc apis, preventing you from using the full power of
+     sqlalchemy.
+
+ 
 
   Model - In Development
 
