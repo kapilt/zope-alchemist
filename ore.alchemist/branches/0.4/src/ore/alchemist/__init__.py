@@ -23,7 +23,9 @@
 $Id$
 """
 
-__all__ = [ 'Session', 'create_engine']
+__all__ = [ 'Session']
+
+from session import Session
 
 def named( klass ):
     return "%s.%s"%( klass.__module__, klass.__name__ )

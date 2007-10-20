@@ -1,6 +1,6 @@
 ##################################################################
 #
-# (C) Copyright 2006 ObjectRealms, LLC
+# (C) Copyright 2006-2007 Kapil Thangavelu <kapil at gmail.com>
 # All Rights Reserved
 #
 # This file is part of Alchemist.
@@ -45,7 +45,10 @@ class FieldTranslator( object ):
     
     def __call__(self, field, annotation):
         d = self.extractInfo( field, annotation )
-        return rdb.Column( **d)
+        name, type = d['name'], d['type']
+        del d['name']
+        del d['type']
+        return rdb.Column( name, type, **d)
 
 class StringTranslator(FieldTranslator):
     

@@ -1,6 +1,6 @@
 ##################################################################
 #
-# (C) Copyright 2006 ObjectRealms, LLC
+# (C) Copyright 2006-2007 Kapil Thangavelu <kapilt at gmail.com>
 # All Rights Reserved
 #
 # This file is part of Alchemist.
@@ -20,17 +20,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ##################################################################
 """
-an adapter that adapts alchemist mapped objects to a zope keyreference.
-
-this implementation has some unavoidable implications for persistence and migrations.
-
-for persistence, the notion that another process interacting directly with the database
-could delete the row rendering the keyreference return value None.
-
-for migration, the notion that changing the primary keys structure of the underlying tables
-can render the stored value in the keyreference moot, again yielding None
-
-Author: Kapil Thangavelu <hazmat@objectrealms.net>
+Author: Kapil Thangavelu <kapilt@gmail.com>
 
 $Id$
 """
