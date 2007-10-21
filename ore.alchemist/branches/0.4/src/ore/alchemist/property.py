@@ -56,7 +56,7 @@ class ValidatedProperty( object ):
         self.__prop.__set__( inst, value )
 
     def __delete__(self, obj):
-        if self.__field.readonly and inst.__dict__.has_key(self.__name):
+        if self.__field.readonly and obj.__dict__.has_key(self.__name):
             raise ValueError(self.__name, 'field is readonly')
         self.__prop.__delete__( obj )
 

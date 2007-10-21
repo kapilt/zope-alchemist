@@ -26,6 +26,7 @@ $Id$
 __all__ = [ 'Session']
 
 from session import Session
+from property import bindClass
 
 def named( klass ):
     return "%s.%s"%( klass.__module__, klass.__name__ )
