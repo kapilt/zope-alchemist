@@ -25,23 +25,60 @@ SQLAlchemy to Zope3 Schemas
 $Id$
 """
 
-import sys
-from zope.interface import Interface, moduleProvides, directlyProvides
+from zope import interface, schema, component
 from zope.interface.interface import InterfaceClass
-from zope import schema
 from zope.schema.interfaces import ValidationError
 
-from zope.component import provideAdapter
-
+from sqlalchemy.util import OrderedDict
 from sqlalchemy import types as rt
 import sqlalchemy as rdb
 
 from interfaces import ITableSchema, TransmutationException, IAlchemistTransmutation, \
      IModelAnnotation, IIModelInterface
 
-from annotation import TableAnnotation
+interface.moduleProvides( IAlchemistTransmutation )
 
-moduleProvides( IAlchemistTransmutation )
+class TableAnnotation( object ):
+    """
+    Annotations for Table objects, to annotate as needed, the notion
+    is that the annotation keys correspond to column, and values correspond
+    to application specific column metadata.
+    """
+    def __init__(self, table_name, columns=(), properties=(), schema_order=(), table_columns=(), order_by=()):
+        self.table_name = table_name
+        self._options = {}
+        self._annot = OrderedDict()
+
+        for info in columns:
+            self._annot[ info['name'] ] = info
+
+        self.properties = properties
+        self.schema_order = schema_order        
+        self.table_columns = table_columns
+        self.order_by = order_by
+
+    def setOption( self, name, value ):
+        self._options[ name ] = value
+        
+    def getOption( self, name, default=None ):
+        return self._options.get( name, default )
+    
+    def __setitem__(self, name, value ):
+        self._annot[name] = value
+
+    def get( self, name, default=None ):
+        return self._annot.get( name, default )
+
+    def __getitem__(self, name):
+        return self.get( name )
+
+    def values( self ):
+        return self._annot.values()
+
+    def __contains__(self, name ):
+        marker = object()
+        return not marker == self.get( name, marker )
+
 
 class ColumnTranslator( object ):
 
@@ -222,11 +259,13 @@ def transmute(  table, annotation=None, __module__=None, **kw):
         pdb.post_mortem( sys.exc_info()[-1])
 
     # mark the interface itself as being model driven
-    directlyProvides( z3iface, IIModelInterface)
+    interface.directlyProvides( z3iface, IIModelInterface)
         
     # provide a named annotation adapter to go from the iface back to the annotation
     if annotation is not None:
         name = "%s.%s"%(z3iface.__module__, z3iface.__name__)
-        provideAdapter( annotation, adapts=(IIModelInterface,), provides=IModelAnnotation, name = name )
+        component.provideAdapter( annotation,
+                                  adapts=(IIModelInterface,),
+                                  provides=IModelAnnotation, name = name )
 
     return z3iface

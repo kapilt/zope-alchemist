@@ -25,22 +25,20 @@ Schema Introspection
 $Id$
 """
 
-from zope.interface import Interface, Attribute, implements, classImplements
-from zope.interface.common.mapping import IEnumerableMapping
-
+from zope import interface
 
 from sqlalchemy.databases import information_schema
-from sqlalchemy.schema import BoundMetaData, Table
+from sqlalchemy.schema import MetaData, Table
 from sqlalchemy import sql
 
 from interfaces import ISchemaIntrospector, ISQLAlchemyMetadata
 
-classImplements( BoundMetaData, ISQLAlchemyMetadata )
+interface.classImplements( MetaData, ISQLAlchemyMetadata )
 
 
 class TableSchemaIntrospector( object ):
 
-    implements( ISchemaIntrospector )
+    interface.implements( ISchemaIntrospector )
     
     def __init__(self, context=None ):
         self._metadata = context
@@ -83,7 +81,7 @@ class TableSchemaIntrospector( object ):
     #################################
     # bindEngine( schema_name=None ) 
     def bindEngine( self, engine, schema_name=None):
-        self._metadata = BoundMetaData( engine, schema_name )
+        self._metadata = MetaData( engine, schema_name )
         self._clear()
         
     def bindMetadata( self, metadata ):
@@ -102,7 +100,7 @@ class TableSchemaIntrospector( object ):
 
     def _getInformationSchema( self ):
         if self._information_schema is None:
-            bound_ischema = BoundMetaData(self.metadata.engine)
+            bound_ischema = MetaData(self.metadata.engine)
             for table in information_schema.ischema.table_iterator():
                 table.tometadata( bound_ischema )
             self._information_schema = bound_ischema
