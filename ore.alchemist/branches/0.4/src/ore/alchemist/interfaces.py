@@ -54,13 +54,6 @@ class IAlchemistContainer( IContainer ):
     a domain record container
     """
 
-    title = schema.TextLine(
-        title = u"Title",
-        description =u"The title of the object",
-        default = u"",
-        required = False
-        )
-
     domain_class = schema.Choice(
         title = u"Domain Class",
         description = u"The Python Path of the Domain Class",
@@ -123,40 +116,4 @@ class IModelAnnotation( Interface ):
         return the columns that should be displayed
         """
 
-class IModelIO( Interface ):
-    """
-    """
 
-class IAlchemySchemaModel( Interface ):
-
-    def match( object ):
-        """
-        should this model be used for the given object
-        """
-
-    def clear( ):
-        """
-        clear all loaded state for the model
-        """
-
-    def __getitem__( key ):
-        """
-        return the peer factor for the given key or None
-        """
-
-    def loadType( archetype_klass, context ):
-        """
-        load the schema from the given archetype klass,
-        translate it to an alchemy model, and alchemy
-        mapped peer class, uses context as an acquisition
-        context if nesc.
-        """
-
-    def loadInstance( instance ):
-        """
-        as above but load from an instance...
-
-        does not support context based schemas.. need to
-        qualify the name on storage.
-        """
-        
