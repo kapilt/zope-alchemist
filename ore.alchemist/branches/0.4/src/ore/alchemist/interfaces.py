@@ -39,6 +39,12 @@ class IAlchemistTransmutation( Interface ):
         translations and kw are specific to the translation being performed.
         """
 
+class IDatabaseEngine( Interface ):
+    """
+    configuration and access to pooled database connection
+    """
+    
+
 class IEngineVocabularyUtility( Interface ):
 
     engines = schema.Iterable( title = u"RDB Engines",
