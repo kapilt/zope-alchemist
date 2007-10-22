@@ -1,6 +1,6 @@
 ##################################################################
 #
-# (C) Copyright 2006-2007 Kapil Thangavelu <kapil at gmail.com>
+# (C) Copyright 2005-2007 ObjectRealms, LLC
 # All Rights Reserved
 #
 # This file is part of Alchemist.
