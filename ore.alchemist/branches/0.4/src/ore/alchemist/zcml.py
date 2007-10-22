@@ -1,6 +1,12 @@
 from zope import interface, schema
 from zope.configuration.fields import GlobalObject
 
+from zope import component
+from zope.app.component.metaconfigure import utility, PublicPermission
+
+import sqlalchemy
+import interfaces
+
 class IEngineDirective( interface.Interface ):
     """ Creates A Database Engine. Database Engines are named utilities.
     """
@@ -24,6 +30,17 @@ class IEngineDirective( interface.Interface ):
 # keyword arguments to pass to the engine
 IEngineDirective.setTaggedValue('keyword_arguments', True)
 
+def engine(_context, url, name='', echo=False, **kwargs):
+
+    component = sqlalchemy.create_engine( url, echo=echo, **kwargs )
+
+    utility( _context,
+             provides = interfaces.IDatabaseEngine,
+             component = component,
+             permission = PublicPermission,
+             name = name )
+             
+
 class IBindDirective( interface.Interface ):
     """ Binds a MetaData to a database engine.
     """
@@ -34,3 +51,15 @@ class IBindDirective( interface.Interface ):
                              description = u"Metadata Instance to be bound" )
     
     
+def bind( _context, engine, metadata ):
+
+    def _bind( engine_name, metadata ):
+        metadata.bind = component.getUtility( interfaces.IDatabaseEngine, engine )
+
+    _context.action(
+        discriminator = ('alchemist.bind', metadata ),
+        callable = _bind,
+        args = ( engine, metadata )
+        )
+    
+        
