@@ -86,3 +86,6 @@
 
   Michael Bayer - SQLAlchemy Author - http://sqlalchemy.org
 
+  z3c.zalchemy (zpl) was helpful for porting the container work to
+  zope 3.
+

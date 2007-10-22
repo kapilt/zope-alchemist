@@ -46,8 +46,9 @@ class SessionDataManager( object ):
         return bool( self.session.new or self.session.deleted or self.session.dirty )
     
     def abort(self, transaction):
-        if self._check():
-            self.session.transaction.rollback()
+        self.session.joined = False
+        self.session.transaction.rollback()
+        self.session.clear()
         
     def commit(self, transaction):
         if self.session.autoflush:
@@ -56,9 +57,13 @@ class SessionDataManager( object ):
             self.session.flush()
 
     def tpc_finish(self, transaction):
+        print 'tf'*5
+        self.session.joined = False        
         self.session.transaction.commit()
         
     def tpc_abort(self, transaction):
+        print 'ta'*5      
+        self.session.joined = False                
         self.session.transaction.rollback()
         self.session.clear()
         
@@ -70,9 +75,6 @@ class SessionDataManager( object ):
     tpc_vote = tpc_begin = null
 
     def register( self ):
-        if self.joined:
-            return
         txn = transaction.get()
         txn.join( self )
-        self.joined = True
         
