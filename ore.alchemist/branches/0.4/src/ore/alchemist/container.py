@@ -28,6 +28,8 @@ def stringKey( instance ):
     return identity_key
 
 def valueKey( identity_key ):
+    if not isinstance( identity_key, basestr):
+        return identity_key
     return identity_key.split('-')
 
 def contained(obj, parent=None, name=None):
@@ -127,12 +129,11 @@ class AlchemistContainer( Persistent, Contained ):
             yield (name, contained(obj, self, name) )
 
     def get( self, name, default=None ):
-        assert isinstance( name, basestring), "Invalid Key %r"%(name) 
         session = Session()
-        value = session.query( self._class ).get( *valueKey( name ) )
+        value = session.query( self._class ).get( name )
         if value is None:
             return default
-        return contained( value, self, name )
+        return contained( value, self, str(name) )
 
     def __iter__( self ):
         return iter( self.keys() )
