@@ -1,6 +1,6 @@
 ##################################################################
 #
-# (C) Copyright 2006-2007 Kapil Thangavelu <kapilt at gmail.com>
+# (C) Copyright 2006-2007 ObjectRealms, LLC
 # All Rights Reserved
 #
 # This file is part of Alchemist.
@@ -209,7 +209,7 @@ class SQLAlchemySchemaTranslator( object ):
     
     def translate( self, table, annotation, __module__, **kw):
         annotation = annotation or TableAnnotation( table.name ) 
-        iname ='I%sTable'%table.name
+        iname = kw.get('interface_name') or 'I%sTable'%table.name
 
         field_map = self.generateFields( table, annotation )
 
