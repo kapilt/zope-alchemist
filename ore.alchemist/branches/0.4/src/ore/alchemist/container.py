@@ -107,7 +107,9 @@ class AlchemistContainer( Persistent, Contained ):
         query = Session().query( self._class ).limit( limit ).offset( offset )
         if order_by:
             query = query.order_by( order_by )
-        return [res.__of__(self) for res in query]
+        for ob in query:
+            ob = contained( ob, self, stringKey(ob) )
+            yield ob
     
     #################################
     # Container Interface
