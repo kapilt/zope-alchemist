@@ -47,19 +47,22 @@ class SessionDataManager( object ):
     
     def abort(self, transaction):
         self.session.joined = False
-        self.session.transaction.rollback()
+        if self.session.transaction:
+            self.session.transaction.rollback()
         self.session.clear()
         
     def commit(self, transaction):
+        if not self.session.transaction:
+            self.session.begin()
         if self.session.autoflush:
             return
-        if self._check():
-            self.session.flush()
+        self.session.flush()
 
     def tpc_finish(self, transaction):
         print 'tf'*5
         self.session.joined = False        
         self.session.transaction.commit()
+        self.session.clear()
         
     def tpc_abort(self, transaction):
         print 'ta'*5      
