@@ -1,0 +1,32 @@
+<html xmlns:tal="http://xml.zope.org/namespaces/tal"
+       xmlns:metal="http://xml.zope.org/namespaces/metal"
+       metal:use-macro="context/@@layout/page">
+
+<body>
+
+<div metal:fill-slot="body">
+
+   <h1 class="title">Container Listing</h1>
+
+
+  <form action="."
+        tal:attributes="action request/URL" method="post"
+        class="edit-form" enctype="multipart/form-data"
+        id="piston.container.listing">
+
+   <div tal:content="structure view/listing">
+     contents 
+   </div>
+
+   <div class="form-controls" tal:condition="view/availableActions">
+     <input tal:repeat="action view/actions"
+            tal:replace="structure action/render"
+            />
+   </div>
+
+  </form>
+
+</div>
+
+</body>
+</html>
