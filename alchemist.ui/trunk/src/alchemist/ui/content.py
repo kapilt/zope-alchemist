@@ -1,7 +1,7 @@
 """
 
 This module gets populated with generic add/edit/view forms for
-specific content objects by meta.py
+domain objects.
 
 """
 
@@ -10,15 +10,12 @@ from zope.lifecycleevent import ObjectCreatedEvent
 from zope.formlib import form
 from zope.formlib.namedtemplate import NamedTemplate
 from zope.traversing.browser import absoluteURL
-from piston.core.generic import generic as createInstance
     
-class PistonAddForm( form.AddForm ):
+class AddForm( form.AddForm ):
     """
     generic add form for piston
     """
      
-    template = NamedTemplate('piston.form')
-
     def createAndAdd( self, data ):
         # create the object
         ob = createInstance( self.context.domain_model, data )
@@ -38,16 +35,14 @@ class PistonAddForm( form.AddForm ):
     def nextURL( self ):
         return absoluteURL( self.context, self.request )
         
-class PistonEditForm( form.EditForm ):
+class EditForm( form.EditForm ):
     """
     generic edit form for piston
     """
     
-    template = NamedTemplate('piston.form')
     
-class PistonView( form.DisplayForm ):
+class View( form.DisplayForm ):
     """
     generic view form for piston
     """
 
-    template = NamedTemplate('piston.form')    
