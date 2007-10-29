@@ -1,6 +1,6 @@
 ##################################################################
 #
-# (C) Copyright 2006 ObjectRealms, LLC
+# (C) Copyright 2005-2007 ObjectRealms, LLC
 # All Rights Reserved
 #
 # This file is part of Alchemist.

@@ -38,39 +38,67 @@ from interfaces import ITableSchema, TransmutationException, IAlchemistTransmuta
 
 interface.moduleProvides( IAlchemistTransmutation )
 
-def queryAnnotation( iface ):
+def queryModelDescriptor( iface ):
     name = "%s.%s"%(iface.__module__, iface.__name__)    
-    return component.queryAdapter( iface, IModelAnnotation, name )
+    return component.queryAdapter( iface, IModelDescriptor, name )
     
-class TableAnnotation( object ):
+class Field( object ):
+    
+    modes = "edit|view|add"
+    read_widget = None
+    write_widget = None
+    write_permission = "zope.Public"
+    read_permission = "zope.Public"
+    fieldset = "default"
+    
+    
+    
+class ModelDescriptor( object ):
     """
-    Annotations for Table objects, to annotate as needed, the notion
+    Annotations for table/mapped objects, to annotate as needed, the notion
     is that the annotation keys correspond to column, and values correspond
     to application specific column metadata.
+
+    edit_grid = True # editable table listing
+    
+    # filtering perms on containers views as well
+    
+    use for both sa2zs and zs2sa
+    
+    fields = [
+      dict( name='title', 
+            edit=True,
+            edit_widget = ""
+            view=True,
+            view_widget = ""
+            listing=True, 
+            listing_column=""
+            search=True,
+            search_widget=""
+            fieldset="default"
+            modes="edit|view|add|search|listing"
+            read_widget=ObjectInputWidget,
+            write_widget=ObjectEditWidget,
+            read_permission="zope.View", 
+            write_permission="zope.WritePermission" ),
+      dict( name="id", omit=True )
+      
+    ]
     """
 
     _marker = object()
     
-    def __init__(self, table_name, columns=(), properties=(), schema_order=(), listing_columns=(), order_by=()):
-        self.table_name = table_name
-        self._options = {}
-        self._annot = OrderedDict()
+    fields = None # mapping of field to dictionary
+    
+    listing_columns = ()
+    schema_order = ()
 
-        for info in columns:
-            self._annot[ info['name'] ] = info
-
-        self.properties = properties
-        self.schema_order = schema_order        
-        self.listing_columns = listing_columns
-        self.order_by = order_by
-
-    def setOption( self, name, value ):
-        self._options[ name ] = value
-        
-    def getOption( self, name, default=None ):
-        return self._options.get( name, default )
+    def __init__(self ):
 
     def __call__( self, iface ):
+        """ 
+        models are also adapters for the underlying objects
+        """
         return self
     
     def __setitem__(self, name, value ):

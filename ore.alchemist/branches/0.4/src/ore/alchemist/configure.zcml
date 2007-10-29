@@ -15,6 +15,12 @@
      trusted="y"
      />
 
+  <adapter
+     for=".interfaces.ITableSchema"
+     provides=".interfaces.IModelAnnotation"
+     factory=".sa2zs.getAnnotation"
+     />
+
   <!--
   <utility provides=".interfaces.IEngineVocabularyUtility"
 	   factory=".engine.EngineUtility" />
