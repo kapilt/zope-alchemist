@@ -2,6 +2,7 @@
 
 $Id$
 """
+
 from zope import schema, interface
 from zope.formlib import form
 from zope.security import proxy
@@ -20,14 +21,8 @@ class Getter( object ):
     def __call__( self, item, formatter):
         return self.getter( item )
 
-<<<<<<< .mine
-ListingColumns = [
-    column.SelectionColumn( lambda item: str(item.id), name="selection" )     
-    ]
-=======
 def viewLink( item, formatter ):
     return '<a class="button-link" href="%s">View</a>'%item.id
->>>>>>> .r90
 
 def editLink( item, formatter ):
     return '<a class="button-link" href="%s/edit">Edit</a>'%item.id
@@ -41,12 +36,8 @@ class ContainerListing( form.DisplayForm ):
 
     def update( self ):
         context = proxy.removeSecurityProxy( self.context )
-<<<<<<< .mine
-        columns = list(self.columns)
-=======
         columns = []
 
->>>>>>> .r90
         domain_model = context.domain_model
         domain_interface = list( interface.implementedBy(domain_model) )[0]
         domain_annotation = queryAnnotation( domain_interface )
