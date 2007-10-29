@@ -34,14 +34,10 @@ from sqlalchemy import types as rt
 import sqlalchemy as rdb
 
 from interfaces import ITableSchema, TransmutationException, IAlchemistTransmutation, \
-     IModelAnnotation, IIModelInterface
+     IModelDescriptor, IIModelInterface
 
 interface.moduleProvides( IAlchemistTransmutation )
 
-def queryAnnotation( iface ):
-    name = "%s.%s"%(iface.__module__, iface.__name__)    
-    return component.queryAdapter( iface, IModelAnnotation, name )
-    
 class TableAnnotation( object ):
     """
     Annotations for Table objects, to annotate as needed, the notion
@@ -233,8 +229,8 @@ class SQLAlchemySchemaTranslator( object ):
             self.applyOrdering( field_map, schema_order )
 
         # verify table columns
-        if annotation.listing_columns:
-            self.verifyNames( field_map, annotation.listing_columns )
+        #if annotation.listing_columns:
+        #    self.verifyNames( field_map, annotation.listing_columns )
 
 
         # extract base interfaces
@@ -250,7 +246,7 @@ class SQLAlchemySchemaTranslator( object ):
         return DerivedTableSchema
         
 def transmute(  table, annotation=None, __module__=None, **kw):
-
+    #import pdb; pdb.set_trace()
     # if no module given, use the callers module
     if __module__ is None:
         import sys
@@ -270,7 +266,7 @@ def transmute(  table, annotation=None, __module__=None, **kw):
         name = "%s.%s"%(z3iface.__module__, z3iface.__name__)
         component.provideAdapter( annotation,
                                   adapts=(IIModelInterface,),
-                                  provides=IModelAnnotation, name = name )
+                                  provides=IModelDescriptor, name = name )
 
     return z3iface
 
