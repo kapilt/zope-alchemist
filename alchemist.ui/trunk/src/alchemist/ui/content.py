@@ -10,7 +10,9 @@ from zope.lifecycleevent import ObjectCreatedEvent
 from zope.formlib import form
 from zope.formlib.namedtemplate import NamedTemplate
 from zope.traversing.browser import absoluteURL
-    
+
+import generic
+
 class AddForm( form.AddForm ):
     """
     generic add form for piston
@@ -18,7 +20,7 @@ class AddForm( form.AddForm ):
      
     def createAndAdd( self, data ):
         # create the object
-        ob = createInstance( self.context.domain_model, data )
+        ob = generic.createInstance( self.context.domain_model, data )
 
         # apply extra form values
         form.applyChanges( ob, self.form_fields, data )
@@ -34,6 +36,7 @@ class AddForm( form.AddForm ):
         
     def nextURL( self ):
         return absoluteURL( self.context, self.request )
+
         
 class EditForm( form.EditForm ):
     """
