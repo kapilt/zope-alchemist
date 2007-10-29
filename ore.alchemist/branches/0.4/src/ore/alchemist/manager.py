@@ -59,13 +59,11 @@ class SessionDataManager( object ):
         self.session.flush()
 
     def tpc_finish(self, transaction):
-        print 'tf'*5
         self.session.joined = False        
         self.session.transaction.commit()
         self.session.clear()
         
     def tpc_abort(self, transaction):
-        print 'ta'*5      
         self.session.joined = False                
         self.session.transaction.rollback()
         self.session.clear()

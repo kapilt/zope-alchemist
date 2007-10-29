@@ -20,38 +20,71 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ##################################################################
 """
-SQLAlchemy to Zope3 Schemas
+Model Descriptions
 
 $Id$
 """
 
-from zope import interface, schema, component
-from zope.interface.interface import InterfaceClass
-from zope.schema.interfaces import ValidationError
+from zope import interface, component
+from zope.interface.interfaces import IInterface
+from interfaces import IModelDescriptor, IModelDescriptorField
 
-from sqlalchemy.util import OrderedDict
-from sqlalchemy import types as rt
-import sqlalchemy as rdb
-
-from interfaces import ITableSchema, TransmutationException, IAlchemistTransmutation, \
-     IModelAnnotation, IIModelInterface
-
-interface.moduleProvides( IAlchemistTransmutation )
-
-def queryModelDescriptor( iface ):
-    name = "%s.%s"%(iface.__module__, iface.__name__)    
-    return component.queryAdapter( iface, IModelDescriptor, name )
+def queryModelDescriptor( ob ):
+    if not IInterface.providedBy( ob ):
+        ob = list( interface.implementedBy( ob ))[0]
+    name = "%s.%s"%(ob.__module__, ob.__name__)    
+    return component.queryAdapter( ob, IModelDescriptor, name )
     
 class Field( object ):
-    
+
+    interface.implements( IModelDescriptorField )
+
+    name = ""        # field name
+    label = ""       # title for field
+    description = "" # description for field
+    fieldset = "default"    
     modes = "edit|view|add"
-    read_widget = None
-    write_widget = None
-    write_permission = "zope.Public"
-    read_permission = "zope.Public"
-    fieldset = "default"
+    omit = False
+
+    view_permission = "zope.Public"
+    edit_permission = "zope.ManageContent"
     
+    view_widget = None    # zope.app.form.interaces.IDisplayWidget
+    edit_widget = None    # zope.app.form.interfaces.IInputWidget
+    listing_column = None # zc.table.interfaces.IColumn object
+    add_widget     = None # zope.app.form.interfaces.IInputWidget object
+    search_widget  = None # zope.app.form.interfaces.IInputWidget object
     
+    _valid_modes = ('edit', 'view', 'read', 'add', 'listing', 'search')
+
+    def get( self, k, default=None):
+        return self.__dict__.get(k, default )
+
+    def __getitem__( self, k ):
+        return self.__dict__[k]
+    
+    @classmethod    
+    def fromDict( cls, kw):
+        d = {}
+        modes = filter(None, kw.get('modes', cls.modes).split("|"))
+        for k in kw:
+            if k in cls._valid_modes:
+                if kw[k]:
+                    if not k in modes:
+                        modes.append( k )
+                elif k in modes:
+                    modes.remove( k )
+            elif k in cls.__dict__:
+                d[k] = kw[k]
+            else:
+                raise SyntaxError(k)
+        if kw.get('omit'):
+            modes = ()
+        d['modes'] = "|".join( modes )
+        instance = cls()
+        for k,v in d.items():
+            setattr( instance, k, v )
+        return instance
     
 class ModelDescriptor( object ):
     """
@@ -82,227 +115,65 @@ class ModelDescriptor( object ):
             read_permission="zope.View", 
             write_permission="zope.WritePermission" ),
       dict( name="id", omit=True )
-      
     ]
     """
 
+    interface.implements( IModelDescriptor )
+    
     _marker = object()
     
-    fields = None # mapping of field to dictionary
-    
-    listing_columns = ()
+    fields = () # sequence of mapping to field
+    properties = ()
     schema_order = ()
 
-    def __init__(self ):
-
+    def __init__( self ):
+        self.fields = [ Field.fromDict( info ) for info in self.fields]
+    
     def __call__( self, iface ):
         """ 
         models are also adapters for the underlying objects
         """
         return self
     
-    def __setitem__(self, name, value ):
-        self._annot[name] = value
-
     def get( self, name, default=None ):
-        return self._annot.get( name, default )
+        for info in self.fields:
+            if info.name == name:
+                return info
+        return default
 
+    def keys( self ):
+        for info in self.fields:
+            yield info.name
+        
     def __getitem__(self, name):
-        return self.get( name )
+        value =  self.get( name, self._marker )
+        if value is self._marker:
+            raise KeyError( name)
+        return value
 
     def values( self ):
-        return self._annot.values()
+        for info in self.fields:
+            yield info
 
     def __contains__(self, name ):
         return not self._marker == self.get( name, self._marker )
 
+    @property
+    def listing_columns( self ):
+        return [f.name for f in self.fields if 'listing' in f.modes]
 
-class ColumnTranslator( object ):
+    @property
+    def search_columns( self ):
+        return [f.name for f in self.fields if 'search' in f.modes]
 
-    def __init__(self, schema_field):
-        self.schema_field = schema_field
-        
-    def extractInfo( self, column, info ):
-        d = {}
-        d['title'] = unicode( info.get('label', column.name )  )
-        d['description'] = unicode( info.get('description', '' ) )
-        d['required'] = not column.nullable
+    @property
+    def edit_columns( self ):
+        return [f for f in self.fields if 'edit' in f.modes]
 
-        # this could be all sorts of things ...
-        if isinstance( column.default, rdb.ColumnDefault ):
-            default = column.default.arg
-        else:
-            default = column.default
+    @property
+    def add_columns( self ):
+        return [f for f in self.fields if 'add' in f.modes]
 
-        # create a field on the fly to validate the default value... 
-        # xxx there is a problem with default value somewhere in the stack
-        # 
-        validator = self.schema_field()
-        try:
-            validator.validate( default )
-            d['default'] = default
-        except ValidationError:
-            pass
-        
-        return d
-
-    def __call__( self, column, annotation ):
-        info = annotation.get( column.name, {} )
-        d = self.extractInfo( column, info)
-        return self.schema_field( **d )
-
-class SizedColumnTranslator( ColumnTranslator ):
-
-    def extractInfo( self, column, info ):
-        d = super( SizedColumnTranslator, self).extractInfo( column, info )
-        d['max_length'] = column.type.length
-        return d
-        
-
-class ColumnVisitor( object ):
-
-    column_type_map = [
-        ( rt.Float,  ColumnTranslator( schema.Float )   ),
-        ( rt.SmallInteger, ColumnTranslator( schema.Int ) ),
-        ( rt.Date, ColumnTranslator( schema.Date ) ),
-        ( rt.DateTime, ColumnTranslator( schema.Datetime ) ),
-#        ( rt.Time, ColumnTranslator( schema.Datetime ),
-        ( rt.TEXT, ColumnTranslator( schema.Text ) ),
-        ( rt.Boolean, ColumnTranslator( schema.Bool ) ),
-        ( rt.String, SizedColumnTranslator( schema.TextLine ) ),
-        ( rt.Binary, ColumnTranslator( schema.Bytes ) ),
-        ( rt.Unicode, SizedColumnTranslator( schema.Bytes ) ),
-        ( rt.Numeric, ColumnTranslator( schema.Float ) ),
-        ( rt.Integer,  ColumnTranslator( schema.Int ) )
-        ]
-
-    def __init__(self, info ):
-        self.info = info or {}
-
-    def visit( self, column ):
-        column_handler = None
-        
-        for ctype, handler in self.column_type_map:
-            if isinstance( column.type, ctype ):
-                if isinstance( handler, str ):
-                    # allow for instance method customization
-                    handler = getattr( self, handler )
-                column_handler = handler
-                break
-
-        if column_handler is None:
-            raise TransmutationException("no column handler for %r"%column)
-
-        return column_handler( column, self.info )
-
-
-class SQLAlchemySchemaTranslator( object ):
-
-    def applyProperties( self, field_map, properties ):
-        # apply manually overridden fields/properties
-        order_max = max( [field.order for field in field_map.values()] )
-        for name in properties:
-            field = properties[ name ]
-            # append new fields
-            if name not in field_map:
-                order_max = order_max + 1
-                field.order = order_max
-            # replace in place old fields
-            else:
-                field.order = field_map[name].order
-            field_map[ name ] = field
-
-    def applyOrdering( self, field_map, schema_order ):
-        """ apply global ordering to all fields, any fields not specified have ordering
-            preserved, but are now located after fields specified in the schema order, which is
-            a list of field names.
-        """
-        self.verifyNames( field_map, schema_order ) # verify all names are in present
-        visited = set() # keep track of fields modified
-        order = 1  # start off ordering values
-        for s in schema_order:
-            field_map[s].order = order
-            visited.add( s )
-            order += 1
-        remainder = [ (field.order, field) for field_name, field in field_map.items() if field_name not in visited ]
-        remainder.sort()
-        for order, field in remainder:
-            field.order = order
-            order += 1
-            
-    def verifyNames( self, field_map, names ):
-        for n in names:
-            if not n in field_map:
-                raise AssertionError("invalid field specified  %s"%( n ) )
-        
-    def generateFields( self, table, annotation ):
-        visitor = ColumnVisitor(annotation)        
-        d = {}
-        for column in table.columns:
-            if annotation.get( column.name, {}).get('omit', False ):
-                continue
-            d[ column.name ] = visitor.visit( column )
-        return d
-    
-    def translate( self, table, annotation, __module__, **kw):
-        annotation = annotation or TableAnnotation( table.name ) 
-        iname = kw.get('interface_name') or 'I%sTable'%table.name
-
-        field_map = self.generateFields( table, annotation )
-
-        # apply manually overridden fields/properties
-        properties = kw.get('properties', None) or annotation.properties
-        if properties:
-            self.applyProperties( field_map, properties )
-        
-        # apply global schema ordering
-        schema_order = kw.get('schema_order', None) or annotation.schema_order
-        if schema_order:
-            self.applyOrdering( field_map, schema_order )
-
-        # verify table columns
-        if annotation.listing_columns:
-            self.verifyNames( field_map, annotation.listing_columns )
-
-
-        # extract base interfaces
-        if 'bases' in kw:
-            bases = (ITableSchema,) + kw.get('bases')
-        else:
-            bases = (ITableSchema,)
-        DerivedTableSchema = InterfaceClass( iname,
-                                             attrs = field_map,
-                                             bases = bases,
-                                             __module__ = __module__ )
-
-        return DerivedTableSchema
-        
-def transmute(  table, annotation=None, __module__=None, **kw):
-
-    # if no module given, use the callers module
-    if __module__ is None:
-        import sys
-        __module__ = sys._getframe(1).f_globals['__name__']
-
-
-    z3iface = SQLAlchemySchemaTranslator().translate( table,
-                                                      annotation,
-                                                      __module__,
-                                                      **kw )
-
-    # mark the interface itself as being model driven
-    interface.directlyProvides( z3iface, IIModelInterface)
-        
-    # provide a named annotation adapter to go from the iface back to the annotation
-    if annotation is not None:
-        name = "%s.%s"%(z3iface.__module__, z3iface.__name__)
-        component.provideAdapter( annotation,
-                                  adapts=(IIModelInterface,),
-                                  provides=IModelAnnotation, name = name )
-
-    return z3iface
-
-
-def transmute_mapper( mapper, annotation=None, __module__=None, **kw):
-    pass
-    
+    @property
+    def view_columns( self ):
+        return [f  for f in self.fields if 'view' in f.modes]

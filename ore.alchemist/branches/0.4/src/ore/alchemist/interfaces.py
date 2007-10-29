@@ -122,4 +122,56 @@ class IModelAnnotation( Interface ):
         return the columns that should be displayed
         """
 
+class IModelDescriptor( IEnumerableMapping ):
+    """
+    captures model behavior encapsulated in a set of fields, which are
+    accessible via the enumerable mapping
+    """
 
+class IModelDescriptorField( Interface ):
+
+    modes = schema.ASCIILine( title=u"View Usage Modes for Field",
+                              description=u"Pipe separated string of different modes.. add|edit|view|search|listing are all valid")
+
+    view_widget = schema.Object(
+        Interface,
+        title=u"A Custom Widget Factory for Read Views",
+        required = False
+        )
+
+    view_permission = schema.ASCIILine(
+        title=u"Read Permission",
+        description=u"If the user does not have this permission this field will not appear in read views",
+        required = False
+        )
+
+    edit_widget = schema.Object(
+        Interface,
+        title=u"A Custom Widget Factory for Write Views",
+        required = False,
+        )
+
+    edit_permission = schema.ASCIILine(
+        title=u"Read Permission",
+        description=u"If the user does not have this permission this field will not appear in write views",
+        required = False
+        )    
+
+    add_widget = schema.Object(
+        Interface,
+        title=u"A Custom Widget Factory for Add Views",
+        required = False
+        )    
+
+    search_widget = schema.ASCIILine(
+        title=u"A Custom Search Widget Factory",
+        required = False
+        )
+
+    listing_column = schema.Object(
+        Interface,
+        title=u"A Custom Column Widget for Listing Views",
+        required = False        
+        )
+                                  
+                                    
