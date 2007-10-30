@@ -166,19 +166,34 @@ class ColumnVisitor( object ):
 
 class SQLAlchemySchemaTranslator( object ):
 
-    def applyProperties( self, field_map, properties ):
-        # apply manually overridden fields/properties
-        order_max = max( [field.order for field in field_map.values()] )
-        for name in properties:
-            field = properties[ name ]
-            # append new fields
-            if name not in field_map:
-                order_max = order_max + 1
-                field.order = order_max
-            # replace in place old fields
-            else:
-                field.order = field_map[name].order
-            field_map[ name ] = field
+    def applyProperties( self, field_map, annotation ):
+        # apply manually overridden fields/properties, pay attention
+        # to field ordering according to values passed into the
+        # annotation.
+        
+        order_value = 0
+        cascade_order = False
+        
+        values = list( annotation.values() )
+        for idx in range(len(values)):
+            info = values[idx]
+            if info.name in field_map:
+                if info.property:
+                    if cascade_order:
+                        order_value += 2
+                        field_map[ info.name ] = f = info.property
+                        f.order =  order_value
+                if cascade_order:
+                    order_value += 2
+                    field_map[ info.name ].order = order_value
+                else:
+                    order_value = field_map[info.name].order
+            if not info.property:
+                continue
+            cascade_order = True
+            order_value += 2
+            field_map[ info.name ] = info.property
+            field_map[ info.name ].order = order_value
 
     def applyOrdering( self, field_map, schema_order ):
         """ apply global ordering to all fields, any fields not specified have ordering
@@ -219,9 +234,7 @@ class SQLAlchemySchemaTranslator( object ):
         field_map = self.generateFields( table, annotation )
 
         # apply manually overridden fields/properties
-        properties = kw.get('properties', None) or annotation.properties
-        if properties:
-            self.applyProperties( field_map, properties )
+        self.applyProperties( field_map, annotation )
         
         # apply global schema ordering
         schema_order = kw.get('schema_order', None) or annotation.schema_order
@@ -246,7 +259,7 @@ class SQLAlchemySchemaTranslator( object ):
         return DerivedTableSchema
         
 def transmute(  table, annotation=None, __module__=None, **kw):
-    #import pdb; pdb.set_trace()
+
     # if no module given, use the callers module
     if __module__ is None:
         import sys
