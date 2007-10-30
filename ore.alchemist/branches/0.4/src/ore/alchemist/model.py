@@ -45,7 +45,8 @@ class Field( object ):
     fieldset = "default"    
     modes = "edit|view|add"
     omit = False
-
+    property = None
+    
     view_permission = "zope.Public"
     edit_permission = "zope.ManageContent"
     
@@ -66,6 +67,9 @@ class Field( object ):
     @classmethod    
     def fromDict( cls, kw):
         d = {}
+        if kw.get('property') and kw.get('omit'):
+            raise SyntaxError("can't specify property and omit for field %s"%kw.get('name'))
+            
         modes = filter(None, kw.get('modes', cls.modes).split("|"))
         for k in kw:
             if k in cls._valid_modes:
@@ -164,7 +168,7 @@ class ModelDescriptor( object ):
 
     @property
     def search_columns( self ):
-        return [f.name for f in self.fields if 'search' in f.modes]
+        return [f for f in self.fields if 'search' in f.modes]
 
     @property
     def edit_columns( self ):

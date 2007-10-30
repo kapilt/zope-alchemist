@@ -110,6 +110,9 @@ class AlchemistContainer( Persistent, Contained ):
         for ob in query:
             ob = contained( ob, self, stringKey(ob) )
             yield ob
+
+    def query( self, **kw):
+        return list( Session().query( self._class ).filter_by( **kw ) )
     
     #################################
     # Container Interface
