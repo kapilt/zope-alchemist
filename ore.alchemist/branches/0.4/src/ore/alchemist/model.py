@@ -43,7 +43,7 @@ class Field( object ):
     label = ""       # title for field
     description = "" # description for field
     fieldset = "default"    
-    modes = "edit|view|add"
+    modes = "edit|view|add" # see _valid modes for allows values, also can be done as bool keyword args
     omit = False
     property = None
     
@@ -55,6 +55,15 @@ class Field( object ):
     listing_column = None # zc.table.interfaces.IColumn object
     add_widget     = None # zope.app.form.interfaces.IInputWidget object
     search_widget  = None # zope.app.form.interfaces.IInputWidget object
+
+    # for relations, we want to enable grouping them together based on
+    # model, this attribute specifies a group. the relation name will be
+    # used on a vocabulary. perhaps an example is cleaner, so say we
+    # have a movie object with separate relations to directors and actors
+    # if we specify both as group 'People', we inform the view machinery
+    # to create a single relation viewlet, that displays and edits
+    # via a single provider with a vocabulary for the relation.
+    group = None
     
     _valid_modes = ('edit', 'view', 'read', 'add', 'listing', 'search')
 
@@ -93,7 +102,7 @@ class Field( object ):
 class ModelDescriptor( object ):
     """
     Annotations for table/mapped objects, to annotate as needed, the notion
-    is that the annotation keys correspond to column, and values correspond
+     is that the annotation keys correspond to column, and values correspond
     to application specific column metadata.
 
     edit_grid = True # editable table listing
