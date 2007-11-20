@@ -1,0 +1,13 @@
+#summary Alchemist for Plone
+
+= Introduction =
+
+Add your content here.
+
+
+= Features =
+
+  * PAS User, Group, Role, Plugins.
+  * Automatic links to other wiki pages.
+  * Compatible with ore.member for custom properties and auto generated
+    user interfaces.
