@@ -20,26 +20,36 @@ class DatabaseSource( object ):
         self.token_field = token_field
         self.value_field = value_field
         
-    def __call__( self, context ):
+    def constructQuery( self, context ):
         session = Session()
         query = session.query( self.domain_model )
+        return query
+        
+    def __call__( self, context ):
+        query = self.constructQuery( context )
         results = query.all()
         keyvalues = [ (getattr( ob, self.token_field), getattr( ob, self.value_field) ) \
                       for ob in results ]
                       
         return vocabulary.SimpleVocabulary.fromItems( keyvalues )
 
-class DatabaseObjectSource( DatabaseSource ):
+class ObjectSource( DatabaseSource ):
     """
     a vocabulary source, where objects are the values, for suitable for o2m fields.
     """
-    def __call__( self, context ):
+    
+    def constructQuery( self, context ):
         session = Session()
         query = session.query( self.domain_model )
+        return query        
+        
+    def __call__( self, context ):
+        query = self.constructQuery( context )
         results = query.all()
         terms = [vocabulary.SimpleTerm( value=ob, token=getattr( ob, self.value_field), title=getattr( ob, self.token_field ) ) \
                  for ob in results ]
         return vocabulary.SimpleVocabulary( terms )
+
 
 class VocabularyTable( object ):
     """
