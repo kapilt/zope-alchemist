@@ -5,7 +5,7 @@ namechooser and contained implementation from z3c.zalchemy (ZPL 2.1)
 $Id$
 """
 
-from zope import interface
+from zope import interface, component
 
 from zope.configuration.name import resolve
 from zope.exceptions.interfaces import UserError
@@ -19,6 +19,9 @@ from zope.app.container.interfaces import IContained
 from persistent import Persistent
 from sqlalchemy import orm, exceptions
 
+from zope.app.container.traversal import ItemTraverser
+from zope.publisher.interfaces import NotFound
+from zope.component import queryMultiAdapter
 from ore.alchemist import Session, interfaces
 
 def stringKey( instance ):
@@ -80,6 +83,24 @@ class SQLAlchemyNameChooser(NameChooser):
         session.save(obj)
         return self.context._toStringIdentifier(obj)
 
+class ContainerTraverser( ItemTraverser ):
+    # basically custom traverser that tries to coerce to
+    # a name to integer before doing a sql lookup if
+    # if the conversion fails, than its likley not an 
+    # contained object ( need separate traversers for other )
+    # multi primary keys
+    
+    def publishTraverse(self, request, name):
+        """See zope.publisher.interfaces.IPublishTraverse"""
+        try: # check if its directly by primary key
+            key = int( name )
+            return self.context[key]
+        except ValueError, KeyError:
+            view = queryMultiAdapter((self.context, request), name=name)
+            if view is not None:
+                return view
+
+        raise NotFound(self.context, name, request)
 
 
 class AlchemistContainer( Persistent, Contained ):
@@ -99,6 +120,10 @@ class AlchemistContainer( Persistent, Contained ):
         return self._class_name
 
     class_name = property( getClassName, setClassName )
+
+    @property
+    def domain_model( self ):
+        return self._class
 
     def batch(self, order_by=(), offset=0, limit=20):
         """
