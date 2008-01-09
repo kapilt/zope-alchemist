@@ -1,6 +1,6 @@
 <html xmlns:tal="http://xml.zope.org/namespaces/tal"
-       xmlns:metal="http://xml.zope.org/namespaces/metal"
-       metal:use-macro="context/@@layout/page">
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="context/@@standard_macros/page">
 
 <body>
 
@@ -12,7 +12,7 @@
   <form action="."
         tal:attributes="action request/URL" method="post"
         class="edit-form" enctype="multipart/form-data"
-        id="piston.container.listing">
+        id="alchemist.container.listing">
 
    <div tal:content="structure view/listing">
      contents 

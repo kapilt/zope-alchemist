@@ -47,19 +47,5 @@ def createInstance( klass, data ):
     return ob
     
 
-if __name__ == '__main__':
-    from piston import model
-
-    d = {'short_name':'b', 'extra':'2'}
-
-    ob = generic( model.Agreement, d )
-    assert tuple(d.keys()) == ('extra',)
-
-    d = dict(short_name='a', status='True', security_level='a', extra=2)
-
-    ob = generic( model.DataSource, d )
-    assert tuple(d.keys()) == ('extra',)
-
-    
     
     
