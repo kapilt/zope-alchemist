@@ -1,0 +1,14 @@
+ui display options
+
+ one 2 many
+
+ - stacked
+ - table
+
+ m2m
+
+ - search
+ - add 
+ - inout
+
+ m2m properties

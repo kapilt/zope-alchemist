@@ -1,0 +1,38 @@
+<div xmlns:tal="http://xml.zope.org/namespaces/tal"
+     xmlns:metal="http://xml.zope.org/namespaces/metal"
+     metal:use-macro="context/@@standard_macros/form">
+
+     <div metal:fill-slot="widget_iter">
+
+      <div class="hidden_fields">
+        <input type="hidden" name="" value="" 
+	       tal:attributes="name python:'%s.state'%view.prefix;
+                               value view/state"/>
+      </div>
+		
+      <tal:block condition="python: view.state == 'listing'">     
+        <div tal:condition="view/results" tal:replace="structure view/render_listing">
+        </div>
+        <div tal:condition="python: not view.results">
+           No <span tal:content="view/domain_model/__name__/title"> </span> Currently Associated
+        </div>
+      </tal:block>
+
+      <tal:block condition="python: view.state == 'add'">
+	 <tal:block tal:repeat="widget widgets">
+	   <div metal:use-macro="context/@@standard_macros/widget_row">
+	     Form Input
+	   </div>
+	 </tal:block>
+      </tal:block>
+
+      <tal:block condition="python: view.state == 'search'">
+        <div tal:condition="view/results" tal:replace="structure view/render_listing">
+        </div>
+        <div tal:condition="python: not view.results">
+           No <span tal:content="view/domain_model/__name__"> </span> Found
+        </div>
+      </tal:block>
+
+     </div>
+</div>

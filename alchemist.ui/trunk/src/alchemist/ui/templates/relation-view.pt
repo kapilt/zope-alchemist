@@ -1,0 +1,18 @@
+<div xmlns:tal="http://xml.zope.org/namespaces/tal"
+     xmlns:metal="http://xml.zope.org/namespaces/metal"
+     metal:use-macro="context/@@standard_macros/form">
+
+     <metal:block fill-slot="widget_iter">
+
+      <div tal:condition="view/results" tal:replace="structure view/render_listing">
+          Listing of Relations
+      </div>     
+      
+      <div tal:condition="python: not view.results">
+         No <span tal:content="view/domain_model/__name__/title"> </span> Currently Associated
+      </div>
+      
+     </metal:block>
+     
+</div>     
+    

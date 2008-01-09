@@ -1,0 +1,9 @@
+<div xmlns:tal="http://xml.zope.org/namespaces/tal"
+     xmlns:metal="http://xml.zope.org/namespaces/metal"
+     metal:use-macro="context/@@standard_macros/form">
+     
+     <div metal:fill-slot="widget_iter">
+        Not Set
+     </div>
+
+</div>
