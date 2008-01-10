@@ -9,8 +9,7 @@ from zope.security import proxy
 from zc.table import column
 from zc.table import table
 
-from ore.alchemist.sa2zs import queryAnnotation
-from copy import deepcopy
+from ore.alchemist.model import queryModelDescriptor
 from i18n import _
 
 class Getter( object ):
@@ -40,7 +39,7 @@ class ContainerListing( form.DisplayForm ):
 
         domain_model = context.domain_model
         domain_interface = list( interface.implementedBy(domain_model) )[0]
-        domain_annotation = queryAnnotation( domain_interface )
+        domain_annotation = queryModelDescriptor( domain_interface )
 
         field_column_names = domain_annotation and domain_annotation.listing_columns \
                              or schema.getFieldNamesInOrder( domain_interface )

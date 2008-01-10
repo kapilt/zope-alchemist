@@ -6,9 +6,12 @@ domain objects.
 """
 
 from zope.event import notify
-from zope.lifecycleevent import ObjectCreatedEvent
 from zope.formlib import form
+from zope.lifecycleevent import ObjectCreatedEvent
 from zope.traversing.browser import absoluteURL
+from zope.publisher.browser import BrowserView
+
+from zope.app.pagetemplate import ViewPageTemplateFile
 
 from ore.alchemist import Session
 from i18n import _
@@ -51,7 +54,7 @@ class ContentAddForm( core.DynamicFields, form.AddForm ):
 
     def update( self ):
         self.status = self.request.get('portal_status_message','')
-        super( AddForm, self).update()
+        super( ContentAddForm, self).update()
 
     @form.action(_(u"Save and continue editing"), condition=form.haveInputWidgets, validator='validateUnique')
     def handle_add_edit( self, action, data ):
