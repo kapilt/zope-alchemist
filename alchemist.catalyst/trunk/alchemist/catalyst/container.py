@@ -18,10 +18,12 @@ from zope import interface
 from zope.interface.interface import InterfaceClass
 from zope.dottedname.resolve import resolve
 
-def ContainerFactory( domain_model,
+# XXX should be removed
+from zope.app.security.protectclass import protectName
+
+def GenerateContainer( domain_model,
                       container_module=None,
                       interface_module=None,
-                      bases = (),
                       container_name=None,
                       container_iname=None,
                       base_interfaces=() ):
@@ -30,7 +32,7 @@ def ContainerFactory( domain_model,
         """
         # create container
         container_name = container_name or domain_model.__name__ + 'Container'
-        
+
         # allow passing in dotted python path
         if isinstance( container_module, (str, unicode) ):
             container_module = resolve( container_module )
@@ -41,40 +43,50 @@ def ContainerFactory( domain_model,
         
         # sanity check we have a module for the container
         assert isinstance(container_module, types.ModuleType ), "Invalid Container"
-        
+
+        # if we already have a container class, exit
+        if getattr( container_module, container_name, None ):
+            return                
+
         container_class = type( container_name,
                                 (AlchemistContainer,),
-                                dict(_class=domain_model) )
+                                dict(_class=domain_model, __module__=container_module.__name__ )
+                                )
+
         setattr( container_module, container_name, container_class)
-        
+            
         # interface for container
         container_iname = container_iname or "I%s"%container_name
+
+        # if the interface module is none, then use the nearest one to the domain class
+        if interface_module is None:
+            ispec = domain_model.__module__.rsplit('.',1)[0]+'.interfaces'
+            interface_module = resolve( ispec )
+
+        # if we already have a container interface class, exit
+        if getattr( interface_module, container_iname, None ):
+            return
         
-        if issubclass( bases, interface.Interface ):
-            base_interfaces = [ bases ]
-            
-        bases = base_interfaces or ( IAlchemistContainer,)
-        
-        found = False
-        for b in bases:
-            found = issubclass( b, IAlchemistContainer )
-            if found: break
-            
-        if not found:
-            if issubclass( bases, interface.Interface ):
-                bases = [ bases, IAlchemistContainer ] 
-            if isinstance( bases, list):
-                bases.append( IAlchemistContainer )
-            else:
-                raise SyntaxError("invalid bases %r"%base_interfaces )
-        
+        if base_interfaces:
+            assert isinstance( base_interfaces, tuple )
+            found = False
+            for bi in base_interfaces:
+                found = issubclass( bi, IAlchemistContainer )
+                if found: break
+            if not found:
+                base_interfaces = base_interfaces + ( IAlchemistContainer,)
+        else:
+            base_interfaces = ( IAlchemistContainer, )
         
         # create interface
         container_interface = InterfaceClass( container_iname,
-                                              bases = bases,
+                                              bases = base_interfaces,
                                               __module__ = interface_module.__name__
                                               )
-        
+
+        for n,d in container_interface.namesAndDescriptions(1):
+            protectName( container_class, n, "zope.Public")
+            
         setattr( interface_module, container_iname, container_interface )
         interface.classImplements( container_class, container_interface )    
         
