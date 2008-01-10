@@ -82,23 +82,5 @@ class ContainerListing( form.DisplayForm ):
         self.request.response.redirect('add')
 
 
-class ContainerSearch( form.FormBase ):
-
-    form_fields = form.Fields()
-
-    def setUpWidgets( self, ignore_request=False):
-        # setup widgets in data entry mode not bound to context
-        self.adapters = {}
-        self.widgets = form.setUpDataWidgets(
-            self.form_fields, self.prefix, self.context, self.request,
-            ignore_request = ignore_request )
-
-    def update( self ):
-        # setup form fields we want for search
-        super( ContainerSearch, self).update()
-
-    @form.action(_(u"Search") )
-    def handle_search( self, action, data ):
-        pass
                  
 

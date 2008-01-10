@@ -56,7 +56,7 @@ class ContentAddForm( core.DynamicFields, form.AddForm ):
     @form.action(_(u"Save and continue editing"), condition=form.haveInputWidgets, validator='validateUnique')
     def handle_add_edit( self, action, data ):
         ob = self.createAndAdd( data )
-        name = self.context.domain_model.__name__        
+        name = self.context.domain_model.__name__
         self._next_url = absoluteURL( ob, self.request ) + "/@@edit?portal_status_message=%s Added"%name
 
     @form.action(_(u"Save and add another"), condition=form.haveInputWidgets)

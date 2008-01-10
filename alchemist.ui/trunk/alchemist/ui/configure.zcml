@@ -1,0 +1,22 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser">
+  
+  
+  <browser:page
+     for="ore.alchemist.interfaces.IAlchemistContainer"
+     permission="zope.View"
+     name="index"
+     menu="context_actions"
+     title="Listing"
+     template="templates/generic-container.pt"
+     class=".container.ContainerListing"
+     />
+  
+  
+  <browser:defaultView
+     for="ore.alchemist.interfaces.IAlchemistContainer"
+     name="index"
+     />    
+  
+</configure>
