@@ -3,7 +3,8 @@ from setuptools import setup, find_packages
 setup(
     name="ore.alchemist",
     version="0.4.0",
-    install_requires=['setuptools'],
+    url="http://code.google.com/p/zope-alchemist",
+    install_requires=['setuptools', 'transaction'],
     packages=find_packages('src', exclude=["*.tests"]),
     package_dir= {'':'src'},
     namespace_packages=['ore'],
