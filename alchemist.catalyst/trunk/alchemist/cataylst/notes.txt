@@ -1,0 +1,7 @@
+
+- carry around a catalyst context
+   - domain model 
+   - domain annotation
+   - view module
+   - container module
+   - echo objects created
