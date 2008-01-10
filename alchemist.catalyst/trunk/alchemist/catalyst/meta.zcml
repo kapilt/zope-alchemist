@@ -1,0 +1,15 @@
+<configure xmlns='http://namespaces.zope.org/zope'
+           xmlns:meta="http://namespaces.zope.org/meta"
+           i18n_domain="zalchemy">
+
+  <meta:directives namespace="http://namespaces.objectrealms.net/rdb">
+
+    <meta:directive
+        name="catalyst"
+        schema=".zcml.ICatalystDirective"
+        handler=".zcml.catalyst"
+        />
+
+  </meta:directives>
+
+</configure>
