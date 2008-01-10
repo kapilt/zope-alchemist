@@ -26,6 +26,7 @@ from zope import component
 from zope.app.component.metaconfigure import utility, PublicPermission
 
 import container
+import domain
 import interfaces
 
 class ICatalystDirective( interface.Interface ):
@@ -44,16 +45,23 @@ class ICatalystDirective( interface.Interface ):
                                 description = u"Generated Views and viewlets will be placed here",
                                 required = False )
     
-    interface_module = GlobalObject( title=u"Module For Interfaces")
+    interface_module = GlobalObject( title=u"Module For Interfaces", required=False)
     
-    container_module = GlobalObject( title=u"Module For Container")
+    container_module = GlobalObject( title=u"Module For Container", required=False)
 
-    echo = schema.Bool( title=u"Echo Generated Items")
+    echo = schema.Bool( title=u"Echo Generated Items", required=False)
     
-def cataylst(_context, class_, descriptor ):
+def catalyst(_context, 
+             class_, 
+             descriptor, 
+             view_module=None,
+             interface_module=None,
+             container_module=None,
+             echo=False ):
     
     # create a container class 
-    container.ContainerFactory( class_ )
+    container.GenerateContainer( class_ )
+    domain.GenerateDomainInterface( class_, descriptor )
     
     # create a domain interface if it doesn't already exist 
     # this also creates an adapter between the domain interface 
