@@ -31,7 +31,7 @@ def stringKey( instance ):
     return identity_key
 
 def valueKey( identity_key ):
-    if not isinstance( identity_key, basestr):
+    if not isinstance( identity_key, (str, unicode)):
         return identity_key
     return identity_key.split('-')
 

@@ -1,5 +1,5 @@
 ##################################################################
-# (C) Copyright 2006 ObjectRealms, LLC
+# (C) Copyright 2006-2008 Kapil Thangavelu
 #
 # All Rights Reserved
 #
@@ -20,17 +20,16 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ##################################################################
 """
-Author: Kapil Thangavelu <kapilt@gmail.com>
+Author: Kapil Thangavelu <kapil.foss@gmail.com>
 
 $Id$
 """
 
 import zope.interface
-import zope.app.keyreference.interfaces
-from zope.dottedname.resolve import resolve
 
-from ore.alchemist.manager import get_session
-from ore.alchemist import named
+from zope.app.keyreference.interfaces import IKeyReference
+from zope.dottedname.resolve import resolve
+from ore.alchemist import Session, named
 
 def getPrimaryKey( object ):
     values = []
@@ -45,7 +44,7 @@ def getPrimaryKey( object ):
 
 class AlchemistKeyReference( object ):
 
-    zope.interface.implements(  zope.app.keyreference.interfaces.IKeyReference )
+    zope.interface.implements( IKeyReference )
 
     key_type_id = "ore.alchemist.keyreference"
 
@@ -59,7 +58,7 @@ class AlchemistKeyReference( object ):
         
     def __call__( self ):
         klass = resolve( self.klass )
-        session = get_session()
+        session = Session()
         query = session.query( klass )
         return query.get( self.primary_key )
 
