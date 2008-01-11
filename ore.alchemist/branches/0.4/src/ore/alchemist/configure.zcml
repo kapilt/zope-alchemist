@@ -16,10 +16,20 @@
      />
 
   <adapter
-     for=".interfaces.ITableSchema"
+     for=".interfaces.IAlchemistContent"
      provides=".interfaces.IModelAnnotation"
-     factory=".sa2zs.getAnnotation"
+     factory=".model.queryModelDescriptor"
      />
+     
+  <view
+      for=".interfaces.IAlchemistContainer"
+      type="zope.publisher.interfaces.browser.IBrowserRequest"
+      provides="zope.publisher.interfaces.browser.IBrowserPublisher"
+      factory=".traversal.ContainerTraverser"
+      permission="zope.Public"
+      allowed_interface="zope.publisher.interfaces.browser.IBrowserPublisher"
+      />
+     
 
   <!--
   <utility provides=".interfaces.IEngineVocabularyUtility"
