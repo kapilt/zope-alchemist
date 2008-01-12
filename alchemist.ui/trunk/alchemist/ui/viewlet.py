@@ -33,7 +33,7 @@ class AttributesViewViewlet( core.DynamicFields, DisplayFormViewlet ):
     template = NamedTemplate('alchemist.subform')    
     form_name = u"General"
 
-class AlchemistViewletManager( manager.ViewletManagerBase ):
+class ContentViewletManager( manager.ViewletManagerBase ):
     
     def sort( self, viewlets ):
         sorted( viewlets )

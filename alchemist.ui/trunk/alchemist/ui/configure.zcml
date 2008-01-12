@@ -2,12 +2,51 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser">
   
+  <!-- Default UI Layer for Alchemist -->
+  <interface
+     interface=".interfaces.IAlchemistLayer"
+     type="zope.publisher.interfaces.browser.IBrowserSkinType"
+     name="alchemist"
+     />
+
+  <!-- Form Layout as Named Template -->
+  <adapter
+     for="*"
+     name="alchemist.form"
+     factory=".form.FormTemplate"
+     />
+
+  <!-- SubForm Layout as Named Template -->
+  <adapter
+     for="*"
+     name="alchemist.subform"
+     factory=".form.SubFormTemplate"
+     />
+
+  <!-- Content Edit/View Manager -->
+  <browser:viewletManager
+     name="alchemist.content.edit"
+     provides=".interfaces.IContentEditManager"
+     class=".viewlet.ContentViewletManager"
+     layer=".interfaces.IAlchemistLayer"
+     permission="zope.ManageContent"
+     />
+
+  <browser:viewletManager
+     name="alchemist.content.view"
+     provides=".interfaces.IContentViewManager"
+     class=".viewlet.ContentViewletManager"
+     layer=".interfaces.IAlchemistLayer"
+     permission="zope.ManageContent"
+     />
+
+  <!-- Create Menu for Actions, conditional? -->
   <browser:menu
      id="context_actions"
      title="Actions"
      />
   
-  
+  <!-- Container UI -->
   <browser:page
      for="ore.alchemist.interfaces.IAlchemistContainer"
      permission="zope.View"
@@ -17,7 +56,6 @@
      template="templates/generic-container.pt"
      class=".container.ContainerListing"
      />
-  
   
   <browser:defaultView
      for="ore.alchemist.interfaces.IAlchemistContainer"
