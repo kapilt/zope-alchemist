@@ -7,6 +7,8 @@ and sa initialization hooks
 
 _marker = object()
 
+wrapper_type = type(object.__init__)
+
 def createInstance( klass, data ):
     """
     generically create an instance of a sqlalchemy object
@@ -16,9 +18,13 @@ def createInstance( klass, data ):
     """
     func = klass.__init__.im_func
     func = func.func_dict.get('_oldinit', func)
-    defaults = func.func_defaults
     
-    names = func.func_code.co_varnames[1:]
+    if isinstance( func, wrapper_type ):
+        defaults = ()
+        names = ()
+    else:
+        defaults = func.func_defaults
+        names = func.func_code.co_varnames[1:]
     args = []
     used = []
 
