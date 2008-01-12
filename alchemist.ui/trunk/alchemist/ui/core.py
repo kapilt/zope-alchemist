@@ -13,11 +13,11 @@ from zc.table import column
 
 from sqlalchemy import orm
 from ore.alchemist import model, Session
-from ore.alchemist.interface import IAlchemistContent
+from ore.alchemist.interfaces import IAlchemistContent
 
 import pytz, datetime
 import zope.event
-
+from zope.security.proxy import removeSecurityProxy
 from zope.lifecycleevent import Attributes
 from zope.lifecycleevent import ObjectModifiedEvent
 
@@ -49,6 +49,8 @@ def setUpFields( domain_model, mode ):
     enabled from model descriptor. this expects the domain model and mode
     passed in and will return a form.Fields instance
     """
+    
+    domain_model = removeSecurityProxy( domain_model )
     t = time.time()
 
     domain_interface = list( interface.implementedBy(domain_model) )[0]
@@ -266,7 +268,7 @@ class DynamicFields( object ):
         if errors:
             return errors
         
-        domain_model = self.getDomainModel()
+        domain_model = removeSecurityProxy( self.getDomainModel() )
         
         # find unique columns in data model.. TODO do this statically
         mapper = orm.class_mapper( domain_model  )
