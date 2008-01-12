@@ -13,12 +13,13 @@ Description:
    - container creation ( module input )
    
   # domain class driven
-  <rdb:bind 
+  <rdb:catalyst 
        class=".domain.MyFoobar"
        descriptor="." />
   
 """
 
+import logging
 from zope import interface, schema
 from zope.configuration.fields import GlobalObject
 
@@ -28,28 +29,55 @@ from zope.app.component.metaconfigure import utility, PublicPermission
 import container
 import domain
 import interfaces
+import ui
 
 class ICatalystDirective( interface.Interface ):
     """ Auto Generate Components for a domain model
     """
-    class_ = GlobalObject( title = u'Domain Class',
-                           description = u'SQLAlchemy Database URL',
-                           required = True,
-                           )
+    class_ = GlobalObject( 
+                        title = u'Domain Class',
+                        description = u'SQLAlchemy Mapped Class',
+                        required = True,
+                        )
                            
-    descriptor = GlobalObject( title = u'Domain Descriptor',
-                               description= u"Domain Model Configuration",
-                               required = True )
+    descriptor = GlobalObject( 
+                            title = u'Domain Descriptor',
+                            description= u"Domain Model Configuration",
+                            required = True 
+                            )
                                
-    view_module = GlobalObject( title=u"Module For Views",
-                                description = u"Generated Views and viewlets will be placed here",
-                                required = False )
+    ui_module = GlobalObject( 
+                            title=u"Module For Views",
+                            description = u"Generated Views and viewlets will be placed here",
+                            required = False 
+                            )
     
-    interface_module = GlobalObject( title=u"Module For Interfaces", required=False)
+    interface_module = GlobalObject( 
+                            title=u"Module For Interfaces", 
+                            description=u"Module for generated domain interface",
+                            required=False
+                            )
     
-    container_module = GlobalObject( title=u"Module For Container", required=False)
-
+    container_module = GlobalObject( 
+                            title=u"Module For Container",
+                            description=u"Module for generated container class",
+                            required=False
+                            )
+    
+    container_permission = schema.Text(
+                            title=u"Permission to Protect Container Access",
+                            description=u"If not specified then no permissions are associated",
+                            required=False
+                            )
+                            
+    
     echo = schema.Bool( title=u"Echo Generated Items", required=False)
+
+class CatalystContext(object):
+    """
+    context object where we store our configuration settings and generated
+    objects.
+    """
     
 def catalyst(_context, 
              class_, 
@@ -57,15 +85,48 @@ def catalyst(_context,
              view_module=None,
              interface_module=None,
              container_module=None,
+             ui_module=None,
              echo=False ):
     
-    # create a container class 
-    container.GenerateContainer( class_ )
-    domain.GenerateDomainInterface( class_, descriptor )
+    ctx = CatalystContext()
     
-    # create a domain interface if it doesn't already exist 
-    # this also creates an adapter between the domain interface 
-    # and the 
+    ctx.zcml = _context
+    ctx.descriptor = descriptor
+    ctx.domain_model = class_
+    ctx.interface_module = interface_module
+    ctx.container_module = container_module
+    ctx.ui_module = ui_module
+    ctx.echo = echo
+    ctx.logger = logging.getLogger('alchemist.catalyst')
+    
+    if ctx.echo:
+        logging.basicConfig()
+ 
+        formatter = logging.Formatter( 'catalyst %(module)s -> %(message)s')
+        console = logging.StreamHandler()
+        console.setLevel( logging.DEBUG )
+        console.setFormatter( formatter )
+        ctx.logger.addHandler( console )
+        ctx.logger.setLevel( logging.DEBUG )
+        #console.propagate = False       
+        ctx.logger.propagate = False  
+    
+    try:
+        # create a domain interface if it doesn't already exist 
+        # this also creates an adapter between the interface and desc.
+        domain.GenerateDomainInterface( ctx )
+        
+        # create a container class 
+        container.GenerateContainer( ctx )
+        
+        # generate views
+        ui.GenerateViews( ctx )
+    except:
+        import sys,traceback, pdb
+        traceback.print_exc()
+        pdb.post_mortem(sys.exc_info()[-1])
+        raise
+
     
 
 

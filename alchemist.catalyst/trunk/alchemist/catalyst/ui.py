@@ -27,13 +27,17 @@ ajax todo..
  """
 
 from zope import  interface
+from zope.dottedname.resolve import resolve
 from zope.formlib import form
 from sqlalchemy import orm, util
 
 from ore.alchemist import named, model
-from alchemist.ui import interfaces, content
-import relation
+from alchemist.ui import interfaces, content, relation
 
+from zope.formlib.interfaces import ISubPageForm
+
+from zope.app.publisher.browser.viewmeta import page
+from zope.viewlet.metaconfigure import viewletDirective
 
 
 ########################################
@@ -44,8 +48,10 @@ class ModelViewFactory( object ):
     
     name_template = None
     base_view = None
-    form_name = None
     
+    def __init__( self, context ):
+        self.context = context
+        
     def __call__( self, domain_model ):
         self.setUpView( domain_model )
         
@@ -54,26 +60,71 @@ class ModelViewFactory( object ):
         model_schema = list( interface.implementedBy(domain_model) )[0]        
         form_name = self.name_template%(domain_model.__name__)
 
+        msg = ( self.name,
+                self.context.ui_module.__name__,
+                form_name )
+                
         # allow us to selectively replace forms on a per content basis
-        if getattr( content, form_name, None) is not None:
+        if getattr( self.context.ui_module, form_name, None) is not None:
+            self.context.logger.debug( 
+                "%s: skipped %s view %s.%s"%( domain_model.__name__, 
+                                                self.name, 
+                                                self.context.ui_module.__name__,
+                                                form_name )
+                                                
+                )            
             return
         
         form_fields = form.Fields( model_schema )
         form_class = type( form_name, (self.base_view,),
                            dict( form_fields = form_fields ) )
         
-        setattr( content, form_name, form_class )
+        if self.context.echo:
+            self.context.logger.debug( 
+                "%s: generated %s view %s.%s"%( domain_model.__name__, 
+                                                self.name, 
+                                                self.context.ui_module.__name__,
+                                                form_name )
+                                                
+                )
+
+        setattr( self.context.ui_module, form_name, form_class )
+        self.setupZCML( form_name, form_class, model_schema )
+        
+    def setupZCML( self, form_name, form_class, model_schema):
+        if self.context.echo:
+            self.context.logger.debug("%s: registered %s for %s, layer %s, permission %s"%( 
+                self.context.domain_model.__name__,
+                form_name,
+                model_schema.__name__,
+                "Default", 
+                self.permission ) )
+        page( self.context.zcml, self.name, self.permission, model_schema,
+              class_=form_class ) # , menu="context_actions", title=self.name )
+
 
 class UIAddFactory( ModelViewFactory ):
+    name = "add"
+    permission = "zope.Public"
     name_template = "%sAddForm"
-    base_view = content.PistonAddForm 
+    
+    base_view = content.ContentAddForm 
+    
+    def setupZCML( self, form_name, form_class, model_schema):
+        super( UIAddFactory, self).setupZCML( form_name, form_class, self.context.container_interface )
 
 class UIEditFactory( ModelViewFactory ):
+    name = "edit"
+    permission = "zope.Public"
     name_template = "%sEditForm"    
+
     base_view = content.ContentEditForm
 
 class UIDisplayFactory( ModelViewFactory ):
+    name = "view"
+    permission = "zope.Public"    
     name_template = "%sDisplayForm"    
+    
     base_view = content.ContentDisplayForm
 
 ########################################
@@ -81,10 +132,13 @@ class UIDisplayFactory( ModelViewFactory ):
 ########################################
 
 class ModelViewletFactory( object ):
+
     viewlet_name_template  = None # base template for viewlet name
     base_viewlet = None # base viewlet class
-    zcml_template = None # base template for zcml registration
 
+    def __init__( self, ui_module ):
+        self.ui_module = ui_module
+        
     def __call__( self, domain_model):
         self.setUpViewlet( domain_model )
 
@@ -108,32 +162,29 @@ class ModelViewletFactory( object ):
             property_name = property.key
             viewlet_name = self.viewlet_name_template % ( domain_model.__name__, property_name.title() )
             viewlet_name = viewlet_name.replace('_', '')
-            if getattr( content, viewlet_name, None):
+            if getattr( self.ui_module, viewlet_name, None):
                 continue
-
+            
             d = {}
             d['domain_model'] = inverse_model = property.mapper.class_ # domain model of endpoint
             d['property_name'] = property_name
-
+            
             self.getPropertyExtra( property, d )
-                
-                
-
+            
             viewlet_class = type( viewlet_name, (self.base_viewlet,), d )
-            #zcml_snippet = self.zcml_template%(
-            #    "%s.%s"%(domain_model.__name__, property_name),
-            #    named( model_schema ),
-            #    viewlet_name
-            #    )
-            setattr( content, viewlet_name, viewlet_class )
 
+            setattr( self.ui_module, viewlet_name, viewlet_class )
+#            viewletDirective( self._zcml, 
+#                              form_name, 
+#                              "zope.Public", 
+#                              manager=context.
+#                              allowed_interface=ISubPageForm )
     
 
 class UIDisplayOne2OneFactory( ModelViewletFactory ):
 
     viewlet_name_template = "%s%sView"
     base_viewlet = relation.One2OneDisplay
-    zcml_template = zcml_display_viewlet_template
 
     def getPropertyExtra( self, property, config ):
         inverse_schema = list( interface.implementedBy( config['domain_model'] ) )[0]
@@ -156,14 +207,11 @@ class UIEditOne2OneFactory( UIDisplayOne2OneFactory ):
 
     viewlet_name_template = "%s%sEdit"
     base_viewlet = relation.One2OneEdit
-    zcml_template = zcml_edit_viewlet_template
-
     
 class UIDisplayMany2ManyFactory( ModelViewletFactory ):
 
     viewlet_name_template  = "%s%sView"
     base_viewlet = relation.Many2ManyDisplay     
-    zcml_template = zcml_display_viewlet_template    
 
     def __call__( self, domain_model):
         self.setUpViewlet( domain_model )
@@ -191,8 +239,6 @@ class UIEditMany2ManyFactory( UIDisplayMany2ManyFactory ):
     viewlet_name_template  = "%s%sEdit"
     base_viewlet = relation.Many2ManyEdit    
 
-    zcml_template = zcml_edit_viewlet_template
-
     def checkProperty( self, property, model_schema, descriptor ):
         if isinstance( property, orm.ColumnProperty):
             return False
@@ -211,7 +257,6 @@ class UIDisplayGroupedMany2Many( ModelViewletFactory ):
     name_template = "%sDisplayForm"
     viewlet_name_template  = "%s%sView"
     base_viewlet = relation.GroupedMany2ManyDisplay
-    zcml_template = zcml_display_viewlet_template
 
     def __call__( self, domain_model):
         self.setUpViewlet( domain_model )
@@ -273,23 +318,22 @@ class UIDisplayGroupedMany2Many( ModelViewletFactory ):
             
             setattr( content, viewlet_name, viewlet_class )
     
-ui_factories = [ UIAddFactory(),
-                 UIEditFactory(),
-                 UIDisplayFactory(),
-                 UIDisplayOne2OneFactory(),
-                 UIEditOne2OneFactory(),
-                 UIDisplayMany2ManyFactory(),
-                 UIEditMany2ManyFactory(),                 
-                 UIDisplayGroupedMany2Many()]
+ui_factories = [ UIAddFactory,
+                 UIEditFactory,
+                 UIDisplayFactory,
+#                 UIDisplayOne2OneFactory,
+#                 UIEditOne2OneFactory,
+#                 UIDisplayMany2ManyFactory,
+#                 UIEditMany2ManyFactory,                 
+#                 UIDisplayGroupedMany2Many
+                ]
 
-for domain_model in meta.models:
+def GenerateViews( ctx ):
+    if ctx.ui_module is None:
+        ispec = ctx.domain_model.__module__.rsplit('.',1)[0]+'.browser'
+        ctx.ui_module = resolve( ispec )    
     
     for ui_factory in ui_factories:
-        try:
-            ui_factory( domain_model )
-        except:
-            import traceback, pdb, sys
-            traceback.print_exc()
-            pdb.post_mortem( sys.exc_info()[-1] )
+        maker = ui_factory( ctx )
+        maker( ctx.domain_model )
 
-        
