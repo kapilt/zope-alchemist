@@ -3,7 +3,16 @@ from ore.alchemist.model import ModelDescriptor
 from ore.alchemist import sa2zs, interfaces
 from zope import interface
 from zope.dottedname.resolve import resolve
+from zope.app.security.protectclass import protectName, protectSetAttribute
 
+def ApplySecurity( ctx ):
+        # setup security
+    for n,d in ctx.domain_interface.namesAndDescriptions(1):
+        protectName( ctx.domain_model, n, "zope.Public")
+
+    for n,d in ctx.domain_interface.namesAndDescriptions(1):
+        protectSetAttribute( ctx.domain_model, n, "zope.Public")
+        
 def GenerateDomainInterface( ctx, interface_name=None ):
 
     # when called from zcml, most likely we'll get a class not an instance

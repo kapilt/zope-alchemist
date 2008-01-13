@@ -116,6 +116,8 @@ def catalyst(_context,
         # this also creates an adapter between the interface and desc.
         domain.GenerateDomainInterface( ctx )
         
+        domain.ApplySecurity( ctx )
+        
         # create a container class 
         container.GenerateContainer( ctx )
         
