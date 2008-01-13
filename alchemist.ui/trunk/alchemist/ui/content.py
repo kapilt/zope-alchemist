@@ -50,6 +50,7 @@ class ContentAddForm( core.DynamicFields, form.AddForm ):
         self._finished_add = True
 
         mapper = orm.object_mapper( ob )
+        
         # TODO single primary key ( need changes to base container)
         oid = mapper.primary_key_from_instance( ob )[0]
         

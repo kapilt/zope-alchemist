@@ -9,7 +9,15 @@
      name="alchemist"
      />
 
-  <!-- Form Layout as Named Template -->
+  <!-- Expose form for use as macro -->
+  <browser:page
+    for="*"
+    name="alchemist-form"
+    permission="zope.Public"
+    template="templates/form.pt"
+    />
+    
+  <!-- Form Layout as Named Template -->    
   <adapter
      for="*"
      name="alchemist.form"
@@ -28,7 +36,6 @@
      name="alchemist.content.edit"
      provides=".interfaces.IContentEditManager"
      class=".viewlet.ContentViewletManager"
-     layer=".interfaces.IAlchemistLayer"
      permission="zope.ManageContent"
      />
 
@@ -36,9 +43,26 @@
      name="alchemist.content.view"
      provides=".interfaces.IContentViewManager"
      class=".viewlet.ContentViewletManager"
-     layer=".interfaces.IAlchemistLayer"
      permission="zope.ManageContent"
      />
+
+  <browser:viewlet
+      name="alchemist.attributes.view"
+      manager=".interfaces.IContentViewManager"
+      class=".viewlet.AttributesViewViewlet"
+      for="ore.alchemist.interfaces.IAlchemistContent"
+      permission="zope.View"
+      allowed_interface="zope.formlib.interfaces.ISubPageForm"
+      />
+
+  <browser:viewlet
+      name="alchemist.attributes.edit"
+      manager=".interfaces.IContentEditManager"
+      class=".viewlet.AttributesEditViewlet"
+      for="ore.alchemist.interfaces.IAlchemistContent"
+      permission="zope.View"
+      allowed_interface="zope.formlib.interfaces.ISubPageForm"
+      />
 
   <!-- Create Menu for Actions, conditional? -->
   <browser:menu
@@ -62,4 +86,10 @@
      name="index"
      />    
   
+  <!-- Default Content View -->
+    <browser:defaultView
+     for="ore.alchemist.interfaces.IAlchemistContent"
+     name="view"
+     />
+     
 </configure>
