@@ -78,7 +78,7 @@ class ContainerListing( form.DisplayForm ):
         
         # TODO : single primary key, need to reexamine 
         formatter.oid_key = orm.class_mapper( context.domain_model ).primary_key[0].name
-        formatter.cssClasses['table'] = 'datagrid'
+        formatter.cssClasses['table'] = 'listing'
         formatter.table_id = "datacontents"
         return formatter()
 
