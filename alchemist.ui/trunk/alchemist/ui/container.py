@@ -34,6 +34,7 @@ def viewEditLinks( item, formatter ):
 class ContainerListing( form.DisplayForm ):
     
     form_fields = form.Fields()
+    mode = "listing"
     
     def update( self ):
         context = proxy.removeSecurityProxy( self.context )
@@ -80,7 +81,11 @@ class ContainerListing( form.DisplayForm ):
         formatter.cssClasses['table'] = 'datagrid'
         formatter.table_id = "datacontents"
         return formatter()
-                                              
+
+    @property
+    def form_name( self ):
+        return "%s %s"%( self.context.domain_model.__name__, self.mode.title())
+
     @form.action(_(u"Add") )
     def handle_add( self, action, data ):
         self.request.response.redirect('add')
