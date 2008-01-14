@@ -17,10 +17,18 @@
      contents 
    </div>
 
-   <div class="form-controls" tal:condition="view/availableActions">
-     <input tal:repeat="action view/actions"
-            tal:replace="structure action/render"
-            />
+   <div id="actionsView">
+    <span class="actionButtons"
+          tal:condition="view/availableActions">
+      <tal:loop tal:repeat="action view/actions">
+		<input type="submit" class="context"
+			   id="" name="" value=""
+			   tal:attributes="id action/__name__;
+			   				   name action/__name__;
+			   				   value python:str(action.label);"
+			   i18n:attributes="value" />
+	  </tal:loop>						
+    </span>
    </div>
 
   </form>
