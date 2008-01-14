@@ -26,7 +26,7 @@ ajax todo..
  
  """
 
-from zope import  interface
+from zope import interface
 from zope.dottedname.resolve import resolve
 from zope.formlib import form
 from sqlalchemy import orm, util
@@ -89,9 +89,9 @@ class ModelViewFactory( object ):
                 )
 
         setattr( self.context.ui_module, form_name, form_class )
-        self.setupZCML( form_name, form_class, model_schema )
+        self.setUpZCML( form_name, form_class, model_schema )
         
-    def setupZCML( self, form_name, form_class, model_schema):
+    def setUpZCML( self, form_name, form_class, model_schema):
         if self.context.echo:
             self.context.logger.debug("%s: registered %s for %s, layer %s, permission %s"%( 
                 self.context.domain_model.__name__,
@@ -110,8 +110,8 @@ class UIAddFactory( ModelViewFactory ):
     
     base_view = content.ContentAddForm 
     
-    def setupZCML( self, form_name, form_class, model_schema):
-        super( UIAddFactory, self).setupZCML( form_name, form_class, self.context.container_interface )
+    def setUpZCML( self, form_name, form_class, model_schema):
+        super( UIAddFactory, self).setUpZCML( form_name, form_class, self.context.container_interface )
 
 class UIEditFactory( ModelViewFactory ):
     name = "edit"
@@ -136,8 +136,8 @@ class ModelViewletFactory( object ):
     viewlet_name_template  = None # base template for viewlet name
     base_viewlet = None # base viewlet class
 
-    def __init__( self, ui_module ):
-        self.ui_module = ui_module
+    def __init__( self, context ):
+        self.context = context
         
     def __call__( self, domain_model):
         self.setUpViewlet( domain_model )
@@ -150,19 +150,17 @@ class ModelViewletFactory( object ):
     
     def setUpViewlet( self, domain_model ):
         # attributes are handled by generic viewlet, we do this for relation views
-
-        model_schema = list( interface.implementedBy(domain_model) )[0]                
-        mapper = orm.class_mapper( domain_model )
-        domain_annotation = model.queryModelDescriptor( model_schema )
-
+        ctx = self.context
+        
         for property in mapper.iterate_properties:
-            if not self.checkProperty( property,  model_schema, domain_annotation):
+            if not self.checkProperty( property,  ctx.domain_interface, ctx.descriptor ):
                 continue
-
+            
             property_name = property.key
-            viewlet_name = self.viewlet_name_template % ( domain_model.__name__, property_name.title() )
+            viewlet_name = self.viewlet_name_template % ( ctx.domain_model.__name__, property_name.title() )
             viewlet_name = viewlet_name.replace('_', '')
-            if getattr( self.ui_module, viewlet_name, None):
+            
+            if getattr( ctx.ui_module, viewlet_name, None):
                 continue
             
             d = {}
@@ -172,19 +170,31 @@ class ModelViewletFactory( object ):
             self.getPropertyExtra( property, d )
             
             viewlet_class = type( viewlet_name, (self.base_viewlet,), d )
-
-            setattr( self.ui_module, viewlet_name, viewlet_class )
-#            viewletDirective( self._zcml, 
-#                              form_name, 
-#                              "zope.Public", 
-#                              manager=context.
-#                              allowed_interface=ISubPageForm )
+            #ctx.relations[ "%s-%s"%( property.key, self.name )] = viewlet_class
+            setattr( ctx.ui_module, viewlet_name, viewlet_class )
+            
+            # self.setUpZCML( form_name, viewlet_class, manager )
+            
+    # def setUpZCML( self, form_name, permission ):
+    #     viewletDirective(
+    #         self.context.zcml, form_name, permission,
+    #         for_=, layer=IDefaultBrowserLayer, view=IBrowserView,
+    #         manager=interfaces.IViewletManager, class_=None, template=None,
+    #         attribute='render', allowed_interface=None, allowed_attributes=None,
+    #         **kwargs)  
+               
+        #viewletDirective( self.context.zcml, 
+        #                  form_name, 
+        #                  permission,
+        #                  allowed_interface=ISubPageForm )
     
 
 class UIDisplayOne2OneFactory( ModelViewletFactory ):
 
+    name = 'display'
     viewlet_name_template = "%s%sView"
     base_viewlet = relation.One2OneDisplay
+    viewlet_manager = resolve('alchemist.ui.viewlet.ContentViewletManager')
 
     def getPropertyExtra( self, property, config ):
         inverse_schema = list( interface.implementedBy( config['domain_model'] ) )[0]
@@ -205,11 +215,13 @@ class UIDisplayOne2OneFactory( ModelViewletFactory ):
     
 class UIEditOne2OneFactory( UIDisplayOne2OneFactory ):
 
+    name = 'edit'
     viewlet_name_template = "%s%sEdit"
     base_viewlet = relation.One2OneEdit
     
 class UIDisplayMany2ManyFactory( ModelViewletFactory ):
 
+    name = 'display'
     viewlet_name_template  = "%s%sView"
     base_viewlet = relation.Many2ManyDisplay     
 
@@ -236,6 +248,7 @@ class UIDisplayMany2ManyFactory( ModelViewletFactory ):
     
 class UIEditMany2ManyFactory( UIDisplayMany2ManyFactory ):
 
+    name = 'edit'
     viewlet_name_template  = "%s%sEdit"
     base_viewlet = relation.Many2ManyEdit    
 
@@ -254,6 +267,7 @@ class UIEditMany2ManyFactory( UIDisplayMany2ManyFactory ):
 
 class UIDisplayGroupedMany2Many( ModelViewletFactory ):
     
+    name = 'display'
     name_template = "%sDisplayForm"
     viewlet_name_template  = "%s%sView"
     base_viewlet = relation.GroupedMany2ManyDisplay
