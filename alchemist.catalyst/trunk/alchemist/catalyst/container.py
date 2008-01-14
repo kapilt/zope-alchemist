@@ -52,7 +52,7 @@ def GenerateContainer( ctx,
         # if we already have a container class, exit                
         if getattr( ctx.container_module, container_name, None ):
             if ctx.echo:
-                ctx.logger.debug("%s: found container %s.%s for %s, skipping"%msg )
+                ctx.logger.debug("%s: found container %s.%s, skipping"%msg )
             ctx.container_class = getattr( ctx.container_module, container_name )
             return
             

@@ -21,7 +21,7 @@ Description:
 
 import logging
 from zope import interface, schema
-from zope.configuration.fields import GlobalObject
+from zope.configuration.fields import GlobalObject, GlobalInterface
 
 from zope import component
 from zope.app.component.metaconfigure import utility, PublicPermission
@@ -70,6 +70,13 @@ class ICatalystDirective( interface.Interface ):
                             required=False
                             )
                             
+    layer = GlobalInterface(
+                            title=u"UI Layer",
+                            description=u"UI Layer for registration",
+                            required=False,
+                            default=interface.Interface
+                            )
+                            
     
     echo = schema.Bool( title=u"Echo Generated Items", required=False)
 
@@ -79,6 +86,8 @@ class CatalystContext(object):
     objects.
     """
     
+logging_setup = False
+
 def catalyst(_context, 
              class_, 
              descriptor, 
@@ -94,12 +103,19 @@ def catalyst(_context,
     ctx.descriptor = descriptor
     ctx.domain_model = class_
     ctx.interface_module = interface_module
+    #ctx.mapper = 
     ctx.container_module = container_module
     ctx.ui_module = ui_module
     ctx.echo = echo
+
+    ctx.views = {} # keyed by view type (add|edit)
+    ctx.relation_viewlets = {} # keyed by relation name 
     ctx.logger = logging.getLogger('alchemist.catalyst')
     
-    if ctx.echo:
+    global logging_setup
+    
+    if ctx.echo and not logging_setup:
+        logging_setup = True
         logging.basicConfig()
  
         formatter = logging.Formatter( 'catalyst %(module)s -> %(message)s')
@@ -117,6 +133,10 @@ def catalyst(_context,
         domain.GenerateDomainInterface( ctx )
         
         domain.ApplySecurity( ctx )
+        
+        # behavior.ApplyIndexing( )
+        # behavior.ApplyWorkflows( )
+        # behavior.ApplyVersioning( )
         
         # create a container class 
         container.GenerateContainer( ctx )
