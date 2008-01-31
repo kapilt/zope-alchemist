@@ -1,21 +1,20 @@
 """
-
-This module gets populated with generic add/edit/view forms for
-domain objects.
+Generic Content Views
 
 """
 
 from zope.event import notify
 from zope.formlib import form
 from zope.lifecycleevent import ObjectCreatedEvent
+from zope.security.proxy import removeSecurityProxy
 from zope.traversing.browser import absoluteURL
 from zope.publisher.browser import BrowserView
 
 from zope.app.pagetemplate import ViewPageTemplateFile
-from zope.security.proxy import removeSecurityProxy
 
 from ore.alchemist import Session
 from sqlalchemy import orm
+
 from i18n import _
 import generic, core
 
@@ -32,6 +31,9 @@ class ContentAddForm( core.DynamicFields, form.AddForm ):
         domain_model = removeSecurityProxy( self.context.domain_model )
         # create the object, inspect data for constructor args        
         ob = generic.createInstance( domain_model, data )
+        
+        # apply any context values
+        self.finishConstruction( ob )
         
         # apply extra form values
         form.applyChanges( ob, self.form_fields, data )
@@ -56,6 +58,10 @@ class ContentAddForm( core.DynamicFields, form.AddForm ):
         
         # retrieve the object with location and security information
         return self.context[ oid ]
+        
+    def finishConstruction(self, ob ):
+        """ no op, subclass to provide additional initialization behavior"""
+        return 
         
     def nextURL( self ):
         if not self._next_url:
