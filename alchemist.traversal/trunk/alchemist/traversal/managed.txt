@@ -1,0 +1,33 @@
+
+Traversing Domain Heirarchies
+-----------------------------
+
+A common use case when handling object relational mappings to the URL space,
+is allowing traversal of foreign key relation ships, and maintaining the 
+fk variant when creating new objects.
+
+Constraints
+-----------
+
+Managed Container traversal is currently incompatible with sqlalchemy relation
+properties, as its spec'd on the domain class where a mapper property would be
+placed. A future revision may try to encapsulate this layer into a traversal
+adapter.
+
+these aren't always exposed at the fk:
+
+  >> from ore.alchemist import Session
+  >> import transaction
+  >> tim_burton = Director("tim burton")
+  
+  >> scissorhands = Movie("Edward Scissorhands")
+  >> scissorhands.director = tim_burton
+  >> session.save( scissorhands, tim_burton )
+  >> transaction.commit()
+  
+  >> tim_burton.movies.keys()
+  movie-1
+  
+  >> tim_burton.movies.values()['title']
+  'Edward Scissorhands'
+  
