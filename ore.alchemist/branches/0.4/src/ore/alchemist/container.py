@@ -5,7 +5,7 @@ namechooser and contained implementation from z3c.zalchemy (ZPL 2.1)
 $Id$
 """
 
-from zope import interface, component
+from zope import interface
 
 from zope.configuration.name import resolve
 from zope.exceptions.interfaces import UserError
@@ -129,7 +129,7 @@ class AlchemistContainer( Persistent, Contained ):
         """
         this method pulls a subset/batch of values for paging through a container.
         """
-        query = Session().query( self._class ).limit( limit ).offset( offset )
+        query = self._query.limit( limit ).offset( offset )
         if order_by:
             query = query.order_by( order_by )
         for ob in query:
@@ -137,8 +137,14 @@ class AlchemistContainer( Persistent, Contained ):
             yield ob
 
     def query( self, **kw):
-        return list( Session().query( self._class ).filter_by( **kw ) )
-    
+        return list( self._query.filter_by( **kw ) )
+
+    @property
+    def _query( self ):
+        session = Session()
+        query = session.query( self._class )
+        return query
+        
     #################################
     # Container Interface
     #################################
@@ -152,15 +158,12 @@ class AlchemistContainer( Persistent, Contained ):
             yield obj
 
     def items( self ):
-        session = Session()
-        query = session.query( self._class )
-        for obj in query:
+        for obj in self._query:
             name = stringKey( obj )
             yield (name, contained(obj, self, name) )
 
     def get( self, name, default=None ):
-        session = Session()
-        value = session.query( self._class ).get( name )
+        value = self._query.get( name )
         if value is None:
             return default
         return contained( value, self, str(name) )
@@ -187,27 +190,29 @@ class AlchemistContainer( Persistent, Contained ):
         return self.get( name ) is not None
 
     def __len__( self ):
-        session = Session()
         try:
-            return session.query( self._class ).count()
+            return self._query.count()
         except exceptions.SQLError:
             return 0
 
-## class PartialContainer( AlchemistContainer ):
-##     """
-##     an alchemist container that matches against an arbitrary subset, via definition
-##     of a query. contents added to this container, may there fore not nesc. be accessible
-##     from it, unless they also match the query.
-##     """
+class PartialContainer( AlchemistContainer ):
+    """
+    an alchemist container that matches against an arbitrary subset, via definition
+    of a query modification function. contents added to this container, may there 
+    fore not nesc. be accessible from it, unless they also match the query. 
+    """
     
-##     _query = None
-
-##     def setQuery( self, query ):
-##         self._query = query
-
-##     def getQuery( self ):
-##         return self._query
-
-##     subset_query = property( setQuery, getQuery )
-        
-        
+    _subset_query = None
+     
+    def setQueryModifier( self, query ):
+        self._subset_query = query
+         
+    def getQueryModifier( self ):
+        return self._subset_query
+    
+    subset_query = property( setQueryModifier, getQueryModifier )
+    
+    @property
+    def _query( self ):
+        query = super( PartialContainer, self)._query 
+        return query.filter( self._subset_query )
