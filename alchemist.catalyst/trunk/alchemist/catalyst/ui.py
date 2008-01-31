@@ -38,7 +38,7 @@ from zope.formlib.interfaces import ISubPageForm
 
 from zope.app.publisher.browser.viewmeta import page
 from zope.viewlet.metaconfigure import viewletDirective
-
+from zope.app.publisher.browser.fields import MenuField
 
 ########################################
 # View Factories
@@ -48,6 +48,8 @@ class ModelViewFactory( object ):
     
     name_template = None
     base_view = None
+    
+    menu = MenuField()
     
     def __init__( self, context ):
         self.context = context
@@ -100,7 +102,7 @@ class ModelViewFactory( object ):
                 "Default", 
                 self.permission ) )
         page( self.context.zcml, self.name, self.permission, model_schema,
-              class_=form_class ) # , menu="context_actions", title=self.name )
+              class_=form_class )
 
 
 class UIAddFactory( ModelViewFactory ):
@@ -111,7 +113,8 @@ class UIAddFactory( ModelViewFactory ):
     base_view = content.ContentAddForm 
     
     def setUpZCML( self, form_name, form_class, model_schema):
-        super( UIAddFactory, self).setUpZCML( form_name, form_class, self.context.container_interface )
+        super( UIAddFactory, self).setUpZCML( form_name,  form_class, self.context.container_interface )
+                                              
 
 class UIEditFactory( ModelViewFactory ):
     name = "edit"
@@ -152,7 +155,7 @@ class ModelViewletFactory( object ):
         # attributes are handled by generic viewlet, we do this for relation views
         ctx = self.context
         
-        for property in mapper.iterate_properties:
+        for property in ctx.mapper.iterate_properties:
             if not self.checkProperty( property,  ctx.domain_interface, ctx.descriptor ):
                 continue
             
