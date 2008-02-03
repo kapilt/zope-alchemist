@@ -25,6 +25,6 @@ class CollectionTraverserTemplate(object):
                 container = getattr( self.context, cname )
                 return container
 
-def CollectionsTraverser( *names ):
+def CollectionTraverser( *names ):
     return type( "CollectionsTraverser", (CollectionTraverserTemplate, ), { collection_attributes: names} )
-    
+
