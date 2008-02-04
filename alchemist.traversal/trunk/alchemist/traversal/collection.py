@@ -19,12 +19,11 @@ class CollectionTraverserTemplate(object):
 
     def publishTraverse(self, request, name):
         """See zope.publisher.interfaces.IPublishTraverse"""
+        if name in self.collection_attributes:
+            container = getattr( self.context, name )
+            return container
+        raise NotFound( self.context, name, request)
         
-        for cname in self.collection_attributes:
-            if cname == name:
-                container = getattr( self.context, cname )
-                return container
-
 def CollectionTraverser( *names ):
-    return type( "CollectionsTraverser", (CollectionTraverserTemplate, ), { collection_attributes: names} )
+    return type( "CollectionsTraverser", (CollectionTraverserTemplate, ), { 'collection_attributes': names} )
 
