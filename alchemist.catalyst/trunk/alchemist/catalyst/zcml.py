@@ -30,6 +30,7 @@ import container
 import domain
 import interfaces
 import ui
+import traversal
 
 class ICatalystDirective( interface.Interface ):
     """ Auto Generate Components for a domain model
@@ -143,6 +144,9 @@ def catalyst(_context,
         
         # generate views
         ui.GenerateViews( ctx )
+        
+        # generate collection traversal 
+        traversal.GenerateCollectionTraversal( ctx )
     except:
         import sys,traceback, pdb
         traceback.print_exc()
