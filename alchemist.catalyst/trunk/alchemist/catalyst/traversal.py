@@ -18,11 +18,8 @@ def GenerateCollectionTraversal( ctx ):
         if IManagedContainer.providedBy( v ):
             collection_names.append( k )
 
-
-    
     if not collection_names:
         return
-    print "collection names", collection_names
 
     traverser = CollectionTraverser( *collection_names )
     
