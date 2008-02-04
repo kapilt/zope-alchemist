@@ -2,12 +2,15 @@
 $Id: $
 """
 
+from zope import interface
 from zope.dottedname.resolve import resolve
 from zope.app.security.protectclass import protectLikeUnto
 from zope.security.proxy import removeSecurityProxy
 
 from ore.alchemist.container import PartialContainer
 from sqlalchemy import orm
+
+import interfaces
 
 # alternatively hand turn a z3 container collection class for an object.
 
@@ -21,6 +24,8 @@ class _ManagedContainer( PartialContainer ):
 class ManagedContainer(object):
     
     _container_class = None
+    
+    interface.implements( interfaces.IManagedContainer )
     
     def __init__( self, name, container, fk):
         self.name = name
