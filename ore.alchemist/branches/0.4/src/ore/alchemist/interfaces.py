@@ -134,7 +134,13 @@ class IModelDescriptor( IEnumerableMapping ):
     captures model behavior encapsulated in a set of fields, which are
     accessible via the enumerable mapping
     """
-
+    
+class IRelationChange( Interface ):
+    """
+    attached to modified events to allow for introspecting relation changes
+    """
+    #description = interface.Attribute(u"description")
+    
 class IModelDescriptorField( Interface ):
 
     modes = schema.ASCIILine( title=u"View Usage Modes for Field",
