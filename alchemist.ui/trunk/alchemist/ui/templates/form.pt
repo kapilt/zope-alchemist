@@ -12,9 +12,21 @@
         tal:attributes="action request/URL" 
 	method="post"
 	enctype="multipart/form-data">
-    
-    <div class="portalMessage" tal:content="view/status" tal:condition="view/status"> </div>
 
+    
+        <dl class="portalMessage info"                                                                                                              
+            tal:condition="view/status"
+            tal:define="mtype string:info"
+            tal:attributes="class string:portalMessage ${mtype};">                                                                                  
+            <dt tal:content="python:mtype.capitalize()"                                                                                             
+                i18n:translate="">                                                                                                                  
+                Info                                                                                                                                
+            </dt>                                                                                                                                   
+            <dd tal:content="view/status | nothing"                                                                                             
+                i18n:translate="">                                                                                                                  
+                The status message.                                                                                                                 
+            </dd>                                                                                                                                   
+        </dl>          
   
 <metal:block define-macro="form-body">
 
