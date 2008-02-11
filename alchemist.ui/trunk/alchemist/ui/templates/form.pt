@@ -30,6 +30,9 @@
   
 <metal:block define-macro="form-body">
 
+  <metal:block define-slot="pre-fieldset">
+  </metal:block>
+
   <fieldset tal:define="widgets view/widgets">
 
     <legend tal:define="form_name view/form_name|nothing"
