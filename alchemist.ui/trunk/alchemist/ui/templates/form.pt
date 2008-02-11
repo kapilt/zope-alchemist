@@ -40,7 +40,10 @@
             tal:content="form_name">Form name</legend>
 
   <metal:block define-macro="fieldset"> 
-
+  
+    <metal:block define-slot="top-fieldset">
+    </metal:block>
+  
   <tal:block tal:repeat="widget widgets">
 
     <div tal:condition="python: not widget.visible">
