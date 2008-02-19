@@ -122,13 +122,6 @@ class ColumnTranslator( object ):
         d = self.extractInfo( column, info)
         return self.schema_field( **d )
 
-class DateTimeTranslator( ColumnTranslator ):
-
-    def extractInfo( self, column, info ):
-        d = super( DateTimeTranslator, self).extractInfo( column, info )
-        d['timezone'] = True
-        return d
-
 class SizedColumnTranslator( ColumnTranslator ):
 
     def extractInfo( self, column, info ):
@@ -143,7 +136,7 @@ class ColumnVisitor( object ):
         ( rt.Float,  ColumnTranslator( schema.Float )   ),
         ( rt.SmallInteger, ColumnTranslator( schema.Int ) ),
         ( rt.Date, ColumnTranslator( schema.Date ) ),
-        ( rt.DateTime, DateTimeTranslator( schema.Datetime ) ),
+        ( rt.DateTime, ColumnTranslator( schema.Datetime ) ),
 #        ( rt.Time, ColumnTranslator( schema.Datetime ),
         ( rt.TEXT, ColumnTranslator( schema.Text ) ),
         ( rt.Boolean, ColumnTranslator( schema.Bool ) ),
