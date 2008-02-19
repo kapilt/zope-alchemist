@@ -27,11 +27,22 @@ $Id$
 
 from zope import interface, component
 from zope.interface.interfaces import IInterface
-from interfaces import IModelDescriptor, IModelDescriptorField
+from interfaces import IIModelInterface, IModelDescriptor, IModelDescriptorField
 
+def queryModelInterface( klass ):
+    if not IInterface.providedBy( klass ):
+        ifaces = filter( IIModelInterface.providedBy, list( interface.implementedBy( klass ) ) )
+        assert len(ifaces), "No Model Interface on Domain Object"
+        assert len(ifaces)==1, "Multiple Model Interfaces on Domain Object"
+        klass = ifaces[0]
+    else:
+        assert IIModelInterface.providedBy( klass ), "Invalid Interface"
+    return klass
+
+    
 def queryModelDescriptor( ob ):
     if not IInterface.providedBy( ob ):
-        ob = list( interface.implementedBy( ob ))[0]
+        ob = filter( IIModelInterface.providedBy, list( interface.implementedBy( ob ) ) )[0]    
     name = "%s.%s"%(ob.__module__, ob.__name__)    
     return component.queryAdapter( ob, IModelDescriptor, name )
     
@@ -45,6 +56,7 @@ class Field( object ):
     fieldset = "default"    
     modes = "edit|view|add" # see _valid modes for allows values, also can be done as bool keyword args
     omit = False
+    required = False  # required flag can only be used if the field is not required by the database.
     property = None
     
     view_permission = "zope.Public"
