@@ -36,7 +36,7 @@ def getPrimaryKey( object ):
     marker = object()
     for column in object.c:
         if column.primary_key:
-            value = getattr( object.__class__, column.name, marker )
+            value = getattr( object, column.name, marker )
             if value is marker or value is None:
                 raise zope.app.keyreference.interfaces.NotYet( object )
             values.append( value )

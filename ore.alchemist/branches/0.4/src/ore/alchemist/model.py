@@ -38,7 +38,6 @@ def queryModelInterface( klass ):
     else:
         assert IIModelInterface.providedBy( klass ), "Invalid Interface"
     return klass
-
     
 def queryModelDescriptor( ob ):
     if not IInterface.providedBy( ob ):
