@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="alchemist.catalyst",
-    version="0.3.0",
+    version="0.4.0dev",
     install_requires=['setuptools', 'ore.alchemist', 'alchemist.ui', 'alchemist.traversal'],
     packages=find_packages(exclude=["*.tests"]),
     #package_dir= {'':'src'},
