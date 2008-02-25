@@ -19,7 +19,20 @@ def ApplySecurity( ctx ):
     for k, v in ctx.domain_model.__dict__.items():
         if isinstance( v, ManagedContainerDescriptor ):
             protectName( ctx.domain_model, k, "zope.Public" )
-        
+
+def getDomainInterfaces( domain_model ):
+    """return the domain bases for an interface as well
+    as a filtered implements only list """
+    domain_bases = []
+    domain_implements = []    
+    for iface in interface.implementedBy( domain_model ):
+        if interfaces.IIModelInterface.providedBy( iface ):
+            domain_bases.append( iface )
+        else:
+            domain_implements.append( iface )
+    domain_bases = tuple(domain_bases) or (interfaces.IAlchemistContent,)
+    return (domain_bases, domain_implements)
+    
 def GenerateDomainInterface( ctx, interface_name=None ):
 
     # when called from zcml, most likely we'll get a class not an instance
@@ -42,17 +55,21 @@ def GenerateDomainInterface( ctx, interface_name=None ):
     
     if ctx.echo:
         ctx.logger.debug("%s: generated interface %s.%s"%msg )
-                        
+    
+    bases, implements = getDomainInterfaces( ctx.domain_model )
+    
     # use the class's mapper select table as input for the transformation
     domain_mapper = orm.class_mapper( ctx.domain_model )
     domain_interface = sa2zs.transmute( domain_mapper.select_table,
                                         annotation=ctx.descriptor,
                                         interface_name = interface_name,
                                         __module__ = ctx.interface_module.__name__,
-                                        bases=(interfaces.IAlchemistContent,)
+                                        bases=bases
                                         )
 
-    interface.classImplements( ctx.domain_model, domain_interface )
+    implements.insert(0, domain_interface)
+    
+    interface.classImplementsOnly( ctx.domain_model, *implements )
     setattr( ctx.interface_module, interface_name, domain_interface )    
     
     ctx.domain_interface = domain_interface
