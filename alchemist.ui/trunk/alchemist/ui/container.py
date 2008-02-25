@@ -22,13 +22,13 @@ class Getter( object ):
         return self.getter( item )
 
 def viewLink( item, formatter ):
-    return '<a class="button-link" href="%s">View</a>'%(getattr( item, formatter.oid_key ))
+    return u'<a class="button-link" href="%s">View</a>'%(getattr( item, formatter.oid_key ))
 
 def editLink( item, formatter ):
-    return '<a class="button-link" href="%s/edit">Edit</a>'%(getattr( item, formatter.oid_key))
+    return u'<a class="button-link" href="%s/edit">Edit</a>'%(getattr( item, formatter.oid_key))
 
 def viewEditLinks( item, formatter ):
-    return '%s %s'%(viewLink( item, formatter), editLink( item, formatter ) )
+    return u'%s %s'%(viewLink( item, formatter), editLink( item, formatter ) )
 
 
 class ContainerListing( form.DisplayForm ):
