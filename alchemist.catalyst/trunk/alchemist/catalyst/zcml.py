@@ -32,6 +32,8 @@ import interfaces
 import ui
 import traversal
 
+from sqlalchemy.orm import class_mapper
+
 class ICatalystDirective( interface.Interface ):
     """ Auto Generate Components for a domain model
     """
@@ -103,6 +105,7 @@ def catalyst(_context,
     ctx.zcml = _context
     ctx.descriptor = descriptor
     ctx.domain_model = class_
+    ctx.mapper = class_mapper( class_ )
     ctx.interface_module = interface_module
     #ctx.mapper = 
     ctx.container_module = container_module

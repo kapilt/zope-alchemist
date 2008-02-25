@@ -1,9 +1,10 @@
 from sqlalchemy import orm
 from ore.alchemist.model import ModelDescriptor
 from ore.alchemist import sa2zs, interfaces
-from alchemist.traversal.managed import ManagedContainer
+from alchemist.traversal.managed import ManagedContainerDescriptor
 from zope import interface
 from zope.dottedname.resolve import resolve
+from zope.location import ILocation
 from zope.app.container.interfaces import IContainer
 from zope.app.security.protectclass import protectName, protectSetAttribute
 
@@ -16,7 +17,7 @@ def ApplySecurity( ctx ):
         protectSetAttribute( ctx.domain_model, n, "zope.Public")
         
     for k, v in ctx.domain_model.__dict__.items():
-        if isinstance( v, ManagedContainer ):
+        if isinstance( v, ManagedContainerDescriptor ):
             protectName( ctx.domain_model, k, "zope.Public" )
         
 def GenerateDomainInterface( ctx, interface_name=None ):
