@@ -39,7 +39,7 @@ def contained(obj, parent=None, name=None):
     """An implementation of zope.app.container.contained.contained
     that doesn't generate events, for internal use.
 
-    Borrowed from SQLOS / z3c.zalchemy
+    copied from SQLOS / z3c.zalchemy
     """
     if (parent is None):
         raise TypeError('Must provide a parent')
@@ -71,17 +71,15 @@ class SQLAlchemyNameChooser(NameChooser):
             name = unicode(name)
         elif not isinstance(name, unicode):
             raise TypeError("Invalid name type", type(name))
-
-        unproxied = removeSecurityProxy(self.context)
-        if not name.startswith(unproxied._class.__name__+'-'):
-            raise UserError("Invalid name for SQLAlchemy object")
-        return True
-
+        if u'-' in name: # valueKey()
+            return True
+        raise UserError("Invalid name for SQLAlchemy object")
+        
     def chooseName(self, name, obj):
         # flush the object to make sure it contains an id
         session = Session()
         session.save(obj)
-        return self.context._toStringIdentifier(obj)
+        return stringKey(obj)
 
 class ContainerTraverser( ItemTraverser ):
     # basically custom traverser that tries to coerce to
@@ -92,13 +90,16 @@ class ContainerTraverser( ItemTraverser ):
     
     def publishTraverse(self, request, name):
         """See zope.publisher.interfaces.IPublishTraverse"""
+        
+        view = queryMultiAdapter((self.context, request), name=name)
+        if view is not None:
+            return view
+
         try: # check if its directly by primary key
             key = int( name )
             return self.context[key]
         except ValueError, KeyError:
-            view = queryMultiAdapter((self.context, request), name=name)
-            if view is not None:
-                return view
+            pass
 
         raise NotFound(self.context, name, request)
 
@@ -166,7 +167,8 @@ class AlchemistContainer( Persistent, Contained ):
         value = self._query.get( name )
         if value is None:
             return default
-        return contained( value, self, str(name) )
+        value = contained( value, self, str(name) )
+        return value
 
     def __iter__( self ):
         return iter( self.keys() )
