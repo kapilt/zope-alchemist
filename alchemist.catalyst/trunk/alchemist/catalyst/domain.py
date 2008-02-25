@@ -6,10 +6,16 @@ from zope import interface
 from zope.dottedname.resolve import resolve
 from zope.location import ILocation
 from zope.app.container.interfaces import IContainer
-from zope.app.security.protectclass import protectName, protectSetAttribute
+from zope.app.security.protectclass import protectName, protectSetAttribute, protectLikeUnto
 
 def ApplySecurity( ctx ):
-        # setup security
+    # setup security
+    # 
+    for c in ctx.domain_model.__bases__:
+        if c is object:
+            continue
+        protectLikeUnto( ctx.domain_model, c )
+        
     for n,d in ctx.domain_interface.namesAndDescriptions(1):
         protectName( ctx.domain_model, n, "zope.Public")
 
