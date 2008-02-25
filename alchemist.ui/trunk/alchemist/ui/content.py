@@ -29,8 +29,11 @@ class ContentAddForm( core.DynamicFields, form.AddForm ):
     def createAndAdd( self, data ):
 
         domain_model = removeSecurityProxy( self.context.domain_model )
-        # create the object, inspect data for constructor args        
-        ob = generic.createInstance( domain_model, data )
+        # create the object, inspect data for constructor args      
+        try:  
+            ob = generic.createInstance( domain_model, data )
+        except TypeError:
+            ob = domain_model()
         
         # apply any context values
         self.finishConstruction( ob )
