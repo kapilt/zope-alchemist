@@ -81,6 +81,13 @@
      class=".container.ContainerListing"
      />
   
+  <browser:page
+     for="ore.alchemist.interfaces.IAlchemistContainer"
+     permission="zope.View"
+     name="json"
+     class=".container.ContainerJSONListing"
+     />
+       
   <browser:defaultView
      for="ore.alchemist.interfaces.IAlchemistContainer"
      name="index"
