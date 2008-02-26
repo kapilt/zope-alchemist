@@ -4,13 +4,15 @@ $Id$
 """
 
 from zope import schema, interface
+from zope.publisher.browser import BrowserView
 from zope.formlib import form
 from zope.security import proxy
 from zc.table import column
 from zc.table import table
 
+import simplejson
 from sqlalchemy import orm
-from ore.alchemist.model import queryModelDescriptor
+from ore.alchemist.model import queryModelDescriptor, queryModelInterface
 from i18n import _
 
 class Getter( object ):
@@ -41,7 +43,7 @@ class ContainerListing( form.DisplayForm ):
         columns = []
         
         domain_model = context.domain_model
-        domain_interface = list( interface.implementedBy(domain_model) )[0]
+        domain_interface =  queryModelInterface( domain_model )
         domain_annotation = queryModelDescriptor( domain_interface )
         
         field_column_names = domain_annotation and domain_annotation.listing_columns \
@@ -91,5 +93,42 @@ class ContainerListing( form.DisplayForm ):
         self.request.response.redirect('add')
 
 
-                 
+class ContainerJSONListing( BrowserView ):
+    """
+    paging, batching, json contents of a container
+    """
 
+    def getOffsets( self ):
+        nodes = []
+        start, limit = self.request.get('start',0), self.request.get('limit', 0)
+
+        try:
+            start, limit = int( start ), int( limit )
+            if not limit:
+                limit = 100
+        except ValueError:
+            start, limit = 0, 100
+        return start, limit 
+
+    def getBatch( self, start, limit ):
+        batch = []
+        nodes = self.context.batch( start, limit)
+        
+        domain_interface = queryModelInterface( self.context.domain_model )
+        domain_interface = proxy.removeSecurityProxy( domain_interface )
+        field_names = schema.getFieldNamesInOrder( domain_interface )
+
+        for n in nodes:
+            d = {}
+            for f in field_names:
+                field = domain_interface[ f ]
+                d[ f ] = field.query( n )
+            batch.append( d )
+        return batch
+        
+    def __call__( self ):
+        start, limit = self.getOffsets( )
+        batch = self.getBatch( start, limit )
+        set_size = len( self.context )
+        data = dict( length=set_size, nodes=batch )
+        return simplejson.dumps( data )
