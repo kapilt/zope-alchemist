@@ -73,6 +73,12 @@ class IAlchemistContainer( IContainer ):
         """
         return the specified children of the container
         """
+        
+    def batch( order_by=(), start=0, limit=20 ):
+        """
+        return a batch of contents with the given offset and size, and ordered
+        by given listing of columns
+        """
 
 class ITableSchema( Interface ):
     """
