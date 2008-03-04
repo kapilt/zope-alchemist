@@ -11,9 +11,12 @@ from zc.table import column
 from zc.table import table
 
 import simplejson
+
 from sqlalchemy import orm
 from ore.alchemist.model import queryModelDescriptor, queryModelInterface
 from i18n import _
+
+import core
 
 class Getter( object ):
 
@@ -40,27 +43,11 @@ class ContainerListing( form.DisplayForm ):
     
     def update( self ):
         context = proxy.removeSecurityProxy( self.context )
-        columns = []
-        
-        domain_model = context.domain_model
-        domain_interface =  queryModelInterface( domain_model )
-        domain_annotation = queryModelDescriptor( domain_interface )
-        
-        field_column_names = domain_annotation and domain_annotation.listing_columns \
-                             or schema.getFieldNamesInOrder( domain_interface )
-        
-        for field_name in field_column_names:
-            field = domain_interface[ field_name ]
-            columns.append(
-                column.GetterColumn( title= ( field.title or field.__name__ ),
-                                     getter = Getter( field.query ) )
-                )
-        
+        columns = core.setUpColumns( context.domain_model )
         columns.append(
             column.GetterColumn( title = _(u'Actions'),
                                  getter = viewEditLinks )
             )
-        
         self.columns = columns
         
         super( ContainerListing, self).update()
