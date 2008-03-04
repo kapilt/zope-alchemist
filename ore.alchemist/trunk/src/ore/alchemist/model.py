@@ -149,7 +149,8 @@ class ModelDescriptor( object ):
     fields = () # sequence of mapping to field
     properties = ()
     schema_order = ()
-
+    schema_invariants = ()
+    
     def __init__( self ):
         self.fields = [ Field.fromDict( info ) for info in self.fields]
     

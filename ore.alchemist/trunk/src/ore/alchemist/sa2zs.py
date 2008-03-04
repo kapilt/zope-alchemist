@@ -46,6 +46,7 @@ class TableAnnotation( object ):
     """
 
     _marker = object()
+    schema_invariants = ()
     
     def __init__(self, table_name, columns=(), properties=(), schema_order=(), listing_columns=(), order_by=()):
         self.table_name = table_name
@@ -230,6 +231,13 @@ class SQLAlchemySchemaTranslator( object ):
             d[ column.name ] = visitor.visit( column )
         return d
     
+    def applyTaggedValues( self, iface, annotation, kw ):
+        invariants = kw.get('invariants') or annotation.schema_invariants 
+        if not invariants:
+            return
+        assert isinstance( invariants, (list, tuple))
+        iface.setTaggedValue('invariants', invariants )
+        
     def translate( self, table, annotation, __module__, **kw):
         annotation = annotation or TableAnnotation( table.name ) 
         iname = kw.get('interface_name') or 'I%sTable'%table.name
@@ -254,11 +262,14 @@ class SQLAlchemySchemaTranslator( object ):
             bases = (ITableSchema,) + kw.get('bases')
         else:
             bases = (ITableSchema,)
+            
         DerivedTableSchema = InterfaceClass( iname,
                                              attrs = field_map,
                                              bases = bases,
                                              __module__ = __module__ )
-
+        
+        self.applyTaggedValues( DerivedTableSchema, annotation, kw )
+        
         return DerivedTableSchema
         
 def transmute(  table, annotation=None, __module__=None, **kw):
