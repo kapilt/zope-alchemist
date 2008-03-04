@@ -52,9 +52,13 @@ class SASchemaTests( TestCase ):
 
         for name, field in fields:
             assert name in ('user_id', 'user_name', '__name__')
-
-
-
+            
+    def testInvariants( self ):
+        
+        def validate( ob ): return False
+        
+        iusers = transmute( users, invariants=[validate] )
+        self.assertTrue( validate in iusers.getTaggedValue('invariants') )
 
 def test_suite():
     from unittest import TestSuite, makeSuite
