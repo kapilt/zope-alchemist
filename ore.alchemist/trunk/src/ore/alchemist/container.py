@@ -27,12 +27,14 @@ def stringKey( instance ):
     mapper = orm.object_mapper( instance )
     primary_key = mapper.primary_key_from_instance( instance )
     identity_key = '-'.join( map( str, primary_key ) )
-    return identity_key
+    return "obj-%s"%identity_key
 
 def valueKey( identity_key ):
     if not isinstance( identity_key, (str, unicode)):
         return identity_key
-    return identity_key.split('-')
+    if identity_key.startswith('obj-'):
+        return identity_key.split('-')[1:]
+    raise KeyError
 
 def contained(obj, parent=None, name=None):
     """An implementation of zope.app.container.contained.contained
@@ -155,7 +157,7 @@ class AlchemistContainer( Persistent, Contained ):
         value = self._query.get( valueKey(name) )
         if value is None:
             return default
-        value = contained( value, self, str(name) )
+        value = contained( value, self, stringKey(value) )
         return value
 
     def __iter__( self ):
