@@ -13,8 +13,7 @@ class ContainerTraverser( ItemTraverser ):
     def publishTraverse(self, request, name):
         """See zope.publisher.interfaces.IPublishTraverse"""
         try: # check if its directly by primary key
-            key = int( name )
-            return self.context[key]
+            return self.context[name]
         except ValueError, KeyError:
             view = queryMultiAdapter((self.context, request), name=name)
             if view is not None:

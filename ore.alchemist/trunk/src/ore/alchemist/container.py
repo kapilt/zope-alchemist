@@ -81,6 +81,17 @@ class SQLAlchemyNameChooser(NameChooser):
         session.save(obj)
         return stringKey(obj)
 
+class ContainerSublocations( object ):
+    """
+    by default, we do not dispatch to containers, as we can contain arbitrarily large sets
+    """ 
+
+    def __init__(self, container):
+        self.container = container
+
+    def sublocations(self):
+        return ()
+
 class ContainerTraverser( ItemTraverser ):
     # basically custom traverser that tries to coerce to
     # a name to integer before doing a sql lookup if
@@ -164,7 +175,7 @@ class AlchemistContainer( Persistent, Contained ):
             yield (name, contained(obj, self, name) )
 
     def get( self, name, default=None ):
-        value = self._query.get( name )
+        value = self._query.get( valueKey(name) )
         if value is None:
             return default
         value = contained( value, self, str(name) )

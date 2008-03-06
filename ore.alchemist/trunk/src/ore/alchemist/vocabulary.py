@@ -57,14 +57,21 @@ class VocabularyTable( object ):
     if the vocabulary definition is static.
     """
     
+    _vocabulary = None
+    
     def __init__( self, table, token_field, value_field ):
         self.table = table
         self.token_field = token_field
         self.value_field = value_field
         
+    @property
+    def vocabulary( self ):
+        if self._vocabulary:
+            return self._vocabulary
         terms = select( [getattr( table.c, value_field ),
                          getattr( table.c, token_field ) ] ).execute().fetchall()
-        self.vocabulary = vocabulary.SimpleVocabulary.fromItems( terms )
+        self._vocabulary = vocabulary.SimpleVocabulary.fromItems( terms )
+        return self._vocabulary
         
     def __getattr__( self, name ):
         return getattr( self.vocabulary, name )
