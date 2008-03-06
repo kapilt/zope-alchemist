@@ -58,7 +58,7 @@ class DatabaseAuthentication( Contained ):
         return self._makeInfo( user )
 
     def _makeInfo( self, user ):
-        return PrincipalInfo( "users.%s"%user.login,    # userid
+        return PrincipalInfo( user.login,               # userid
                               user.login,               # login
                               u"%s, %s"%(user.last_name, user.first_name), # title
                               user.email,               # description

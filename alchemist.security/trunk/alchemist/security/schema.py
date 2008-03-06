@@ -19,26 +19,25 @@ roles = rdb.Table(
 permission_role_map = rdb.Table(
    "zope_role_permission_map",
    metadata,
-   rdb.Column( "role_id", rdb.Integer, rdb.ForeignKey('zope_roles.role_id') ),
-   rdb.Column( "permission_id", rdb.Integer, rdb.ForeignKey('zope_permissions.permission_id') ),
+   rdb.Column( "role_id", rdb.Unicode(50) ),
+   rdb.Column( "permission_id", rdb.Unicode(50) ),
    rdb.Column( "object_type", rdb.Unicode(50), ),
-   rdb.Column( "object_id", rdb.Integer,  ),   
+   rdb.Column( "object_id", rdb.Unicode(40),  ),   
    )
    
 principal_role_map = rdb.Table(
    "zope_principal_role_map",
    metadata,
-   rdb.Column( "principal_id", rdb.Integer, index=True, nullable=False ),
-   rdb.Column( "role_id", rdb.Integer, nullable=False ),   
+#   rdb.Column( "principal_id", rdb.Integer, index=True, nullable=False ),
+   rdb.Column( "principal_id", rdb.Unicode(50), index=True, nullable=False ),#    # 
+   rdb.Column( "role_id", rdb.Unicode(50), nullable=False ),   
    rdb.Column( "setting", rdb.Boolean, nullable=False ),
    rdb.Column( "object_type", rdb.Integer, ),      
    rdb.Column( "object_id", rdb.Integer, ),         
    )
-
-   
+  
 def main( ):
-    
-    db = rdb.create_engine('sqlite://')
+    db = rdb.create_engine('postgres://localhost/bungeni')
     metadata.bind = db
     metadata.create_all()
     

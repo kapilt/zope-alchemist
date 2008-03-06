@@ -33,7 +33,7 @@ class RolePermissionMap(object):
         returned.
         """
         prm = schema.permission_role_map 
-        s =prm.select(
+        s = prm.select(
             [prm.role_id, prm.setting ]
             ).where( prm.permission_id == permission_id )
         return s.execute()        
@@ -44,7 +44,8 @@ class RolePermissionMap(object):
         If there is no setting, Unset is returned
         """
         prm = schema.permission_role_map        
-
+        return prm
+        
     def getRolesAndPermissions(self ):
         """Return a sequence of (permission_id, role_id, setting) here.
 
