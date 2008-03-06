@@ -7,7 +7,7 @@ from zope import schema, interface
 from zope.publisher.browser import BrowserView
 from zope.formlib import form
 from zope.security import proxy
-from zc.table import column
+from zc.table import column, batching, table
 from zc.table import table
 
 import simplejson
@@ -59,7 +59,7 @@ class ContainerListing( form.DisplayForm ):
     def listing( self ):
         context = proxy.removeSecurityProxy( self.context )
         
-        formatter = table.SortingFormatter( context,
+        formatter = batching.Formatter( context,
                                             self.request,
                                             context.values(),
                                             prefix="form",
