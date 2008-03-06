@@ -13,6 +13,7 @@ from zc.table import table
 import simplejson
 
 from sqlalchemy import orm
+from ore.alchemist.container import stringKey
 from ore.alchemist.model import queryModelDescriptor, queryModelInterface
 from i18n import _
 
@@ -27,10 +28,10 @@ class Getter( object ):
         return self.getter( item )
 
 def viewLink( item, formatter ):
-    return u'<a class="button-link" href="%s">View</a>'%(getattr( item, formatter.oid_key ))
+    return u'<a class="button-link" href="%s">View</a>'%( stringKey( item ) )
 
 def editLink( item, formatter ):
-    return u'<a class="button-link" href="%s/edit">Edit</a>'%(getattr( item, formatter.oid_key))
+    return u'<a class="button-link" href="%s/edit">Edit</a>'%( stringKey( item ) )
 
 def viewEditLinks( item, formatter ):
     return u'%s %s'%(viewLink( item, formatter), editLink( item, formatter ) )
@@ -65,8 +66,7 @@ class ContainerListing( form.DisplayForm ):
                                             visible_column_names = [c.name for c in self.columns],
                                             columns = self.columns )
         
-        # TODO : single primary key, need to reexamine 
-        formatter.oid_key = orm.class_mapper( context.domain_model ).primary_key[0].name
+        #formatter.mapper = [pk.name for pk in orm.class_mapper( context.domain_model )]
         formatter.cssClasses['table'] = 'listing'
         formatter.table_id = "datacontents"
         return formatter()
