@@ -19,7 +19,6 @@ from zope.app.container.interfaces import IContained
 from persistent import Persistent
 from sqlalchemy import orm, exceptions
 
-from zope.app.container.traversal import ItemTraverser
 from zope.publisher.interfaces import NotFound
 from zope.component import queryMultiAdapter
 from ore.alchemist import Session, interfaces
@@ -91,28 +90,6 @@ class ContainerSublocations( object ):
 
     def sublocations(self):
         return ()
-
-class ContainerTraverser( ItemTraverser ):
-    # basically custom traverser that tries to coerce to
-    # a name to integer before doing a sql lookup if
-    # if the conversion fails, than its likley not an 
-    # contained object ( need separate traversers for other )
-    # multi primary keys
-    
-    def publishTraverse(self, request, name):
-        """See zope.publisher.interfaces.IPublishTraverse"""
-        
-        view = queryMultiAdapter((self.context, request), name=name)
-        if view is not None:
-            return view
-
-        try: # check if its directly by primary key
-            key = int( name )
-            return self.context[key]
-        except ValueError, KeyError:
-            pass
-
-        raise NotFound(self.context, name, request)
 
 
 class AlchemistContainer( Persistent, Contained ):
