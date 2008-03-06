@@ -57,7 +57,7 @@ class ContentAddForm( core.DynamicFields, form.AddForm ):
         mapper = orm.object_mapper( ob )
         
         # TODO single primary key ( need changes to base container)
-        oid = mapper.primary_key_from_instance( ob )[0]
+        oid = mapper.primary_key_from_instance( ob )
         
         # retrieve the object with location and security information
         return self.context[ oid ]
