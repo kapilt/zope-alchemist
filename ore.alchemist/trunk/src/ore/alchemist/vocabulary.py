@@ -8,6 +8,8 @@ from zope import interface
 from zope.schema.interfaces import IContextSourceBinder
 from zope.schema import vocabulary
 
+import sqlalchemy as rdb
+
 class DatabaseSource( object ):
     """
     a simple implementation of vocabularies on top of a domain model, ideally should
@@ -15,10 +17,11 @@ class DatabaseSource( object ):
     """
     interface.implements( IContextSourceBinder )
     
-    def __init__( self, domain_model, token_field, value_field ):
+    def __init__( self, domain_model, token_field, value_field, title_field=None ):
         self.domain_model = domain_model
         self.token_field = token_field
         self.value_field = value_field
+        self.title_field = title_field
         
     def constructQuery( self, context ):
         session = Session()
@@ -28,10 +31,18 @@ class DatabaseSource( object ):
     def __call__( self, context=None ):
         query = self.constructQuery( context )
         results = query.all()
-        keyvalues = [ (getattr( ob, self.token_field), getattr( ob, self.value_field) ) \
-                      for ob in results ]
-                      
-        return vocabulary.SimpleVocabulary.fromItems( keyvalues )
+        
+        terms = []
+        title_field = self.title_field or self.token_field
+        for ob in results:
+            terms.append( 
+                vocabulary.SimpleTerm( 
+                    value = getattr( ob, self.value_field), 
+                    token = getattr( ob, self.token_field),
+                    title = getattr( ob, title_field) ,
+                    ))
+                    
+        return vocabulary.SimpleVocabulary( terms )
 
 class ObjectSource( DatabaseSource ):
     """
@@ -68,8 +79,8 @@ class VocabularyTable( object ):
     def vocabulary( self ):
         if self._vocabulary:
             return self._vocabulary
-        terms = select( [getattr( table.c, value_field ),
-                         getattr( table.c, token_field ) ] ).execute().fetchall()
+        terms = rdb.select( [ self.table.c[self.value_field], 
+                          self.table.c[self.token_field] ] ).execute().fetchall()
         self._vocabulary = vocabulary.SimpleVocabulary.fromItems( terms )
         return self._vocabulary
         
