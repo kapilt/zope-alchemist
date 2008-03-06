@@ -25,7 +25,7 @@ class DatabaseSource( object ):
         query = session.query( self.domain_model )
         return query
         
-    def __call__( self, context ):
+    def __call__( self, context=None ):
         query = self.constructQuery( context )
         results = query.all()
         keyvalues = [ (getattr( ob, self.token_field), getattr( ob, self.value_field) ) \
@@ -43,7 +43,7 @@ class ObjectSource( DatabaseSource ):
         query = session.query( self.domain_model )
         return query        
         
-    def __call__( self, context ):
+    def __call__( self, context=None ):
         query = self.constructQuery( context )
         results = query.all()
         terms = [vocabulary.SimpleTerm( value=ob, token=getattr( ob, self.value_field), title=getattr( ob, self.token_field ) ) \
