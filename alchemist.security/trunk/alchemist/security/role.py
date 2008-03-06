@@ -1,8 +1,23 @@
-from zope import interface
+from zope import interface, component
 from zope.securitypolicy.interfaces import IPrincipalRoleMap 
-
+from zope.securitypolicy.interfaces import Allow, Deny, Unset
 import sqlalchemy as rdb
 import schema
+
+def get_parent_names( ob ):
+    names = []
+    while ob is not None:
+        names.append( ob.__name__ )
+        ob = ob.__parent__
+    return names
+    
+@interface.implementer( IPrincipalRoleMap )
+def adaptprm( object ):
+    prm = PrincipalRoleMap()
+    return prm
+     
+
+BooleanAsSetting = { True : Allow, False : Deny, None : Unset }
 
 class PrincipalRoleMap( object ):
     
@@ -18,7 +33,7 @@ class PrincipalRoleMap( object ):
         then the empty list is returned.
         """
         prm = schema.principal_role_map
-        s = rdb.select( [prm.principal_id, prm.setting] ).where( prm.role_id == role_id )  
+        s = rdb.select( [prm.c.principal_id, prm.c.setting] ).where( prm.c.role_id == role_id )  
         return s.execute()
 
     def getRolesForPrincipal(self, principal_id):
@@ -31,15 +46,16 @@ class PrincipalRoleMap( object ):
         this principal, then the empty list is returned.
         """
         prm = schema.principal_role_map
-        s = rdb.select( [prm.role_id, prm.setting] ).where( prm.principal_id == principal_id )
-        return s.execute()
+        s = rdb.select( [prm.c.role_id, prm.c.setting] ).where( prm.c.principal_id == principal_id )
+        for o in s.execute():
+            yield o[0], BooleanAsSetting[ o[1] ]
 
     def getSetting(self, role_id, principal_id):
         """Return the setting for this principal, role combination
         """
         prm = schema.principal_role_map
-        s = rdb.select( [prm.settings] ).where( 
-                rdb.and_( prm.principal_id == principal_id, prm.role_id == role_id )
+        s = rdb.select( [prm.c.settings] ).where( 
+                rdb.and_( prm.c.principal_id == principal_id, prm.c.role_id == role_id )
                 )
         results = s.execute()
         return results.fetchone()[0]
@@ -52,5 +68,5 @@ class PrincipalRoleMap( object ):
         role id, principal id, and setting, in that order.
         """
         prm = schema.principal_role_map
-        return prm.select( [prm.role_id, prm.principle_id, prm.setting ] ).execute()
+        return prm.select( [prm.c.role_id, prm.c.principle_id, prm.c.setting ] ).execute()
         
