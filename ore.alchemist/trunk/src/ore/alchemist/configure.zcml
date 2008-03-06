@@ -21,15 +21,13 @@
      factory=".model.queryModelDescriptor"
      />
      
-  <view
+  <adapter
+      provides="zope.location.interfaces.ISublocations"
       for=".interfaces.IAlchemistContainer"
-      type="zope.publisher.interfaces.browser.IBrowserRequest"
-      provides="zope.publisher.interfaces.browser.IBrowserPublisher"
-      factory=".traversal.ContainerTraverser"
-      permission="zope.Public"
-      allowed_interface="zope.publisher.interfaces.browser.IBrowserPublisher"
-      />
+      factory=".container.ContainerSublocations"
+      />     
      
+
 
   <!--
   <utility provides=".interfaces.IEngineVocabularyUtility"
