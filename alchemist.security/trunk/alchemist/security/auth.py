@@ -10,7 +10,6 @@ from ore.alchemist import Session
 
 from interfaces import IAlchemistUser, IAlchemistAuth
 
-
 class PrincipalInfo( object ):
 
     interface.implements(interfaces.IPrincipalInfo)
