@@ -77,7 +77,10 @@ class Field( object ):
     group = None
     
     _valid_modes = ('edit', 'view', 'read', 'add', 'listing', 'search')
-
+    
+    # track kw arguements consumed when used in from dict mode
+    consumed = ()
+    
     def get( self, k, default=None):
         return self.__dict__.get(k, default )
 
@@ -91,6 +94,7 @@ class Field( object ):
             raise SyntaxError("can't specify property and omit for field %s"%kw.get('name'))
             
         modes = filter(None, kw.get('modes', cls.modes).split("|"))
+        consumed = []
         for k in kw:
             if k in cls._valid_modes:
                 if kw[k]:
@@ -102,13 +106,17 @@ class Field( object ):
                 d[k] = kw[k]
             else:
                 raise SyntaxError(k)
+            consumed.append(k)
+            
         if kw.get('omit'):
             modes = ()
         d['modes'] = "|".join( modes )
         instance = cls()
+        instance.consumed = consumed
         for k,v in d.items():
             setattr( instance, k, v )
         return instance
+    
     
 class ModelDescriptor( object ):
     """
