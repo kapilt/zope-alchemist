@@ -1,4 +1,5 @@
 
+from zope import interface
 from zope.viewlet import viewlet, manager
 from zope.formlib import form
 from zope.formlib.namedtemplate import NamedTemplate
@@ -18,6 +19,13 @@ class EditFormViewlet( form.SubPageEditForm, viewlet.ViewletBase ):
     def handle_edit_action( self, action, data ):
         return core.handle_edit_action( self, action, data )
     
+    def invariantErrors( self ):        
+        errors = []
+        for error in self.errors:
+            if isinstance( error, interface.Invalid ):
+                errors.append( error )
+        return errors
+            
 class DisplayFormViewlet( form.SubPageDisplayForm, viewlet.ViewletBase ):
     
     __init__ = viewlet.ViewletBase.__init__
