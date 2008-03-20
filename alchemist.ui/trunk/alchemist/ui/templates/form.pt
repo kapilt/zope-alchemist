@@ -26,7 +26,15 @@
                 i18n:translate="">                                                                                                                  
                 The status message.                                                                                                                 
             </dd>                                                                                                                                   
-        </dl>          
+        </dl>        
+        
+    <div class="invariant-errors" tal:condition="view/invariantErrors|nothing">
+        <ul>
+            <li tal:repeat="error view/invariantErrors" tal:content="error/message">
+            </li>
+        </ul>
+    </div>
+          
   
 <metal:block define-macro="form-body">
 
