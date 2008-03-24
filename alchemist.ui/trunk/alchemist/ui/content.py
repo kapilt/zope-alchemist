@@ -87,6 +87,12 @@ class ContentAddForm( core.DynamicFields, form.AddForm ):
         name = self.context.domain_model.__name__
         self._next_url = absoluteURL( self.context, self.request ) + '/@@add?portal_status_message=%s Added'%name
         
+    def invariantErrors( self ):        
+        errors = []
+        for error in self.errors:
+            if isinstance( error, interface.Invalid ):
+                errors.append( error )
+        return errors
         
 class ContentDisplayForm( BrowserView ):
     """
