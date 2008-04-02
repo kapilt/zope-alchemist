@@ -3,6 +3,7 @@ Generic Content Views
 
 """
 
+from zope import interface
 from zope.event import notify
 from zope.formlib import form
 from zope.lifecycleevent import ObjectCreatedEvent
