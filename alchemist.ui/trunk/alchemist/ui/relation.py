@@ -8,10 +8,13 @@ UI/Viewlets for Managing Relations
 from zope import interface
 from zope.formlib import form, namedtemplate
 from zope.app.pagetemplate import ViewPageTemplateFile
+from zope.security import proxy
 from zc.table import table, column
 from ore.alchemist import Session
 
+
 import sqlalchemy as rdb
+from sqlalchemy import orm
 import viewlet, core
 
 class RelationTableBaseViewlet( viewlet.FormViewlet ):
@@ -199,10 +202,12 @@ class Many2ManyEdit( RelationTableBaseViewlet ):
         self.state = 'search'
         d = core.constructQuery( self.form_fields, self.domain_model, data )
 
+        context = proxy.removeSecurityProxy( self.context )
         query = Session().query( self.domain_model)
         query = query.filter(
-            rdb.not_( getattr( self.domain_model, 'id').in_( [ ob.id for ob in getattr( self.context, self.property_name) ] ) )
+            rdb.not_( getattr( self.domain_model, 'id').in_( [ ob.id for ob in getattr( context, self.property_name) ] ) )
             )
+        
         if not d:
             self.results = query.all()
             return
@@ -223,10 +228,18 @@ class Many2ManyEdit( RelationTableBaseViewlet ):
         if related_count > 20:
             self.form_fields = core.setUpFields( self.domain_model, mode='search')
         else:
-            self.state = 'search'
-            query = session.query( self.domain_model ).filter(
-                rdb.not_( getattr( self.domain_model, 'id').in_( [ ob.id for ob in getattr( self.context, self.property_name) ] ) )
-              )
+            self.state = 'search'            
+            query = session.query( self.domain_model )
+            context = proxy.removeSecurityProxy( self.context )
+            
+            collection = getattr( context, self.property_name)
+            if collection:
+                mapper = orm.class_mapper( self.domain_model )
+                instance_pkey = mapper.primary_key_from_instance
+                pkey = mapper.primary_key[0]
+                query = query.filter(
+                    rdb.not_( pkey ).in_( [ instance_pkey(ob)[0] for ob in getattr( context, self.property_name) ] ) 
+                    )
             self.results = query.all()
         
     def condition_delete( self, action):
