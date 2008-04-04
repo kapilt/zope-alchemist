@@ -15,11 +15,17 @@ def ApplySecurity( ctx ):
         if c is object:
             continue
         protectLikeUnto( ctx.domain_model, c )
-        
-    for n,d in ctx.domain_interface.namesAndDescriptions(1):
-        protectName( ctx.domain_model, n, "zope.Public")
 
-    for n,d in ctx.domain_interface.namesAndDescriptions(1):
+    attributes = set([n for n,d in \
+                      ctx.domain_interface.namesAndDescriptions(1)])
+    attributes = attributes.union(
+        set( [ f.get('name') for f in ctx.descriptor.fields] )
+        )
+        
+    for n in attributes:
+        protectName( ctx.domain_model, n, "zope.Public")
+    
+    for n in attributes:
         protectSetAttribute( ctx.domain_model, n, "zope.Public")
         
     for k, v in ctx.domain_model.__dict__.items():
