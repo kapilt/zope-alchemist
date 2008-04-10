@@ -19,7 +19,7 @@ class EditFormViewlet( form.SubPageEditForm, viewlet.ViewletBase ):
 
     def setUpWidgets( self, ignore_request=False):
         self.adapters = self.adapters or {}
-        self.widgets = setUpEditWidgets(
+        self.widgets = form.setUpEditWidgets(
             self.form_fields, self.prefix, self.context, self.request,
             adapters=self.adapters, ignore_request=ignore_request
             )
