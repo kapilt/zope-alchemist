@@ -15,6 +15,15 @@ class EditFormViewlet( form.SubPageEditForm, viewlet.ViewletBase ):
 
     __init__ = viewlet.ViewletBase.__init__
 
+    adapters = None
+
+    def setUpWidgets( self, ignore_request=False):
+        self.adapters = self.adapters or {}
+        self.widgets = setUpEditWidgets(
+            self.form_fields, self.prefix, self.context, self.request,
+            adapters=self.adapters, ignore_request=ignore_request
+            )
+        
     @form.action(_(u"Edit"), condition=form.haveInputWidgets)
     def handle_edit_action( self, action, data ):
         return core.handle_edit_action( self, action, data )
