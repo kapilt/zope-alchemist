@@ -15,14 +15,13 @@ def get_parent_names( ob ):
 def adaptprm( object ):
     prm = PrincipalRoleMap()
     return prm
-     
 
 BooleanAsSetting = { True : Allow, False : Deny, None : Unset }
 
 class PrincipalRoleMap( object ):
     
     interface.implements( IPrincipalRoleMap )
-    
+
     def getPrincipalsForRole(self, role_id):
         """Get the principals that have been granted a role.
 
@@ -60,7 +59,7 @@ class PrincipalRoleMap( object ):
         results = s.execute()
         return results.fetchone()[0]
 
-    def getPrincipalsAndRoles():
+    def getPrincipalsAndRoles( self ):
         """Get all settings.
 
         Return all the principal/role combinations along with the
@@ -70,3 +69,18 @@ class PrincipalRoleMap( object ):
         prm = schema.principal_role_map
         return prm.select( [prm.c.role_id, prm.c.principle_id, prm.c.setting ] ).execute()
         
+    def assignRoleToPrincipal( self, role_id, principal_id ):
+        schema.principal_role_map.insert(
+            values=dict( role_id = role_id, principal_id = principal_id )
+            ).execute()
+
+    def removeRoleFromPrincipal( self, role_id, principal_id ):
+        prm = schema.principal_role_map
+        prm.delete(
+            rdb.and_( prm.c.role_id == role_id,
+                      prm.c.principal_id == principal_id )
+            ).execute()
+
+    def unsetRoleForPrincipal( self, role_id, principal_id ):
+        raise NotImplemented
+    
