@@ -31,9 +31,9 @@ principal_role_map = rdb.Table(
 #   rdb.Column( "principal_id", rdb.Integer, index=True, nullable=False ),
    rdb.Column( "principal_id", rdb.Unicode(50), index=True, nullable=False ),#    # 
    rdb.Column( "role_id", rdb.Unicode(50), nullable=False ),   
-   rdb.Column( "setting", rdb.Boolean, nullable=False ),
-   rdb.Column( "object_type", rdb.Integer, ),      
-   rdb.Column( "object_id", rdb.Integer, ),         
+   rdb.Column( "setting", rdb.Boolean, default=True, nullable=False ),
+#   rdb.Column( "object_type", rdb.Un, ),      
+#   rdb.Column( "object_id", rdb.Integer, ),         
    )
   
 def main( ):
