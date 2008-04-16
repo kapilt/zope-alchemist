@@ -7,6 +7,7 @@ role_permission_map = rdb.Table(
    metadata,
    rdb.Column( "role_id", rdb.Unicode(50) ),
    rdb.Column( "permission_id", rdb.Unicode(50) ),
+   rdb.Column( "setting", rdb.Boolean, default=True, nullable=False ),   
    rdb.Column( "object_type", rdb.Unicode(100), ),
    rdb.Column( "object_id", rdb.Integer ),   
    )
@@ -20,7 +21,7 @@ rdb.Index( "rpm_oid_idx",
 principal_role_map = rdb.Table(
    "zope_principal_role_map",
    metadata,
-   rdb.Column( "principal_id", rdb.Unicode(50), index=True, nullable=False ),#    # 
+   rdb.Column( "principal_id", rdb.Unicode(50), index=True, nullable=False ),
    rdb.Column( "role_id", rdb.Unicode(50), nullable=False ),   
    rdb.Column( "setting", rdb.Boolean, default=True, nullable=False ),
    rdb.Column( "object_type", rdb.Unicode(100) ),      

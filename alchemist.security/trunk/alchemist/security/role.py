@@ -69,8 +69,10 @@ class LocalPrincipalRoleMap( object ):
                           prm.c.object_type == self.object_type,
                           prm.c.object_id == self.oid )                          
                 )
-        results = s.execute()
-        return BooleanAsSetting[ results.fetchone()[0] ]
+        results = s.execute().fetchone()
+        if not results:
+            return Unset
+        return BooleanAsSetting[ results[0] ]
 
     def getPrincipalsAndRoles( self ):
         """Get all settings.
@@ -95,23 +97,34 @@ class LocalPrincipalRoleMap( object ):
             ).execute()
 
     def removeRoleFromPrincipal( self, role_id, principal_id ):
-        prm.delete(
-            and_( prm.c.role_id == role_id,
-                      prm.c.principal_id == principal_id,
+        s = select( [prm.c.role_id, prm.c.setting],
+                and_( prm.c.principal_id == principal_id,
                       prm.c.object_type == self.object_type,
-                      prm.c.object_id == self.oid )                                                
-            ).execute()
+                      prm.c.role_id == role_id, 
+                      prm.c.object_id == self.oid )
+            )
+        if s.execute().fetchone():
+            self.unsetRoleForPrincipal( role_id, principal_id )
 
-    def unsetRoleForPrincipal( self, role_id, principal_id ):
         prm.insert(
             values=dict( role_id = role_id, 
                          principal_id = principal_id,
                          setting = False,
                          object_id = self.oid,
                          object_type = self.object_type )
-            ).execute()        
+            ).execute()    
+        
 
-    
+        
+    def unsetRoleForPrincipal( self, role_id, principal_id ):
+        prm.delete(
+            and_( prm.c.role_id == role_id,
+                      prm.c.principal_id == principal_id,
+                      prm.c.object_type == self.object_type,
+                      prm.c.object_id == self.oid )                                                
+            ).execute()
+        
+
 class GlobalPrincipalRoleMap( LocalPrincipalRoleMap ):
     
     def __init__( self, context ):

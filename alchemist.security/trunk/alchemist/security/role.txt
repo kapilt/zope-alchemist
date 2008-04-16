@@ -47,11 +47,18 @@ If we make a grant in a different context, its isolated to that context
   >>> list(elephant_prm.getRolesForPrincipal(u'test_user'))
   [(u'zope.Manager', PermissionSetting: Allow)]  
 
-We can also remove grants:
+We can also deny grants:
 
   >>> elephant_prm.removeRoleFromPrincipal( u'zope.Manager', u'test_user')
   >>> list(elephant_prm.getRolesForPrincipal(u'test_user'))
+  [(u'zope.Manager', PermissionSetting: Deny)]
+
+Or simply remove them:
+
+  >>> elephant_prm.unsetRoleForPrincipal(  u'zope.Manager', u'test_user')
+  >>> list(elephant_prm.getRolesForPrincipal(u'test_user'))
   []
+
 
 Verify this doesn't affect other contexts:
 
@@ -79,4 +86,5 @@ We can also explicitly deny roles for a user:
   
   >>> global_prm.unsetRoleForPrincipal(u'zope.Manager', u'test_user')
   >>> list(global_prm.getRolesForPrincipal(u'test_user'))
-  [(u'zope.Manager', PermissionSetting: Deny)]
+  []
+  >>> metadata.drop_all()  

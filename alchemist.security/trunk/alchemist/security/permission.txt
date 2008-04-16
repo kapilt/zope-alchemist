@@ -1,0 +1,92 @@
+Permission Role Mapping
+-----------------------
+
+First let's setup a table, and a mapped class:
+
+  >>> from alchemist.security.schema import metadata
+  >>> content = rdb.Table( 'content', metadata,
+  ...    rdb.Column('content_id', rdb.Integer, primary_key=True),
+  ...    useexisting=True )
+  >>> class Content( object ): 
+  ...    pass
+  >>> orm.mapper( Content, content )
+  <sqlalchemy.orm.mapper.Mapper ...>
+
+And test against a sqllite in memory database:
+
+  >>> metadata.bind = rdb.create_engine('sqlite://')
+  >>> metadata.create_all()
+
+And create some sample content to test against:
+
+  >>> zebra = Content()
+  >>> elephant = Content()
+  >>> session = Session()
+  >>> session.save( zebra )
+  >>> session.save( elephant )  
+  >>> transaction.commit()
+  >>> zebra.content_id
+  1
+  >>> elephant.content_id
+  2
+  
+
+Local Permission Role Grants
+----------------------------
+
+Now let's test that we can grant a permission to a local context:
+
+  >>> from alchemist.security.permission import LocalRolePermissionMap
+  >>> zebra_rpm = LocalRolePermissionMap( zebra )  
+  >>> zebra_rpm.grantPermissionToRole( u'zope.EditContent', u'zope.Editor')
+  >>> list( zebra_rpm.getPermissionsForRole(u'zope.Editor') )
+  [(u'zope.EditContent', PermissionSetting: Allow)]
+
+If we make a grant in a different context, its isolated to that context
+ 
+  >>> elephant_rpm = LocalRolePermissionMap( elephant )
+  >>> elephant_rpm.grantPermissionToRole( u'zope.DeleteContent', u'zope.Editor')
+  >>> list(elephant_rpm.getPermissionsForRole(u'zope.Editor'))
+  [(u'zope.DeleteContent', PermissionSetting: Allow)]  
+
+We can also deny grants:
+
+  >>> elephant_rpm.denyPermissionToRole( u'zope.DeleteContent', u'zope.Editor')
+  >>> list(elephant_rpm.getPermissionsForRole(u'zope.Editor'))
+  [(u'zope.DeleteContent', PermissionSetting: Deny)]
+
+Or simply remove them:
+
+  >>> elephant_rpm.unsetPermissionFromRole(  u'zope.DeleteContent', u'zope.Editor')
+  >>> list(elephant_rpm.getPermissionsForRole(u'zope.Editor'))
+  []
+
+Verify this doesn't affect other contexts:
+
+  >>> list( zebra_rpm.getRolesAndPermissions() )
+  [(u'zope.EditContent', u'zope.Editor', PermissionSetting: Allow)]
+  
+Global Permission Role Grants
+------------------
+
+We can also grant roles globally:
+
+  >>> from alchemist.security.permission import GlobalRolePermissionMap
+  >>> global_rpm = GlobalRolePermissionMap(None)
+  >>> global_rpm.grantPermissionToRole( u'zope.AdminContent', u'zope.Manager')
+  >>> global_rpm.getSetting( u'zope.AdminContent', u'zope.Manager')
+  PermissionSetting: Allow
+  
+A global context, is isolated from local contexts from a definition perspective,
+we rely on the security machinery to chain the contexts, when doing assertions:
+  
+  >>> list(global_rpm.getPermissionsForRole(u'zope.Manager'))
+  [(u'zope.AdminContent', PermissionSetting: Allow)]
+  
+We can also explicitly deny roles for a user:  
+  
+  >>> global_rpm.unsetPermissionFromRole(u'zope.AdminContent', u'zope.Manager')
+  >>> list(global_rpm.getPermissionsForRole(u'zope.Manager'))
+  []  
+
+  
