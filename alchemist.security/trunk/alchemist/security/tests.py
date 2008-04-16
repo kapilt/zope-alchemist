@@ -9,10 +9,10 @@ def setUp( test ):
     pass
     
 def tearDown( test ):
-    pass
+    orm.clear_mappers()
 
 def test_suite():
-    doctests = ('role.txt',)
+    doctests = ('role.txt','permission.txt')
 
     globs = dict(Session=Session, 
                  Allow=Allow,
