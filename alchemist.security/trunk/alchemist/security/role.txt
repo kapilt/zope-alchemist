@@ -1,0 +1,82 @@
+Role Principal Mapping
+----------------------
+
+First let's setup a table, and a mapped class:
+
+  >>> from alchemist.security.schema import metadata
+  >>> content = rdb.Table( 'content', metadata,
+  ...    rdb.Column('content_id', rdb.Integer, primary_key=True) )
+  >>> class Content( object ): 
+  ...    pass
+  >>> orm.mapper( Content, content )
+  <sqlalchemy.orm.mapper.Mapper ...>
+
+And test against a sqllite in memory database:
+
+  >>> metadata.bind = rdb.create_engine('sqlite://')
+  >>> metadata.create_all()
+
+And create some sample content to test against:
+
+  >>> zebra = Content()
+  >>> elephant = Content()
+  >>> session = Session()
+  >>> session.save( zebra )
+  >>> session.save( elephant )  
+  >>> transaction.commit()
+  >>> zebra.content_id
+  1
+  >>> elephant.content_id
+  2
+  
+Local Role Grants
+-----------------
+
+Now let's test that we can grant a permission to a local context:
+
+  >>> from alchemist.security.role import LocalPrincipalRoleMap
+  >>> zebra_prm = LocalPrincipalRoleMap( zebra )  
+  >>> zebra_prm.assignRoleToPrincipal( u'zope.Editor', u'test_user')
+  >>> list( zebra_prm.getRolesForPrincipal(u'test_user') )
+  [(u'zope.Editor', PermissionSetting: Allow)]
+
+If we make a grant in a different context, its isolated to that context
+ 
+  >>> elephant_prm = LocalPrincipalRoleMap( elephant )
+  >>> elephant_prm.assignRoleToPrincipal( u'zope.Manager', u'test_user')
+  >>> list(elephant_prm.getRolesForPrincipal(u'test_user'))
+  [(u'zope.Manager', PermissionSetting: Allow)]  
+
+We can also remove grants:
+
+  >>> elephant_prm.removeRoleFromPrincipal( u'zope.Manager', u'test_user')
+  >>> list(elephant_prm.getRolesForPrincipal(u'test_user'))
+  []
+
+Verify this doesn't affect other contexts:
+
+  >>> list( zebra_prm.getPrincipalsAndRoles() )
+  [(u'zope.Editor', u'test_user', PermissionSetting: Allow)]
+  
+Global Role Grants
+------------------
+
+We can also grant roles globally:
+
+  >>> from alchemist.security.role import GlobalPrincipalRoleMap
+  >>> global_prm = GlobalPrincipalRoleMap(None)
+  >>> global_prm.assignRoleToPrincipal( u'zope.Manager', u'test_user2')
+  >>> global_prm.getSetting( u'zope.Manager', u'test_user2')
+  PermissionSetting: Allow
+  
+A global context, is isolated from local contexts from a definition perspective,
+we rely on the security machinery to chain the contexts, when doing assertions:
+  
+  >>> list(global_prm.getPrincipalsForRole(u'zope.Manager'))
+  [(u'test_user2', PermissionSetting: Allow)]
+  
+We can also explicitly deny roles for a user:  
+  
+  >>> global_prm.unsetRoleForPrincipal(u'zope.Manager', u'test_user')
+  >>> list(global_prm.getRolesForPrincipal(u'test_user'))
+  [(u'zope.Manager', PermissionSetting: Deny)]
