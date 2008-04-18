@@ -189,6 +189,9 @@ def getSelectedObjects( selection_column, request, domain_model ):
     session = Session()
     return filter( None, [ session.get( domain_model, k) for k in keys] )
     
+def null_validator( form, action, data ):
+    return ()
+    
 class BaseForm( form.FormBase ):
     
     template = NamedTemplate('alchemist.form')        

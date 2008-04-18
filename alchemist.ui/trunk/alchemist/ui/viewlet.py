@@ -23,8 +23,12 @@ class EditFormViewlet( form.SubPageEditForm, viewlet.ViewletBase ):
             self.form_fields, self.prefix, self.context, self.request,
             adapters=self.adapters, ignore_request=ignore_request
             )
+            
+    @form.action(_(u"Cancel"), condition=form.haveInputWidgets, validator=core.null_validator)
+    def handle_cancel_action( self, action, data ):
+        return core.handle_edit_action( self, action, data )            
         
-    @form.action(_(u"Edit"), condition=form.haveInputWidgets)
+    @form.action(_(u"Save"), condition=form.haveInputWidgets)
     def handle_edit_action( self, action, data ):
         return core.handle_edit_action( self, action, data )
     
