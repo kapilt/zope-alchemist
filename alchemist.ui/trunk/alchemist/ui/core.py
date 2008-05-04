@@ -92,9 +92,9 @@ def setWidgetErrors( widgets, errors ):
     for widget in widgets:
         name = widget.context.getName()
         for error in errors:
-        if isinstance(error, interface.Invalid) and name in error.args[1:]:
-            if widget._error is None:
-                widget._error = error
+            if isinstance(error, interface.Invalid) and name in error.args[1:]:
+                if widget._error is None:
+                    widget._error = error
 
 def setUpColumns( domain_model ):
     """
