@@ -88,10 +88,17 @@ def setUpFields( domain_model, mode ):
     return form_fields
 
 
+def setWidgetErrors( widgets, errors ):
+    for widget in widgets:
+        name = widget.context.getName()
+        for error in errors:
+        if isinstance(error, interface.Invalid) and name in error.args[1:]:
+            if widget._error is None:
+                widget._error = error
+
 def setUpColumns( domain_model ):
     """
     use model descriptor on domain model extract columns for table listings
-
     """
     columns = []
     domain_interface = list( interface.implementedBy(domain_model) )[0]
@@ -221,7 +228,8 @@ class DynamicFields( object ):
         domain_model = self.getDomainModel()
         self.form_fields = setUpFields( domain_model, self.mode )
         super( DynamicFields, self).update()
-
+        setWidgetErrors( self.widgets, self.errors )
+        
     @property
     def form_name( self ):
         # play nice w/ containers or content views, or content
