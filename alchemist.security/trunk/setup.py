@@ -1,19 +1,30 @@
 from setuptools import setup, find_packages
 
+
 setup(
     name="alchemist.security",
-    version="0.2.0",
-    install_requires=['setuptools', 'ore.alchemist'],
-    packages=find_packages(exclude=["*.tests"]),
-#    package_dir= {'':'src'},
-    namespace_packages=['alchemist'],
-    package_data = {
-      '': ['*.txt', '*.zcml', '*.pt'],
-    },
-    zip_safe=False,
+    version="0.4.0",    
     author='Kapil Thangavelu',
     author_email='kapil.foss@gmail.com',
-    description="z3 security components with relational storage",
-    license='LGPL',
+    description="Relational Implementation of Zope Security components",
+    long_description="""
+    A relational implementation of zope security components, including
+    authentication, principal role mappings (global and local),
+    permission role mappings ( global and local ).
+    """,
+    license='ZPL',
     keywords="zope zope3",
+    classifiers=['Programming Language :: Python',
+                 'Environment :: Web Environment',
+                 "License :: OSI Approved :: Zope Public License",                 
+                 'Topic :: Internet :: WWW/HTTP :: WSGI :: Application',
+                 'Framework :: Zope3',
+                 ],    
+    install_requires=['setuptools', 'ore.alchemist'],
+    packages=find_packages(exclude=["*.tests"]),
+    namespace_packages=['alchemist'],
+    package_data = {
+      '': ['*.txt', '*.zcml'],
+    },
+    zip_safe=False,
     )
