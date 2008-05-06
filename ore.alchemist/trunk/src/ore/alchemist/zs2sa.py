@@ -52,7 +52,7 @@ class FieldTranslator( object ):
 
 class StringTranslator(FieldTranslator):
     
-    column_type = rdb.String
+    column_type = rdb.Text
 
     def __init__(self, column_type=None):
         self.column_type = column_type or self.column_type
