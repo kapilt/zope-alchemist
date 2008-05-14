@@ -120,3 +120,29 @@ class ContentEditForm( BrowserView ):
     
     def __call__( self ):
         return self.template()
+
+class EditForm( form.EditForm )
+
+    adapters = None
+
+    def setUpWidgets( self, ignore_request=False):
+        self.adapters = self.adapters or {}
+        self.widgets = form.setUpEditWidgets(
+            self.form_fields, self.prefix, self.context, self.request,
+            adapters=self.adapters, ignore_request=ignore_request
+            )
+            
+    @form.action(_(u"Cancel"), condition=form.haveInputWidgets, validator=core.null_validator)
+    def handle_cancel_action( self, action, data ):
+        return core.handle_edit_action( self, action, data )            
+        
+    @form.action(_(u"Save"), condition=form.haveInputWidgets)
+    def handle_edit_action( self, action, data ):
+        return core.handle_edit_action( self, action, data )
+    
+    def invariantErrors( self ):        
+        errors = []
+        for error in self.errors:
+            if isinstance( error, interface.Invalid ):
+                errors.append( error )
+        return errors
