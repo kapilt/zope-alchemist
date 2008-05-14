@@ -1,5 +1,4 @@
 """
-
 namechooser and contained implementation from z3c.zalchemy (ZPL 2.1)
 
 $Id$
@@ -11,7 +10,6 @@ from zope.configuration.name import resolve
 from zope.exceptions.interfaces import UserError
 from zope.location.interfaces import ILocation
 from zope.proxy import sameProxiedObjects
-from zope.security.proxy import removeSecurityProxy
 
 from zope.app.container.contained import Contained, ContainedProxy, NameChooser
 from zope.app.container.interfaces import IContained
@@ -19,8 +17,6 @@ from zope.app.container.interfaces import IContained
 from persistent import Persistent
 from sqlalchemy import orm, exceptions
 
-from zope.publisher.interfaces import NotFound
-from zope.component import queryMultiAdapter
 from ore.alchemist import Session, interfaces
 
 def stringKey( instance ):
