@@ -121,7 +121,7 @@ class ContentEditForm( BrowserView ):
     def __call__( self ):
         return self.template()
 
-class EditForm( form.EditForm )
+class EditForm( form.EditForm ):
 
     adapters = None
 

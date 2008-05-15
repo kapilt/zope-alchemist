@@ -1,6 +1,8 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser">
+
+  <include package="zope.viewlet" file="meta.zcml" />
   
   <!-- Default UI Layer for Alchemist -->
   <interface
