@@ -8,17 +8,14 @@ assert session is Session()
 
 """
 
-from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm.scoping import ScopedSession
 
 import manager
 
-class zope_txn_session( object ):
-    # transaction integration
-    def __init__( self, session_factory ):
-        self.session_factory = session_factory
-
+class TransactionScoped( ScopedSession ):
     def __call__( self, **kwargs ):
-        session = self.session_factory( **kwargs )
+        session = super( TransactionScoped, self).__call__( **kwargs )
         if not session.joined:
             data_manager = manager.SessionDataManager( session )
             data_manager.register()
@@ -35,12 +32,7 @@ def _zope_session( session_factory ):
             super( ZopeSession, self).__init__( **kwargs )
     return ZopeSession
 
-Session = zope_txn_session(
-               scoped_session(
-                     _zope_session(
-                           sessionmaker( autoflush=True, transactional=True )
-                           )
-                     )
-               )
+Session = TransactionScoped( _zope_session( sessionmaker( autoflush=True,
+                                                          transactional=True ) ) )
 
 
