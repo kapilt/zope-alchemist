@@ -57,19 +57,21 @@ class ContainerListing( form.DisplayForm ):
         return self.index()
         
     def listing( self ):
+        return self.formatter()
+    
+    @property
+    def formatter( self ):
         context = proxy.removeSecurityProxy( self.context )
         
-        formatter = batching.Formatter( context,
-                                            self.request,
-                                            context.values(),
-                                            prefix="form",
-                                            visible_column_names = [c.name for c in self.columns],
-                                            columns = self.columns )
-        
-        #formatter.mapper = [pk.name for pk in orm.class_mapper( context.domain_model )]
+        formatter = table.AlternatingRowFormatter( context,
+                                                   self.request,
+                                                   context.values(),
+                                                   prefix="form",
+                                                   columns = self.columns )
         formatter.cssClasses['table'] = 'listing'
         formatter.table_id = "datacontents"
-        return formatter()
+        return formatter
+        
 
     @property
     def form_name( self ):
