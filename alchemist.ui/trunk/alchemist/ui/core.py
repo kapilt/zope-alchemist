@@ -101,7 +101,12 @@ def setUpColumns( domain_model ):
     use model descriptor on domain model extract columns for table listings
     """
     columns = []
-    domain_interface = list( interface.implementedBy(domain_model) )[0]
+    domain_interface = list( interface.implementedBy(domain_model) )
+
+    if not domain_interface:
+        raise SyntaxError("Model must have domain interface %r"%(domain_model ) )
+
+    domain_interface = domain_interface[0]
     domain_annotation = model.queryModelDescriptor( domain_interface )
     
     field_column_names = domain_annotation and domain_annotation.listing_columns \
@@ -284,10 +289,11 @@ class DynamicFields( object ):
         # find unique columns in data model.. TODO do this statically
         mapper = orm.class_mapper( domain_model  )
         unique_columns = []
-        for c in mapper.select_table.columns:
-            if c.unique:
-                unique_columns.append( (c.name,c) )
-                
+        for t in mapper.tables:
+            for c in t.columns:
+                if c.unique:
+                    unique_columns.append( (c.name,c) )
+
         errors = []
         # query out any existing values with the same unique values,
         
