@@ -101,4 +101,32 @@
      name="view"
      />
      
+  <class class="sqlalchemy.orm.collections.InstrumentedList">
+    <allow interface=".interfaces.IIterableSequence"/>
+  </class>
+
+  <class class=".relation.Many2ManyEdit">
+    <allow interface="zope.formlib.interfaces.ISubPageForm"/>
+  </class>
+
+  <class class=".relation.Many2ManyDisplay">
+    <allow interface="zope.formlib.interfaces.ISubPageForm"/>
+  </class>
+
+  <class class=".relation.One2ManyDisplay">
+    <allow interface="zope.formlib.interfaces.ISubPageForm"/>
+  </class>
+
+  <class class=".relation.One2ManyEdit">
+    <allow interface="zope.formlib.interfaces.ISubPageForm"/>
+  </class>
+
+  <class class=".relation.One2OneEdit">
+    <allow interface="zope.formlib.interfaces.ISubPageForm"/>
+  </class>
+
+  <class class=".relation.One2OneDisplay">
+    <allow interface="zope.formlib.interfaces.ISubPageForm"/>
+  </class>
+		
 </configure>

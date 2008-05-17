@@ -167,11 +167,9 @@ class Many2ManyEdit( RelationTableBaseViewlet ):
         return columns
     
     def update( self ):
-
         # we capture state from the last processed action, so our next action
         # becomes available.
         self.state = self.request.get( "%s.state"%self.property_name, self.state )
-        
         # our previous state when we process searches is the add state, in order
         # to process the form values for the search action, we need to have search
         # widgets setup prior to the handler invocation, so do that here..
@@ -185,7 +183,7 @@ class Many2ManyEdit( RelationTableBaseViewlet ):
             self.results = getattr( self.context, self.property_name)
 
         super( Many2ManyEdit, self).update()
-
+        
         # if our state changes to listing
         if not self.results and self.state == 'listing':
             self.results = getattr( self.context, self.property_name)
@@ -201,11 +199,19 @@ class Many2ManyEdit( RelationTableBaseViewlet ):
         """
         self.state = 'search'
         d = core.constructQuery( self.form_fields, self.domain_model, data )
-
+        
         context = proxy.removeSecurityProxy( self.context )
+        
+        mapper = orm.class_mapper( self.domain_model )
+        instance_pkey = mapper.primary_key_from_instance
+        pkey = mapper.primary_key[0]
+        
         query = Session().query( self.domain_model)
         query = query.filter(
-            rdb.not_( getattr( self.domain_model, 'id').in_( [ ob.id for ob in getattr( context, self.property_name) ] ) )
+            rdb.not_(
+                pkey.in_(
+                    [ ob.id for ob in getattr( context, self.property_name) ]
+                    ) )
             )
         
         if not d:
@@ -238,7 +244,7 @@ class Many2ManyEdit( RelationTableBaseViewlet ):
                 instance_pkey = mapper.primary_key_from_instance
                 pkey = mapper.primary_key[0]
                 query = query.filter(
-                    rdb.not_( pkey ).in_( [ instance_pkey(ob)[0] for ob in getattr( context, self.property_name) ] ) 
+                    rdb.not_( pkey.in_( [ instance_pkey(ob)[0] for ob in getattr( context, self.property_name) ] ) )
                     )
             self.results = query.all()
         
@@ -292,7 +298,8 @@ class Many2ManyEdit( RelationTableBaseViewlet ):
                                      self.domain_model )
 
         # add objects to the association
-        association = getattr( self.context, self.property_name )
+        association = proxy.removeSecurityProxy( getattr( self.context, self.property_name ) )
+
         for v in values:
             if v not in association:
                 association.append( v )
@@ -302,8 +309,8 @@ class Many2ManyEdit( RelationTableBaseViewlet ):
             self.status = "%s Associated"%(self.domain_model.__name__.title()+'s')
         else:
             self.status = "%s Associated"%self.domain_model.__name__.title()
-            
-        # reset selection column 
+
+        # reset selection column
         self.form_reset = True
     
     def condition_cancel( self, action):
