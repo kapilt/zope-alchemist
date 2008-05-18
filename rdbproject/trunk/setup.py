@@ -6,7 +6,7 @@ long_description = (open('README.txt').read()
 
 setup(
     name='rdbproject',
-    version='0.3.0dev',
+    version='0.3.1-dev',
     author='Kapil Thangavelu',
     author_email='kapil.foss@gmail.com',
     url='http://code.google.com/p/zope-alchemist',
@@ -22,6 +22,6 @@ setup(
     tests_require=['zope.testing', 'zc.buildout', 'Cheetah', 'PasteScript'],
     test_suite='tests.test_suite',
     entry_points={
-    'console_scripts': ['grokproject = rdbproject:main'],
+    'console_scripts': ['rdbproject = rdbproject:main'],
     'paste.paster_create_template': ['alchemist = rdbproject:AlchemistProject']},
     )

@@ -46,6 +46,6 @@ def main():
         supplied_value = getattr(options, var.name)
         if supplied_value is not None:
             extra_args.append('%s=%s' % (var.name, supplied_value))
-    exit_code = runner.run(option_args + ['-t', 'grok', project]
+    exit_code = runner.run(option_args + ['-t', 'alchemist', project]
                            + extra_args)
     sys.exit(exit_code)

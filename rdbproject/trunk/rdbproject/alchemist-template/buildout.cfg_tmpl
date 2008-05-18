@@ -1,0 +1,38 @@
+[buildout]
+extends = http://download.zope.org/zope3.4/versions.cfg
+versions = versions
+develop = .
+parts = app ipython test
+index = http://pypi.python.org/simple
+
+[versions]
+zope.publisher = 3.5.1
+setuptools = 0.6c8
+
+[app]
+# python interpreter w/ app eggs for all entry points found in these eggs
+recipe = zc.recipe.egg
+eggs = 
+       ${package}
+       ${dbi}
+       zope.app.securitypolicy
+       z3c.evalexception>=2.0
+       Paste
+       PasteScript
+       PasteDeploy
+interpreter = python
+
+[ipython]
+# ipython shell w/ app eggs
+recipe = zc.recipe.egg
+eggs =
+   $${app:eggs}
+   ipython
+scripts = ipython
+
+[test]
+# test runner 
+recipe = zc.recipe.testrunner
+eggs = $${app:eggs}
+defaults = ['--tests-pattern', '^f?tests$$', '-v']
+
