@@ -1,0 +1,36 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser">
+
+  <include package="zope.app.zcmlfiles" file="meta.zcml" />
+  <include package="zope.publisher" />
+  <include package="zope.traversing" />
+  <include package="zope.app.zcmlfiles" />
+  <include package="zope.contentprovider" />
+  <include package="zope.formlib" />
+
+  <!-- We override the default zope publisher request factory which expects a zodb -->
+  <includeOverrides package="ore.wsgiapp"/>
+
+  <!-- setup database meta configuration -->
+  <include package="ore.alchemist" file="meta.zcml" />
+  <include package="ore.alchemist"/>  
+  <include package="alchemist.ui" />
+
+  <!-- configure menu subsystem -->
+  <include package="z3c.template" file="meta.zcml"/>  
+  <include package="z3c.menu.ready2go" file="meta.zcml" />  
+  <include package="z3c.menu.ready2go" />
+
+  <!-- include cookie authentication -->
+  <include package="wc.cookiecredentials"/>
+
+  <!-- wire application -->
+  <include package="${package}"/>
+  
+  <!-- Setup Default Skin For Application   -->
+  <browser:defaultSkin name="${package}"/>
+
+  <!-- Default Role / Permission Mapping -->
+  <include file="security.zcml" />
+
+</configure>

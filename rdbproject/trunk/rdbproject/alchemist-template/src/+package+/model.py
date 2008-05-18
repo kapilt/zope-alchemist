@@ -1,18 +1,17 @@
-import sqlalchemy as rdb
-#from elixir import Entity, Field, OneToOne, ManyToMany, ManyToOne, OneToMany, options_defaults
-#from sqlalchemy import String, Date, Boolean, Integer, Float
 
-__all__ = []
+from sqlalchemy import orm
+from zope import interface
 
-options_defaults.update({
-    'inheritance' : 'multi',
-    'shortnames': True,
-#    'table_options' : {'mysql_engine':'InnoDB'},
-    })
+import schema
+import interfaces
 
+class User( object ):
 
-class Users( object ):
-
+    interface.implements( interfaces.IUser )
+    
     def checkPassword( self, *args, **kw):
         return True
+
+orm.mapper( User, schema.users )
+    
 

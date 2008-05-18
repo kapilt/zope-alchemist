@@ -1,4 +1,4 @@
-
+import re
 from zope import interface, schema
 from ore.alchemist.interfaces import IAlchemistContent, IAlchemistContainer
 from zope.publisher.interfaces.browser import IDefaultBrowserLayer
@@ -40,9 +40,29 @@ class IApplicationContainer( IAlchemistContainer ):
     """ basic container interface
     """
 
+class NotAnEmailAddress(schema.ValidationError):
+    """This is not a valid email address"""
+    
+def check_email( email ):
+    if EMAIL_RE.match( email ) is None:
+        raise NotAnEmailAddress(email)
+        return False
+    return True
+
+EMAIL_RE = "([0-9a-zA-Z_&.+-]+!)*[0-9a-zA-Z_&.+-]+@(([0-9a-zA-Z]([0-9a-zA-Z-]*[0-9a-z-A-Z])?\.)+[a-zA-Z]{2,6}|([0-9]{1,3}\.){3}[0-9]{1,3})$"
+EMAIL_RE = re.compile( EMAIL_RE )            
+
+
 class IUser( IApplicationContent ):
     """ """
-    jobTitle = schema.TextLine( title=_(u"Last Name"), max_length=30 )
+    
+    login = schema.TextLine(title=_(u"User Id"))
+    first_name = schema.TextLine(title=_(u"First Name"))
+    last_name = schema.TextLine(title=_(u"Last Name"))
+    email = schema.TextLine(title=_(u"Email Address"), constraint=check_email )
+    
+
+    
     empNum = schema.Int( title=_(u"Employee Number"))
     status = schema.Choice( title=_(u"Status"), values=["A", "I"] )
     role = schema.TextLine(title=_(u"Role") )

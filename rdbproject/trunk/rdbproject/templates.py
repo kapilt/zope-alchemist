@@ -16,9 +16,11 @@ class AlchemistProject(templates.Template):
     required_templates = []
 
     vars = [
-        utils.ask_var('user', 'Name of an initial administrator user',
-                default=NoDefault),
         utils.ask_var('db_uri', 'Database URI',
+                default=NoDefault),
+        utils.ask_var('dbi', 'Database Module',
+                default=NoDefault),        
+        utils.ask_var('user', 'Name of an initial administrator user',
                 default=NoDefault),
         utils.ask_var('passwd', 'Password for the initial administrator user',
                 default=NoDefault, should_echo=False),
@@ -35,7 +37,7 @@ class AlchemistProject(templates.Template):
         ]
 
     def check_vars(self, vars, cmd):
-        if vars['package'] in ('grok', 'zope'):
+        if vars['package'] in ('alchemist', 'zope'):
             print
             print "Error: The chosen project name results in an invalid " \
                   "package name: %s." % vars['package']
@@ -84,6 +86,9 @@ class AlchemistProject(templates.Template):
         os.chdir(vars['project'])
         eggs_dir = vars.get('explicit_eggs_dir',
                             utils.get_buildout_default_eggs_dir())
+        if not eggs_dir:
+            eggs_dir = 'eggs'
+
         if not os.path.isdir(eggs_dir):
             os.mkdir(eggs_dir)
 
