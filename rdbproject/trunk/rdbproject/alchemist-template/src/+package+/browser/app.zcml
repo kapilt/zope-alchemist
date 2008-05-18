@@ -1,0 +1,90 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser">
+
+  <browser:page
+      name="error"
+      for="..interfaces.IApplication"
+      template="templates/error.pt"
+      permission="zope.Public"
+      />
+
+  <browser:page
+      name="app-template"
+      for="*"
+      template="templates/layout.pt"
+      permission="zope.Public"
+      />
+
+  <browser:page
+      name="index.html"
+      for="..interfaces.IApplication"
+      template="templates/app-index.pt"
+      permission="zope.Public"
+      />
+
+  <browser:page
+     for="..interfaces.IApplication"
+     name="login"
+     class=".login.Login"
+     permission="zope.Public"
+     />
+
+  <browser:page
+     for="..interfaces.IApplication"
+     name="logout"
+     class=".login.Logout"
+     permission="zope.Public"
+     />
+
+  <!-- Not Implemented Views -->
+  <browser:page
+     for="..interfaces.IApplication"
+     name="search"
+     template="templates/not-implemented.pt"
+     permission="zope.Public"
+     />
+
+  <browser:page
+     for="..interfaces.IApplication"
+     name="help"
+     template="templates/not-implemented.pt"
+     permission="zope.Public"
+     />
+
+  <browser:page
+     for="..interfaces.IApplication"
+     name="my-profile"
+     template="templates/not-implemented.pt"
+     permission="zope.Public"
+     />
+
+  <browser:page
+     for="..interfaces.IApplication"
+     name="reports"
+     template="templates/not-implemented.pt"
+     permission="zope.Public"
+     />
+
+  <browser:page
+     for="..interfaces.IApplication"
+     name="contactus"
+     template="templates/not-implemented.pt"
+     permission="zope.Public"
+     />
+
+  <!-- FavIcon View for Site -->
+  <browser:view
+     for="zope.traversing.interfaces.IContainmentRoot"
+     name="favicon.ico"
+     class=".images.FavIconView"
+     permission="zope.Public"
+     />
+
+  <!-- Skin Definition.. not needed for most we just use the default browser layer -->
+  <interface
+     interface="..interfaces.IApplicationSkin"
+     type="zope.publisher.interfaces.browser.IBrowserSkinType"
+     name="app"
+     />
+
+</configure>

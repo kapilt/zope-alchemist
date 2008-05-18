@@ -1,0 +1,35 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:db="http://namespaces.objectrealms.net/rdb">
+
+  <include package="zope.component" file="meta.zcml" />
+  
+  <!-- Bind Security Model to Database (role, permission maps) -->
+  <db:bind
+     engine="pft-db"
+     metadata="alchemist.security.schema.metadata" />
+
+  <!-- Authentication Utility -->
+  <adapter
+     factory=".auth.authUser"
+     />
+          
+  <utility
+     provides="zope.app.authentication.interfaces.IAuthenticatorPlugin"
+     factory="alchemist.security.auth.DatabaseAuthentication"
+     name="rdb-auth"
+     />
+     
+ <!-- Global/Local Role/Permission/Principal Maps -->
+ <adapter
+     for=".interfaces.IPublicFundsApp"
+     provides="zope.securitypolicy.interfaces.IPrincipalRoleMap"
+     factory="alchemist.security.role.GlobalPrincipalRoleMap"
+     />
+     
+ <adapter
+     for=".interfaces.IPublicFundsApp"
+     provides="zope.securitypolicy.interfaces.IRolePermissionMap"
+     factory="alchemist.security.permission.GlobalRolePermissionMap"
+     />     
+
+ </configure>     

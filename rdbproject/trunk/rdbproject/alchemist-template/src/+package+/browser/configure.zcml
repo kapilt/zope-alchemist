@@ -1,0 +1,62 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser">
+
+  <!-- Generic Content Display View-->
+  <browser:page
+     name="view"
+     for="..interfaces.IApplicationContent"
+     class="alchemist.ui.content.ContentDisplayForm"
+     permission="zope.View"
+     />
+
+  <!-- Default Content View -->
+  <browser:defaultView
+     for="..interfaces.IApplicationContent"
+     name="view"
+     />
+
+  <!-- Generic Container Listing -->
+  <browser:page
+     name="index"
+     for="..interfaces.IAlchemistContainer"
+     class=".ContainerListing"
+     permission="zope.View"
+     />
+
+  <!-- Generic Views and Layout on the Application -->
+  <include file="app.zcml"/>
+
+  <!-- Menu -->
+  <include file="menu.zcml"/>
+
+  <!-- Javascript Viewlets -->
+  <include file="js.zcml"/>
+
+  <!-- CSS Viewlets -->
+  <include file="css.zcml"/>
+
+  <!-- Static Resources -->
+  <browser:resourceDirectory name="images" directory="images"/>
+  <browser:resourceDirectory name="css" directory="css"/>
+  <browser:resourceDirectory name="js" directory="js"/>
+
+  <!-- Setup Access to Browser Resources on the Application -->
+  <browser:page
+    name=""
+    for="..interfaces.IApplication"
+    class="zope.app.publisher.browser.resources.Resources"
+    permission="zope.Public"
+    allowed_interface="zope.publisher.interfaces.browser.IBrowserPublisher"
+    />
+
+  <!-- Standard Macros Definition (access to layout/form) -->
+  <browser:view
+     for="*"
+     name="standard_macros"
+     class=".macros.StandardMacros"
+     permission="zope.View"
+     allowed_interface="zope.interface.common.mapping.IItemMapping"
+     layer="..interfaces.IApplicationSkin"
+     />
+
+</configure>

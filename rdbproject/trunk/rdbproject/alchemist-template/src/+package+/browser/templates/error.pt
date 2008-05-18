@@ -1,0 +1,27 @@
+<div metal:fill-slot="content" tal:define="error options/error | nothing">
+    
+    <div class="contentWrapper" tal:condition="python:error['error_type']=='NotFound'">
+        <div id="centerCol">  
+        <h1>404 Page Not Found</h1>
+        </div>
+    </div>
+    
+    <div class="contentWraper" tal:condition="python:error['error_type']=='Invalid'">
+        <div id="centerCol">
+        <h1>The following errors were found:</h1>
+        <ul tal:define="fields python:str(error['error_value']).splitlines()">
+            <li tal:repeat="field fields" tal:content="python: field.replace('_',' ')"></li>
+        </ul>
+        <h2>Please <a href="javascript:history.go(-1)">go back</a> and correct these errors.</h2>
+        </div>
+    </div>
+    
+    <div class="contentWraper" tal:condition="python:error['error_type'] not in ('Invalid','NotFound')">
+        <div id="centerCol">
+        <h1>Error</h1>
+        <h2>Please <a href="javascript:history.go(-1)">go back</a> and try again.  If the error persists, please contact the Enterprise Helpdesk at <a href="mailto:helpdesk@tnc.org">helpdesk@tnc.org</a>.  Thank you.</h2>
+        </div>
+    </div>
+
+</div>
+

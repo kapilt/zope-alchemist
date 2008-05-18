@@ -1,0 +1,23 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser"/>
+        
+
+  <!-- CSS Registered here appears on every application view rendered with app-layout -->
+
+  <browser:viewletManager
+      name="app-css"
+      provides="..interfaces.ICSS"
+      permission="zope.Public"
+      class=".viewlet.WeightBasedSorter"
+      />
+
+  <browser:viewlet
+     name="app-css-base"
+     for="*"
+     class=".css.App"
+     manager="..interfaces.ICSS"
+     permission="zope.Public"
+     weight="10"
+     />
+
+</configure>

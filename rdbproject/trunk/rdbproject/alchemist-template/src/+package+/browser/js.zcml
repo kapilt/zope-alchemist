@@ -1,0 +1,22 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser">
+
+  <!-- JS Registered here appears on *Every* application view rendered with app-layout -->
+  <browser:viewletManager
+      name="app-js"
+      provides="..interfaces.IJavaScript"
+      permission="zope.Public"
+      class=".viewlet.WeightBasedSorter"
+      />
+
+  <browser:viewlet
+     name="jquery"
+     for="*"
+     class=".js.JQuery"
+     layer="..interfaces.IApplicationSkin"
+     manager="..interfaces.IJavaScript"
+     permission="zope.Public"
+     weight="10"
+     />
+
+</configure>

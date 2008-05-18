@@ -1,0 +1,55 @@
+<html lang="en" metal:define-macro="page">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+
+	<title><span tal:condition="exists:context/title" tal:replace="context/title"></span></title>
+
+	<!-- allow any view to fill the header -->
+	<tal:block metal:define-slot="header">
+	</tal:block>
+
+	<!-- standard css and javascript -->
+	<script tal:replace="structure provider:pft-js"></script>
+	<link tal:replace="structure provider:pft-css"/>
+
+	<link rel="stylesheet" type="text/css" href="/++resource++css/base.css"/>
+	<link rel="stylesheet" type="text/css" href="/++resource++css/autosuggest_inquisitor.css"/>
+
+</head>
+<body>
+	<div class="masthead">
+		<div class="mastheadtop">
+			<ul>
+				<li><a href="/help"> Help </a></li>
+				<li><a class="topbarRt" href="/contactus"> Contact Us </a></li>
+			</ul>
+		</div>
+		<div class="mastheadbottom">
+		  <a href="/">
+		  <img src="/@@/images/masthead/masthead_10.gif" width="184" height="51" alt="Home"></a>
+		  <img src="/@@/images/masthead/masthead_11.gif" width="216" height="51" alt="Public Funds and Policy Leverage Tool">
+		  <img class="tnclogo" src="/@@/images/masthead/masthead_13.gif" width="164" height="51" alt="The Nature Conservancy">
+		</div>
+	</div>
+
+	<ul id="menubar" tal:content="structure provider:pft.menu.site"></ul>
+	<ul id="submenubar" tal:content="structure provider:pft.menu.subsite"></ul>
+	
+	<div>
+		<ul id="breadcrumb">
+			<li><a href="/">Home</a> > </li>
+			<li><a href="/strategic-actions/">Strategic Actions</a> > </li>
+			<li tal:content="context/title | nothing">The Campaign to Raise Lots of</li>	
+		</ul>
+		<br class="clear"><br>
+	</div>
+
+
+	<div id="content_main" metal:define-slot="content">
+	  <div metal:define-slot="body">
+	    This is the main content of the page
+	  </div>
+	</div>
+</body>
+</html>

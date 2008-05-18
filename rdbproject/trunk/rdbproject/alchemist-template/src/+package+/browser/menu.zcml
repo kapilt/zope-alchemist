@@ -1,0 +1,41 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser"
+	   xmlns:z3c="http://namespaces.zope.org/z3c"/>
+           
+  <z3c:template
+      template="templates/menu-item.pt"
+      for=".menu.GlobalMenuItem"
+      layer="zope.publisher.interfaces.browser.IBrowserRequest"
+      />
+
+  <z3c:template
+      template="templates/menu-item.pt"
+      for=".menu.SubMenuItem"
+      layer="zope.publisher.interfaces.browser.IBrowserRequest"
+      />
+
+  <!-- Site Menu -->
+  <browser:viewletManager
+     name="app.menu.site"
+     provides="..interfaces.ISiteMenu"
+     class="z3c.menu.ready2go.manager.MenuManager"
+     permission="zope.Public"
+     />
+
+  <!-- Add Menu -->
+  <browser:viewletManager
+     name="app.menu.add"
+     provides="..interfaces.IAddMenu"
+     class="z3c.menu.ready2go.manager.MenuManager"
+     permission="zope.Public"
+     />
+
+  <!-- Context Menu -->
+  <browser:viewletManager
+     name="app.menu.context"
+     provides="..interfaces.IContextMenu"
+     class="z3c.menu.ready2go.manager.MenuManager"
+     permission="zope.Public"
+     />
+
+</configure>
