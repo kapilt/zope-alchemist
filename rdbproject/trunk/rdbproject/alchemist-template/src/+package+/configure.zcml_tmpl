@@ -1,0 +1,47 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:db="http://namespaces.objectrealms.net/rdb">
+
+  <!-- Setup Database Connection -->	  
+  <db:engine
+     name="${package}-db"
+     url="postgres://localhost/${package}"
+     />
+
+  <!-- Bind Application Model to Database -->
+  <db:bind
+     engine="${package}-db"
+     metadata=".schema.metadata" />
+
+  <!-- Application to publish -->
+  <utility
+     provides="ore.wsgiapp.interfaces.IApplication"
+     factory="pft.app.Application"
+     />
+
+  <!-- Application Setup Event Dispatcher -->
+  <subscriber
+     for=".interfaces.IApplication
+          ore.wsgiapp.interfaces.IWSGIApplicationCreatedEvent"
+     handler=".app.setUpSubscriber"
+     />
+     
+  <!-- Application Setup -->
+  <adapter
+     for=".interfaces.IApplication"
+     factory=".app.AppSetup"
+     />
+
+  <!-- Application Defined Permissions -->
+  <include file="permissions.zcml"/>
+
+  <!-- Security Declarations -->
+  <include file="security.zcml"/>
+  
+  <!-- Authz/Authn Framework -->
+  <include file="auth.zcml"/>
+
+  <!-- Application Views -->
+  <include package=".browser"/>
+
+
+</configure>

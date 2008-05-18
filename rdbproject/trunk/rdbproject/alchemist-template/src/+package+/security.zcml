@@ -1,0 +1,7 @@
+<configure xmlns="http://namespaces.zope.org/zope">
+
+  <class class=".app.Application">
+     <allow interface="zope.app.container.interfaces.IReadContainer" />
+  </class>
+
+</configure>

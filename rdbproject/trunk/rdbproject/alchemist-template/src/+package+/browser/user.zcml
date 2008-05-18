@@ -1,0 +1,17 @@
+<configure xmlns:browser="http://namespaces.zope.org/browser">
+
+  <browser:page
+     for="..interfaces.IUser"
+     name="add"
+     class=".user.Add"
+     permission="zope.Public"
+     />
+
+  <browser:page
+     for="..interfaces.IUserContainer"
+     name="edit"
+     class=".user.Edit"
+     permission="zope.Public"
+     />
+
+</configure>
