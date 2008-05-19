@@ -18,7 +18,7 @@
   <!-- Generic Container Listing -->
   <browser:page
      name="index"
-     for="..interfaces.IAlchemistContainer"
+     for="..interfaces.IApplicationContainer"
      class=".ContainerListing"
      permission="zope.View"
      />

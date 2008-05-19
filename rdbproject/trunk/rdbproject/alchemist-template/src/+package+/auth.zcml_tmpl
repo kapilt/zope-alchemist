@@ -5,7 +5,7 @@
   
   <!-- Bind Security Model to Database (role, permission maps) -->
   <db:bind
-     engine="pft-db"
+     engine="${package}-db"
      metadata="alchemist.security.schema.metadata" />
 
   <!-- Authentication Utility -->
