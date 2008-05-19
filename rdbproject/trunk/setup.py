@@ -10,10 +10,8 @@ setup(
     author='Kapil Thangavelu',
     author_email='kapil.foss@gmail.com',
     url='http://code.google.com/p/zope-alchemist',
-    description="""
-    Script that sets up an alchemist project directory, installs Zope3, Alchemist and
-    creates a template for a alchemist application.""",
-    long_description=long_description,
+    description="""Paster Template for Alchemist/Zope3 Projects"
+    long_description = long_description,
     license='ZPL',
     packages=find_packages(),
     include_package_data=True,
