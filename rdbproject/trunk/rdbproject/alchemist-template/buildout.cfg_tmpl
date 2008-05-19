@@ -44,10 +44,10 @@ ${database_parts_src}
 
 [setup-database]
 recipe = lovely.recipe:mkfile
-path = ${buildout:bin-directory}/setup-database
+path = $${buildout:bin-directory}/setup-database
 mode = 0755
 content = 
- #!${buildout:bin-directory}/python
+ #!$${buildout:bin-directory}/python
  from ${package}.schema import metadata
  import sqlalchemy as rdb
  #
@@ -57,10 +57,9 @@ content =
 
 [reset-database]
 recipe = lovely.recipe:mkfile
-path = ${buildout:bin-directoy}/reset-db
+path = $${buildout:bin-directoy}/reset-db
 mode = 0755
-content = 
- #!${buildout:bin-directory}/python
+content = #!$${buildout:bin-directory}/python
  from ${package}.schema import metadata
  import sqlalchemy as rdb
  #

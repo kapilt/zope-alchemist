@@ -1,6 +1,6 @@
 import sqlalchemy as rdb
 
-metadata = rdb.MetaData
+metadata = rdb.MetaData()
 
 # for users and groups because of the zope users and groups
 PrincipalSequence = rdb.Sequence('principal_sequence')

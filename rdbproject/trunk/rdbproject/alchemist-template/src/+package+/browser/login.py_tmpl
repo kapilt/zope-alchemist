@@ -15,7 +15,7 @@ from ore.alchemist import Session
 
 from alchemist.ui.core import BaseForm
 from ${package} import domain, interfaces
-from ${package} import _
+from ${package}.i18n import _
 
 class ILoginForm( interface.Interface ):
     login = schema.TextLine( title=_(u"Username"))

@@ -15,7 +15,7 @@
   <!-- Application to publish -->
   <utility
      provides="ore.wsgiapp.interfaces.IApplication"
-     factory="pft.app.Application"
+     factory=".app.Application"
      />
 
   <!-- Application Setup Event Dispatcher -->

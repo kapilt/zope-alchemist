@@ -21,13 +21,13 @@
      
  <!-- Global/Local Role/Permission/Principal Maps -->
  <adapter
-     for=".interfaces.IPublicFundsApp"
+     for=".interfaces.IApplication"
      provides="zope.securitypolicy.interfaces.IPrincipalRoleMap"
      factory="alchemist.security.role.GlobalPrincipalRoleMap"
      />
      
  <adapter
-     for=".interfaces.IPublicFundsApp"
+     for=".interfaces.IApplication"
      provides="zope.securitypolicy.interfaces.IRolePermissionMap"
      factory="alchemist.security.permission.GlobalRolePermissionMap"
      />     
