@@ -1,5 +1,5 @@
 <configure xmlns="http://namespaces.zope.org/zope"
-           xmlns:browser="http://namespaces.zope.org/browser"/>
+           xmlns:browser="http://namespaces.zope.org/browser">
         
 
   <!-- CSS Registered here appears on every application view rendered with app-layout -->
