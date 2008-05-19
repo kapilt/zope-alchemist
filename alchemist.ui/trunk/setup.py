@@ -2,10 +2,9 @@ from setuptools import setup, find_packages
 
 setup(
     name="alchemist.ui",
-    version="0.3.0",
-    install_requires=['setuptools', 'ore.alchemist', 'zope.formlib', 'zope.viewlet'],
+    version="0.3.1",
+    install_requires=['setuptools', 'ore.alchemist', 'zope.formlib', 'zc.table', 'zope.viewlet'],
     packages=find_packages(exclude=["*.tests"]),
-#    package_dir= {'':'src'},
     namespace_packages=['alchemist'],
     package_data = {
       '': ['*.txt', '*.zcml', '*.pt'],
