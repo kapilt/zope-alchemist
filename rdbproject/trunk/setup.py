@@ -10,7 +10,7 @@ setup(
     author='Kapil Thangavelu',
     author_email='kapil.foss@gmail.com',
     url='http://code.google.com/p/zope-alchemist',
-    description="""Paster Template for Alchemist/Zope3 Projects"
+    description="Paster Template for Alchemist/Zope3 Projects",
     long_description = long_description,
     license='ZPL',
     packages=find_packages(),
