@@ -8,12 +8,6 @@
       layer="zope.publisher.interfaces.browser.IBrowserRequest"
       />
 
-  <z3c:template
-      template="templates/menu-item.pt"
-      for=".menu.SubMenuItem"
-      layer="zope.publisher.interfaces.browser.IBrowserRequest"
-      />
-
   <!-- Site Menu -->
   <browser:viewletManager
      name="app.menu.site"

@@ -22,10 +22,12 @@ ${long_description|nothing}""",
                            'zope.schema',
                            'zope.interface',
                            'zope.i18n',
+                           'SQLAlchemy',
                            'alchemist.ui',
                            'alchemist.security',
                            'ore.wsgiapp',
                            'z3c.menu.ready2go',
+                           'simplejson',
                            'wc.cookiecredentials'
                            # Add extra requirements here                           
                            ],
