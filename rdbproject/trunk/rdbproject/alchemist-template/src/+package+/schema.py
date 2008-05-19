@@ -1,6 +1,4 @@
 import sqlalchemy as rdb
-#from elixir import Entity, Field, OneToOne, ManyToMany, ManyToOne, OneToMany, options_defaults
-#from sqlalchemy import String, Date, Boolean, Integer, Float
 
 metadata = rdb.MetaData
 

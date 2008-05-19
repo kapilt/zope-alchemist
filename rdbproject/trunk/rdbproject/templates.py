@@ -6,9 +6,12 @@ import xml.sax.saxutils
 from paste.script import templates
 from paste.script.templates import NoDefault
 
-import utils
+import utils, database
 
 BOOTSTRAP = 'http://svn.zope.org/*checkout*/zc.buildout/trunk/bootstrap/bootstrap.py'
+
+
+
 
 class AlchemistProject(templates.Template):
     _template_dir = 'alchemist-template'
@@ -65,6 +68,18 @@ class AlchemistProject(templates.Template):
         bootstrap_contents = urllib.urlopen(BOOTSTRAP).read()
         vars['bootstrap_contents'] = bootstrap_contents
 
+
+        # Handle Database Module
+        dbi = vars['dbi'] 
+        if not dbi in database.kinds:
+            print "Invalid Database Module, Valid Modules are %s"%( database.kind.keys())
+            sys.exit(1)
+            
+        db_info = database.kinds[dbi]
+        vars['database_parts_install'] = db_info.install_parts
+        vars['database_parts_src'] = db_info.parts
+        vars['dbi_module'] = db_info.dbi_module
+        
         buildout_default = utils.exist_buildout_default_file()
         if explicit_eggs_dir:
             # Put explicit_eggs_dir in the vars; used by the post command.

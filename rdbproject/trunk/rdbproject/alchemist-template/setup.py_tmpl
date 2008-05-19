@@ -2,32 +2,36 @@ from setuptools import setup, find_packages
 
 version = '${repr(version)|0.0}'
 
-setup(
-    name=${repr(project)},
-    version=version,
-    description="${description|nothing}",
-    long_description="""\
+setup(name=${repr(project)},
+      version=version,
+      description="${description|nothing}",
+      long_description="""\
 ${long_description|nothing}""",
-    description='Clinical Surveys/Trials',
-    classifiers = [ 'Framework :: Zope3' ],
-    keywords=${repr(keywords)|empty},
-    author=${repr(author)|empty},
-    author_email=${repr(author_email)|empty},
-    url=${repr(url)|empty},
-    license=${repr(license_name)|empty},
-    package_dir={'': 'src'},
-    packages=find_packages('src'),
-    include_package_data = True,
-    install_requires = [ 'setuptools',
-                         'zope.schema',
-                         'zope.interface',
-                         'zope.i18n',
-                         'alchemist.ui',
-                         'alchemist.security',
-                         'ore.wsgiapp',
-                         'z3c.menu.ready2go'
-                         'wc.cookiecredentials'
-                         ],
-    zip_safe = False,
-    )
+      # Get strings from http://www.python.org/pypi?%3Aaction=list_classifiers
+      classifiers=[], 
+      keywords=${repr(keywords)|empty},
+      author=${repr(author)|empty},
+      author_email=${repr(author_email)|empty},
+      url=${repr(url)|empty},
+      license=${repr(license_name)|empty},
+      package_dir={'': 'src'},
+      packages=find_packages('src'),
+      include_package_data=True,
+      zip_safe=False,
+      install_requires = [ 'setuptools',
+                           'zope.schema',
+                           'zope.interface',
+                           'zope.i18n',
+                           'alchemist.ui',
+                           'alchemist.security',
+                           'ore.wsgiapp',
+                           'z3c.menu.ready2go',
+                           'wc.cookiecredentials'
+                           # Add extra requirements here                           
+                           ],
+      entry_points="""
+      # Add entry points here
+      """,
+      )
+
 
