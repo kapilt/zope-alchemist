@@ -22,7 +22,10 @@ class AlchemistProject(templates.Template):
         utils.ask_var('db_uri', 'Database URI',
                 default=NoDefault),
         utils.ask_var('dbi', 'Database Module',
-                default=NoDefault),        
+                default=NoDefault),
+        utils.ask_var('build_db', 'Use Buildout for Database &DBI Module',
+                default=False,
+                getter=utils.get_boolean_value_for_option),
         utils.ask_var('user', 'Name of an initial administrator user',
                 default=NoDefault),
         utils.ask_var('passwd', 'Password for the initial administrator user',
@@ -72,13 +75,18 @@ class AlchemistProject(templates.Template):
         # Handle Database Module
         dbi = vars['dbi'] 
         if not dbi in database.kinds:
-            print "Invalid Database Module, Valid Modules are %s"%( database.kind.keys())
+            print "Invalid Database Module, Valid Modules are %s"%( database.kinds.keys())
             sys.exit(1)
             
         db_info = database.kinds[dbi]
-        vars['database_parts_install'] = db_info.install_parts
-        vars['database_parts_src'] = db_info.parts
-        vars['dbi_module'] = db_info.dbi_module
+        if not vars.get('build_db'):
+            vars['database_parts_install'] = ""
+            vars['database_parts_src'] = ""
+            vars['dbi_module'] = db_info.dbi_module
+        else:
+            vars['database_parts_install'] = db_info.install_parts
+            vars['database_parts_src'] = db_info.parts
+            vars['dbi_module'] = db_info.dbi_module
         
         buildout_default = utils.exist_buildout_default_file()
         if explicit_eggs_dir:
