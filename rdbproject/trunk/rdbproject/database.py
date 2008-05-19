@@ -70,9 +70,12 @@ library-dirs = ${database:location}/lib
 """
 
 kinds = { 'mysql':mysql,
-          'postgres':postgres,
+          'MySQLdb':mysql,
           'sqlite':sqlite3,
           'sqlite3':sqlite3,
+          'postgres':postgres,          
+          'psycopg':postgres,
+          'psycopg2':postgres,
           'postgresql':postgres}
 
 
