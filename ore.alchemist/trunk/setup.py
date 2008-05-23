@@ -5,7 +5,7 @@ def read( name ):
 
 setup(
     name="ore.alchemist",
-    version="0.5.1",
+    version="0.5.2",
     url="http://code.google.com/p/zope-alchemist",
     install_requires=['setuptools', 'transaction', 'SQLAlchemy'],
     packages=find_packages('src', exclude=["*.tests"]),
