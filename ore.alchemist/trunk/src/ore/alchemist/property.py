@@ -1,24 +1,16 @@
-##################################################################
+##############################################################################
 #
-# (C) Copyright 2006 ObjectRealms, LLC
-# All Rights Reserved
+# Copyright (c) 2006-2008 Kapil Thangavelu <kapil.foss@gmail.com>
+# All Rights Reserved.
 #
-# This file is part of Alchemist.
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE.
 #
-# Alchemist is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#
-# Alchemist is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with CMFDeployment; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-##################################################################
+##############################################################################
 """
 Binding Zope3 Schema Properties to Alchemist Mapped Classes
 
@@ -27,7 +19,7 @@ $Id$
 
 from sqlalchemy.orm import attributes
 from interfaces import IIModelInterface
-from zope import schema
+from zope import schema, interface
 
 class ValidatedProperty( object ):
     """
@@ -59,28 +51,23 @@ class ValidatedProperty( object ):
         if self.__field.readonly and obj.__dict__.has_key(self.__name):
             raise ValueError(self.__name, 'field is readonly')
         self.__prop.__delete__( obj )
-
-def providedByInstances( klass ):
-    """ return all the interfaces implemented by instances of a klass.. why isn't this in z.i?
-    """
-    class_provides = getattr( klass, '__provides__', None )
-    if class_provides is None:
-        return ()
-    return iter( class_provides._implements )
     
 def bindClass( klass, mapper=None ):
-    """ insert validated properties into a class based on its primary mapper, and model schemas
     """
-    # compile the klass mapper, this will add instrumented attributes to the class
-    # we could alternatively do.. mapper.compile() compiles all extant mappers
+    attach validation to a sqlalchemy mapped class, based on its implemented schemas, via property
+    validators, taking care to wrap sqlalchemy properties.
+    """
 
     if mapper is None:
         mapper = getattr( klass, 'mapper')
 
+    # compile the klass mapper, this will add instrumented attributes to the class
+    # we could alternatively do.. mapper.compile() compiles all extant mappers
+
     mapper.compile()
 
     # find all the model schemas implemented by the class
-    for iface in providedByInstances( klass ):
+    for iface in interface.implementedBy( klass ):
         if not IIModelInterface.providedBy( iface ):
             continue
 
