@@ -1,4 +1,8 @@
+import os
 from setuptools import setup, find_packages
+
+def read(*rnames):
+    return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
 setup(
     name="alchemist.traversal",
@@ -14,6 +18,7 @@ setup(
     author='Kapil Thangavelu',
     author_email='kapil.foss@gmail.com',
     description="""traversal mechanisms for alchemist containers and domain objects.""",
+    long_description="Traversal of objects by foreign keys"+'\n\n'+read('changes.txt'),
     license='LGPL',
     keywords="zope zope3",
     )
