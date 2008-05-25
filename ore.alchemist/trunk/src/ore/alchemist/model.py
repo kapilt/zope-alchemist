@@ -19,13 +19,26 @@ $Id$
 
 from zope import interface, component
 from zope.interface.interfaces import IInterface
-from interfaces import IIModelInterface, IModelDescriptor, IModelDescriptorField
+from interfaces import IIModelInterface, IModelDescriptor, IModelDescriptorField, IAlchemistContent
 
 def queryModelInterface( klass ):
+    """ we can passed in a class or interface """
+    
     if not IInterface.providedBy( klass ):
-        ifaces = filter( IIModelInterface.providedBy, list( interface.implementedBy( klass ) ) )
-        assert len(ifaces), "No Model Interface on Domain Object"
-        assert len(ifaces)==1, "Multiple Model Interfaces on Domain Object"
+        candidates = list( interface.implementedBy( klass ) )
+        ifaces = filter( IIModelInterface.providedBy, candidates )
+
+        if not ifaces:
+            for i in candidates:
+                if issubclass( i, IAlchemistContent ):
+                    ifaces.append( i )
+                    
+        if not ifaces:
+            raise SyntaxError( "No Model Interface on Domain Object" )
+
+        if ifaces:
+            assert len(ifaces)==1, "Multiple Model Interfaces on Domain Object"
+
         klass = ifaces[0]
     else:
         assert IIModelInterface.providedBy( klass ), "Invalid Interface"

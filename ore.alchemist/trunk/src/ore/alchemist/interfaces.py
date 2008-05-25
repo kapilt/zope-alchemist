@@ -12,7 +12,7 @@
 #
 ##############################################################################
 
-from zope.interface import Interface, Attribute
+from zope.interface import Interface, Attribute, directlyProvides
 from zope.interface.common.mapping import IEnumerableMapping
 from zope.app.container.interfaces import IContainer
 from zope import schema
