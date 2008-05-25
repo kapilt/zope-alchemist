@@ -84,13 +84,27 @@ class ContainerListing( form.DisplayForm ):
 
 class ContainerJSONListing( BrowserView ):
     """
-    paging, batching, json contents of a container
+    paging, batching, sorting, json contents of a container
     """
 
+    def getSort( self ):
+        """ server side sort,
+        @web_parameter sort - request variable for sort column
+        @web_parameter dir  - direction of the sort, only once acceptable value 'desc'
+        """
+        sort_key, sort_dir = self.request.get('sort'), self.request.get('dir')
+        
+        # get sort in sqlalchemy form
+        if sort_key and ( sort_key in self.context.domain_model.c ):
+            column = self.context.domain_model.c[sort_key]
+            if sort_dir == 'desc':
+                return getattr( column, sort_dir )
+            return column
+        return None
+    
     def getOffsets( self ):
         nodes = []
         start, limit = self.request.get('start',0), self.request.get('limit', 0)
-
         try:
             start, limit = int( start ), int( limit )
             if not limit:
@@ -99,16 +113,21 @@ class ContainerJSONListing( BrowserView ):
             start, limit = 0, 100
         return start, limit 
 
-    def getBatch( self, start, limit ):
+    def getBatch( self, start, limit, order_by=None):
         batch = []
-        nodes = self.context.batch( start, limit)
-        
+
         domain_interface = queryModelInterface( self.context.domain_model )
         domain_interface = proxy.removeSecurityProxy( domain_interface )
         field_names = schema.getFieldNamesInOrder( domain_interface )
 
+        # fetch the nodes from the container
+        nodes = self.context.batch( offset=start,
+                                    limit=limit,
+                                    order_by=order_by )
+        
         for n in nodes:
             d = {}
+            # field to dictionaries
             for f in field_names:
                 field = domain_interface[ f ]
                 d[ f ] = field.query( n )
@@ -117,7 +136,8 @@ class ContainerJSONListing( BrowserView ):
         
     def __call__( self ):
         start, limit = self.getOffsets( )
-        batch = self.getBatch( start, limit )
+        sort_clause = self.getSort()
+        batch = self.getBatch( start, limit, sort_clause )
         set_size = len( self.context )
         data = dict( length=set_size, nodes=batch )
         return simplejson.dumps( data )

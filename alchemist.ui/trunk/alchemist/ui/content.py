@@ -55,7 +55,7 @@ class ContentAddForm( core.DynamicFields, form.AddForm ):
         
         # signal to add form machinery to go to next url
         self._finished_add = True
-
+        
         mapper = orm.object_mapper( ob )
         
         # TODO single primary key ( need changes to base container)
