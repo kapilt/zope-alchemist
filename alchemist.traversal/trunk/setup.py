@@ -13,10 +13,7 @@ setup(
     zip_safe=False,
     author='Kapil Thangavelu',
     author_email='kapil.foss@gmail.com',
-    description="""\
-    various traversal mechanisms for alchemist containers and domain
-    objects.
-    """,
+    description="""traversal mechanisms for alchemist containers and domain objects.""",
     license='LGPL',
     keywords="zope zope3",
     )

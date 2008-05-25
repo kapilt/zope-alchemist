@@ -67,27 +67,27 @@ class One2Many( ConstraintManager ):
         column = target.__class__.c[ self.fk ]
         setattr( target, column.name, primary_key )
         
-class Many2Many( ConstraintManager ):
+## class Many2Many( ConstraintManager ):
 
-    def __init__( self, join_fk ):
-        pass
+##     def __init__( self, join_fk ):
+##         pass
 
-    def getQueryModifier( self, instance, container ):
-        mapper = orm.object_mapper( instance )
-        primary_key = mapper.primary_key_from_instance( instance )[0]
+##     def getQueryModifier( self, instance, container ):
+##         mapper = orm.object_mapper( instance )
+##         primary_key = mapper.primary_key_from_instance( instance )[0]
         
-        #import pdb; pdb.set_trace()
-        # user_group_membership.group_id = groups.group_id 
-        # group
-        #container.domain_model.c[ self.fk ] ==
-        #sql.and_( 
-        #            )
-        return 
+##         #import pdb; pdb.set_trace()
+##         # user_group_membership.group_id = groups.group_id 
+##         # group
+##         #container.domain_model.c[ self.fk ] ==
+##         #sql.and_( 
+##         #            )
+##         return 
         
-    def setConstrainedValues( self, instance, target ):
-        mapper = orm.object_mapper( instance )        
-        primary_key = mapper.primary_key_from_instance( instance )
-        setattr( target, column.name, primary_key )
+##     def setConstrainedValues( self, instance, target ):
+##         mapper = orm.object_mapper( instance )        
+##         primary_key = mapper.primary_key_from_instance( instance )
+##         setattr( target, column.name, primary_key )
 
 def one2many( name, container, fk ):
     constraint = One2Many( fk )
@@ -107,6 +107,8 @@ class ManagedContainerDescriptor(object):
                 
     def __get__( self, instance, class_):
         container = self.domain_container()
+        if instance is None:
+            return container
         if ILocation.providedBy( instance ):
             container.__parent__ = instance
             container.__name__ = self.name
