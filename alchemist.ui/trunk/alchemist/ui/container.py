@@ -10,7 +10,7 @@ from zope.security import proxy
 from zc.table import column, batching, table
 from zc.table import table
 
-import simplejson
+import simplejson, datetime
 
 from sqlalchemy import orm
 from ore.alchemist.container import stringKey
@@ -93,18 +93,18 @@ class ContainerJSONListing( BrowserView ):
         @web_parameter dir  - direction of the sort, only once acceptable value 'desc'
         """
         sort_key, sort_dir = self.request.get('sort'), self.request.get('dir')
-        
+        domain_model = proxy.removeSecurityProxy( self.context.domain_model )
         # get sort in sqlalchemy form
-        if sort_key and ( sort_key in self.context.domain_model.c ):
-            column = self.context.domain_model.c[sort_key]
+        if sort_key and ( sort_key in domain_model.c ):
+            column = domain_model.c[sort_key]
             if sort_dir == 'desc':
-                return getattr( column, sort_dir )
+                return column.desc()
             return column
         return None
     
     def getOffsets( self ):
         nodes = []
-        start, limit = self.request.get('start',0), self.request.get('limit', 0)
+        start, limit = self.request.get('start',0), self.request.get('limit', 25)
         try:
             start, limit = int( start ), int( limit )
             if not limit:
@@ -114,30 +114,59 @@ class ContainerJSONListing( BrowserView ):
         return start, limit 
 
     def getBatch( self, start, limit, order_by=None):
-        batch = []
-
-        domain_interface = queryModelInterface( self.context.domain_model )
-        domain_interface = proxy.removeSecurityProxy( domain_interface )
-        field_names = schema.getFieldNamesInOrder( domain_interface )
 
         # fetch the nodes from the container
         nodes = self.context.batch( offset=start,
                                     limit=limit,
                                     order_by=order_by )
-        
+
+        fields = list( getFields( self.context )  )
+        batch = self._jsonValues( nodes, fields )
+        return batch
+
+    def _jsonValues( self, nodes, fields ):
+        """
+        filter values from the nodes to respresent in json, currently
+        that means some footwork around, probably better as another
+        set of adapters.
+        """
+        values = []
         for n in nodes:
             d = {}
             # field to dictionaries
-            for f in field_names:
-                field = domain_interface[ f ]
-                d[ f ] = field.query( n )
-            batch.append( d )
-        return batch
+            for field in fields:
+                f = field.__name__
+                d[ f ] = v = field.query( n )
+                if isinstance( v, datetime.datetime ):
+                    d[f] = v.strftime('%F %I:%M %p')
+                elif isinstance( v, datetime.date ):
+                    d[f] = v.strftime('%F')
+                    
+            values.append( d )
+        return values
         
     def __call__( self ):
         start, limit = self.getOffsets( )
         sort_clause = self.getSort()
         batch = self.getBatch( start, limit, sort_clause )
         set_size = len( self.context )
-        data = dict( length=set_size, nodes=batch )
+        data = dict( length=set_size,
+                     start=start,
+                     recordsReturned=len(batch),
+                     sort = self.request.get('sort'),
+                     dir  = self.request.get('dir', "asc"),
+                     nodes=batch )
         return simplejson.dumps( data )
+
+
+def getFields( context ):
+    domain_model = proxy.removeSecurityProxy( context.domain_model )
+    domain_interface = queryModelInterface( domain_model )
+    field_names = schema.getFieldNamesInOrder( domain_interface )
+    for f in field_names:
+        field = domain_interface[f]
+        if isinstance( field,  ( schema.Choice,
+                                 schema.Object,
+                                 schema.List, schema.Tuple ) ):
+            continue
+        yield field
