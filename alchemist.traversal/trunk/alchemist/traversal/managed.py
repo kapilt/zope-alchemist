@@ -106,6 +106,13 @@ class ManagedContainerDescriptor(object):
         self.constraint = constraint
                 
     def __get__( self, instance, class_):
+        # initialization issue, elixir bootstraps by inspecting all class variables,
+        # we may not have processed the fk class yet, when our context is processed
+        # by elixir, in that case short circuit, else we'll get errors trying to 
+        # process any additional subquery constraints.
+        if instance is None and self._container_class is None:
+            return None
+        
         container = self.domain_container()
         if instance is None:
             return container
