@@ -1,4 +1,4 @@
- 0.3.1 - Unreleased
+ 0.3.1 - June 1st, 2008
 
   - fix an initialization exception during sqlalchemy introspection of variables,
     inspection of managed container properties on a class/ie no instance is passed, 
