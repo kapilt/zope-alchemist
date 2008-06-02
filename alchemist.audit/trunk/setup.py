@@ -22,7 +22,7 @@ setup(
         'Framework :: Zope3'
         ],
     url="http://code.google.com/p/zope-alchemist",
-    keywords="zope3 audit zope",
+    keywords="zope3 audit",
     author='Kapil Thangavelu',
     author_email='kapil.foss@gmail.com',
     description="Alchemist Auditing Components ( Event Subscribers, Change Recorders, UI ) for Relational Applications",
