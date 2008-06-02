@@ -20,7 +20,7 @@ setup(
                  'Topic :: Internet :: WWW/HTTP :: WSGI :: Application',
                  'Framework :: Zope3',
                  ],    
-    install_requires=['setuptools', 'ore.alchemist'],
+    install_requires=['setuptools', 'ore.alchemist', 'zope.securitypolicy'],
     packages=find_packages(exclude=["*.tests"]),
     namespace_packages=['alchemist'],
     package_data = {

@@ -8,7 +8,7 @@ role_permission_map = rdb.Table(
    rdb.Column( "role_id", rdb.Unicode(50) ),
    rdb.Column( "permission_id", rdb.Unicode(50) ),
    rdb.Column( "setting", rdb.Boolean, default=True, nullable=False ),   
-   rdb.Column( "object_type", rdb.Unicode(100), ),
+   rdb.Column( "object_type", rdb.String(100), ),
    rdb.Column( "object_id", rdb.Integer ),   
    )
    
@@ -24,7 +24,7 @@ principal_role_map = rdb.Table(
    rdb.Column( "principal_id", rdb.Unicode(50), index=True, nullable=False ),
    rdb.Column( "role_id", rdb.Unicode(50), nullable=False ),   
    rdb.Column( "setting", rdb.Boolean, default=True, nullable=False ),
-   rdb.Column( "object_type", rdb.Unicode(100) ),      
+   rdb.Column( "object_type", rdb.String(100) ),      
    rdb.Column( "object_id", rdb.Integer ),         
    )
    
