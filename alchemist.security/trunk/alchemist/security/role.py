@@ -25,7 +25,7 @@ class LocalPrincipalRoleMap( object ):
         self.context = context
         self.oid = orm.object_mapper( self.context ).primary_key_from_instance(self.context)[0]
         self.object_type = context.__class__.__name__.lower()
-        
+                                    
     def getPrincipalsForRole(self, role_id):
         """Get the principals that have been granted a role.
 
