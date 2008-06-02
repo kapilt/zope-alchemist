@@ -33,6 +33,5 @@ setup(
         + '\n\n'
         ),
     license='ZPL',
-    keywords="zope zope3",
     )
 
