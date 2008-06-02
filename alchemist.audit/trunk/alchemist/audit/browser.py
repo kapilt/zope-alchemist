@@ -23,6 +23,8 @@ class ChangeBaseView( BrowserView ):
         column.GetterColumn( title=_(u"user"), getter=lambda i,f:i['user_id'] ),
         column.GetterColumn( title=_(u"description"), getter=lambda i,f:i['description'] ),
         ]    
+
+    table_css = 'listing'
     
     def listing( self ):
         columns = self.columns
@@ -33,7 +35,7 @@ class ChangeBaseView( BrowserView ):
                                             visible_column_names = [c.name for c in columns],
                                             #sort_on = ('name', False)
                                             columns = columns )
-        formatter.cssClasses['table'] = 'listing'
+        formatter.cssClasses['table'] = self.table_css
         formatter.updateBatching()
         return formatter()
         

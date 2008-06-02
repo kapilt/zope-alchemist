@@ -45,7 +45,7 @@
        for=".interfaces.IAuditable"
        class=".browser.ChangeLog"
        name="audit-log"
-       permission="zope.Public"
+       permission="zope.View"
        template="changes.pt"
        />
   
