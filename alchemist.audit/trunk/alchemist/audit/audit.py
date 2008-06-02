@@ -1,6 +1,11 @@
 """
-Auditing of Changes for Domain Objects
+Auditing of Changes for Domain Objects.
+
+implementation note, we dance around with attaching change ids to the
+events, to do a crude coalesce in band to the event subscribers, as
+workflow state changes are also modification events.
 """
+
 from zope.security.proxy import removeSecurityProxy
 import interfaces
 

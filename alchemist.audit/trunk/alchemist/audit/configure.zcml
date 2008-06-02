@@ -1,4 +1,5 @@
 <configure xmlns="http://namespaces.zope.org/zope"
+	   xmlns:zcml="http://namespaces.zope.org/zcml"
            xmlns:browser="http://namespaces.zope.org/browser">
   
   <subscriber
@@ -23,19 +24,21 @@
      />
      
   <subscriber
+      zcml:condition="have ore.workflow"     
       for=".interfaces.IAuditable
            ore.workflow.interfaces.IWorkflowTransitionEvent"
       handler=".audit.objectStateChange"
       />
 
   <subscriber
+     zcml:condition="have alchemist.version"
      for=".interfaces.IAuditable
-          .interfaces.IVersionCreated"
+          alchemist.version.interfaces.IVersionCreated"
      handler=".audit.objectNewVersion" />
-     
   <subscriber
+     zcml:condition="have alchemist.version"
      for=".interfaces.IAuditable
-          .interfaces.IVersionReverted"
+          alchemist.version.interfaces.IVersionReverted"
      handler=".audit.objectRevertedVersion" />     
 
    <browser:page 
