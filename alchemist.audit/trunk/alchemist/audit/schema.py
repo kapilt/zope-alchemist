@@ -2,6 +2,7 @@
 from datetime import datetime
 import sqlalchemy as rdb
 
+
 def make_changes_table( table, metadata ):
     """ create an object log table for an object """
     table_name = table.name
