@@ -4,6 +4,7 @@ from zope.publisher.interfaces import NotFound
 from zope.publisher.browser import BrowserView
 from zope.contentprovider.interfaces import IContentProvider
 from zope.viewlet.interfaces import IViewlet
+import zope.security.checker
 
 import zope.interface
 
@@ -11,6 +12,9 @@ class MethodPublisher( BrowserView, zope.location.Location ):
 
     zope.interface.implements( IBrowserPublisher )
 
+    __Security_checker__ = zope.security.checker.NamesChecker((
+        '__call__', 'browserDefault', 'publishTraverse'))
+    
     def __init__( self, context, request, method):
         self.context = context
         self.request = request

@@ -128,5 +128,5 @@
   <class class=".relation.One2OneDisplay">
     <allow interface="zope.formlib.interfaces.ISubPageForm"/>
   </class>
-		
+
 </configure>
