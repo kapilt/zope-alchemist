@@ -1,23 +1,36 @@
+from zope import component
 from zope.security.management import getInteraction
+from zope.security.proxy import removeSecurityProxy
 from zope.publisher.interfaces import IRequest
 
 from zope import lifecycleevent
 from datetime import datetime
 
 from ore.alchemist.interfaces import IRelationChange
+from ore.alchemist.model import queryModelInterface
 from sqlalchemy import orm
 
+import interfaces
 from i18n import _
 
+def provideRecorder( klass, change_table ):
+    domain_interface = queryModelInterface( klass )
+    recorder = type( "%sChangeRecorder"%(klass.__name__),
+                     (ChangeRecorder,),
+                     {'change_table':change_table} )
+    component.provideAdapter( recorder, (domain_interface,), (interfaces.IRecorder,))
+    
 class ChangeRecorder( object ):
 
-    def __init__( self, change_table ):
-        self.change_table = change_table
-
-    def objectAdded( self, object, event ):
-        return self._objectChanged(u'added', object )
+    change_table = None
     
-    def objectModified( self, object, event ):
+    def __init__( self, context ):
+        self.context = removeSecurityProxy(context)
+
+    def objectAdded( self, event ):
+        return self._objectChanged(u'added')
+    
+    def objectModified( self, event ):
         attrset =[]
         for attr in event.descriptions:
             if lifecycleevent.IAttributes.providedBy( attr ):
@@ -28,28 +41,27 @@ class ChangeRecorder( object ):
                 attrset.append( attr.description )
 
         description = u", ".join( attrset )
-        return self._objectChanged(u'modified', object, description )
+        return self._objectChanged(u'modified', description )
 
-    def objectStateChanged( self, object, event):
+    def objectStateChanged( self, event):
         description = _(u"""transition from %s to %s via %s - %s"""%( 
                         event.source,
                         event.destination,
                         event.transition.title,
                         event.comment ) )
-        return self._objectChanged(u'workflow', object, description )
-        #return self._objectChanged(u'workflow', object )
+        return self._objectChanged(u'workflow', description )
         
-    def objectDeleted( self, object, event ):
-        return self._objectChanged(u'deleted', object )
+    def objectDeleted( self, event ):
+        return self._objectChanged(u'deleted')
 
-    def objectNewVersion( self, object, event ):
-        return self._objectChanged(u"new-version", object, description=event.message )
+    def objectNewVersion( self, event ):
+        return self._objectChanged(u"new-version", description=event.message )
 
-    def objectRevertedVersion( self, object, event ):
-        return self._objectChanged(u'reverted-version', object, description=event.message )
+    def objectRevertedVersion( self, event ):
+        return self._objectChanged(u'reverted-version', description=event.message )
         
-    def _objectChanged( self, change_kind, object, description=u'' ):
-        oid, otype = self._getKey( object )
+    def _objectChanged( self, change_kind, description=u'' ):
+        oid, otype = self._getKey( self.context )
         user_id = self._getCurrentUserId()
 
         statement = self.change_table.insert(
