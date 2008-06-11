@@ -53,7 +53,7 @@ def setUpFields( domain_model, mode ):
     domain_model = removeSecurityProxy( domain_model )
     t = time.time()
 
-    domain_interface = list( interface.implementedBy(domain_model) )[0]
+    domain_interface = model.queryModelInterface( domain_model )
     domain_annotation = model.queryModelDescriptor( domain_interface )
 
     search_mode = mode == 'search'
@@ -101,12 +101,11 @@ def setUpColumns( domain_model ):
     use model descriptor on domain model extract columns for table listings
     """
     columns = []
-    domain_interface = list( interface.implementedBy(domain_model) )
+    domain_interface = model.queryModelInterface( domain_model )
 
     if not domain_interface:
         raise SyntaxError("Model must have domain interface %r"%(domain_model ) )
 
-    domain_interface = domain_interface[0]
     domain_annotation = model.queryModelDescriptor( domain_interface )
     
     field_column_names = domain_annotation and domain_annotation.listing_columns \
