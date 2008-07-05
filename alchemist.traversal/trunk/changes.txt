@@ -1,5 +1,12 @@
- 0.3.1 - June 1st, 2008
+Changes
+-------
+ 
+0.4.0 - ( unreleased )
 
-  - fix an initialization exception during sqlalchemy introspection of variables,
-    inspection of managed container properties on a class/ie no instance is passed, 
-    returns a container without query modifiers.
+ - switch to buildout based testing environment 
+
+0.3.1 - June 1st, 2008
+
+ - fix an initialization exception during sqlalchemy introspection of variables,
+   inspection of managed container properties on a class/ie no instance is passed, 
+   returns a container without query modifiers.
