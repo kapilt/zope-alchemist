@@ -20,7 +20,7 @@
 
       <tal:block condition="python: view.state == 'add'">
 	 <tal:block tal:repeat="widget widgets">
-	   <div metal:use-macro="context/@@standard_macros/widget_row">
+	   <div metal:use-macro="context/@@standard_macros/field">
 	     Form Input
 	   </div>
 	 </tal:block>
