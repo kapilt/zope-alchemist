@@ -76,13 +76,17 @@ class ContentAddForm( core.DynamicFields, form.AddForm ):
     def update( self ):
         self.status = self.request.get('portal_status_message','')
         super( ContentAddForm, self).update()
+
+    def validateAdd(self, action, data ):
+        errors = self.validateUnique(action, data )
+        return errors
         
     @form.action(_(u"Cancel"), validator=core.null_validator )
     def handle_cancel( self, action, data ):
         url = self.nextURL()
         return self.request.response.redirect( url )
         
-    @form.action(_(u"Save and continue editing"), condition=form.haveInputWidgets, validator='validateUnique')
+    @form.action(_(u"Save and continue editing"), condition=form.haveInputWidgets, validator='validateAdd')
     def handle_add_edit( self, action, data ):
         ob = self.createAndAdd( data )
         name = self.context.domain_model.__name__
