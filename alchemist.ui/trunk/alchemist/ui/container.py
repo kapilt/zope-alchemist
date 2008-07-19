@@ -2,19 +2,17 @@
 
 $Id$
 """
-
-from zope import schema, interface
+from zope import schema
 from zope.publisher.browser import BrowserView
 from zope.formlib import form
 from zope.security import proxy
-from zc.table import column, batching, table
-from zc.table import table
+from zc.table import column, table
+from zope.app.pagetemplate import ViewPageTemplateFile
 
 import simplejson, datetime
 
-from sqlalchemy import orm
 from ore.alchemist.container import stringKey
-from ore.alchemist.model import queryModelDescriptor, queryModelInterface
+from ore.alchemist.model import queryModelInterface
 from i18n import _
 
 import core
@@ -41,6 +39,8 @@ class ContainerListing( form.DisplayForm ):
     
     form_fields = form.Fields()
     mode = "listing"
+
+    index = ViewPageTemplateFile('templates/generic-container.pt')
     
     def update( self ):
         context = proxy.removeSecurityProxy( self.context )
@@ -165,8 +165,7 @@ def getFields( context ):
     field_names = schema.getFieldNamesInOrder( domain_interface )
     for f in field_names:
         field = domain_interface[f]
-        if isinstance( field,  ( schema.Choice,
-                                 schema.Object,
+        if isinstance( field,  ( schema.Choice, schema.Object,
                                  schema.List, schema.Tuple ) ):
             continue
         yield field
