@@ -6,10 +6,17 @@ from zope.formlib.namedtemplate import NamedTemplate
 
 from i18n import _
 import core
+import content
 
 class FormViewlet( form.SubPageForm, viewlet.ViewletBase ):
 
     __init__ = viewlet.ViewletBase.__init__
+
+class AddFormViewlet( content.AddFormBase, FormViewlet ):
+    """
+    add form viewlet
+    """
+    __init__ = FormViewlet.__init__
 
 class EditFormViewlet( form.SubPageEditForm, viewlet.ViewletBase ):
 
