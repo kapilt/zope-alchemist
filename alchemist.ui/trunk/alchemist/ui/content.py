@@ -19,15 +19,12 @@ from sqlalchemy import orm
 from i18n import _
 import generic, core
 
-class ContentAddForm( core.DynamicFields, form.AddForm ):
-    """
-    generic add form for db content
-    """
-    
-    mode = "add"
+
+class AddFormBase( object ):
+
     _next_url = None
     adapters = None
-    
+
     def createAndAdd( self, data ):
 
         domain_model = removeSecurityProxy( self.context.domain_model )
@@ -75,7 +72,7 @@ class ContentAddForm( core.DynamicFields, form.AddForm ):
         
     def update( self ):
         self.status = self.request.get('portal_status_message','')
-        super( ContentAddForm, self).update()
+        super( AddFormBase, self).update()
 
     def validateAdd(self, action, data ):
         errors = self.validateUnique(action, data )
@@ -104,8 +101,21 @@ class ContentAddForm( core.DynamicFields, form.AddForm ):
             if isinstance( error, interface.Invalid ):
                 errors.append( error )
         return errors
-        
-class ContentDisplayForm( BrowserView ):
+
+class Add( AddFormBase, form.AddForm ):
+    """
+    static add form for db content
+    """
+
+class DynamicAdd( core.DynamicFields, Add):
+    """
+    generic add form ( dynamic fields ) for db content
+    """
+    mode = "add"
+
+ContentAddForm = DynamicAdd
+
+class Display( BrowserView ):
     """
     Content Display
     """
@@ -114,6 +124,8 @@ class ContentDisplayForm( BrowserView ):
     
     def __call__( self ):
         return self.template()
+
+ContentDisplayForm = Display
         
 class ContentEditForm( BrowserView ):
     """
