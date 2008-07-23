@@ -12,6 +12,7 @@ from zope.formlib.namedtemplate import NamedTemplate
 from zc.table import column
 
 from sqlalchemy import orm
+from sqlalchemy.orm import properties
 from ore.alchemist import model, Session
 from ore.alchemist.interfaces import IAlchemistContent
 
@@ -215,6 +216,17 @@ class BaseForm( form.FormBase ):
         return errors
 
 
+def columns( mapper ):
+    for p in mapper.iterate_properties:
+        if isinstance( p, properties.ColumnProperty ):
+            yield p
+
+def unique_columns( mapper ):
+    for cp in columns( mapper ):
+        for c in cp.columns:
+            if c.unique:
+                yield cp.key, c
+            
 class DynamicFields( object ):
 
     mode = None # required string attribute
@@ -287,29 +299,25 @@ class DynamicFields( object ):
         
         # find unique columns in data model.. TODO do this statically
         mapper = orm.class_mapper( domain_model  )
-        unique_columns = []
-        for t in mapper.tables:
-            for c in t.columns:
-                if c.unique:
-                    unique_columns.append( (c.name,c) )
+        ucols = list( unique_columns( mapper ) )
 
         errors = []
         # query out any existing values with the same unique values,
         
         s = Session()        
         # find data matching unique columns
-        for uc, col in unique_columns:
-            if uc in data:
+        for key, col in ucols:
+            if key in data:
                 # on edit ignore new value if its the same as the previous value
                 if isinstance( self.context, domain_model ) \
-                   and data[uc] == getattr( self.context, uc, None):
+                   and data[key] == getattr( self.context, key, None):
                    continue
                 
-                value = s.query( domain_model ).filter( col == data[uc] ).count()
+                value = s.query( domain_model ).filter( col == data[key] ).count()
                 if not value:
                     continue
                 
-                widget = self.widgets[ uc ]
+                widget = self.widgets[ key ]
                 error = form.WidgetInputError( widget.name, 
                                                widget.label, 
                                               u"Duplicate Value for Unique Field" )
