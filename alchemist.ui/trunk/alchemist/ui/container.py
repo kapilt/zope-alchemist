@@ -166,6 +166,6 @@ def getFields( context ):
     for f in field_names:
         field = domain_interface[f]
         if isinstance( field,  ( schema.Choice, schema.Object,
-                                 schema.List, schema.Tuple ) ):
+                                 schema.List, schema.Tuple, schema.Bytes ) ):
             continue
         yield field
