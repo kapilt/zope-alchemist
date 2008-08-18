@@ -31,15 +31,18 @@ class DatabaseSource( object ):
     """
     interface.implements( IContextSourceBinder )
     
-    def __init__( self, domain_model, token_field, value_field, title_field=None ):
+    def __init__( self, domain_model, token_field, value_field, title_field=None, order_by=None ):
         self.domain_model = domain_model
         self.token_field = token_field
         self.value_field = value_field
         self.title_field = title_field
+        self.order_by = order_by
         
     def constructQuery( self, context ):
         session = Session()
         query = session.query( self.domain_model )
+        if self.order_by:
+            query = query.order_by( self.order_by )
         return query
         
     def __call__( self, context=None ):
