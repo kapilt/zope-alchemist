@@ -6,7 +6,6 @@ from zope.contentprovider.interfaces import IContentProvider
 from zope.viewlet.interfaces import IViewlet
 import zope.security.checker
 
-import zope.interface
 
 class MethodPublisher( BrowserView, zope.location.Location ):
 
@@ -39,8 +38,16 @@ class MethodPublisher( BrowserView, zope.location.Location ):
     __parent__ = property(__getParent, __setParent)
 
 
-class ViewletTraversableMixin( object ):
+class ViewletTraverse( object ):
+    pass
 
+class ViewletTraversableMixin( object ):
+    """
+    supports ambigious traversal of formlib viewlets, ie. all viewlets
+    of a given provider have are checked against the request to see if
+    they were submitted, if a submitted viewlet is found it is updated
+    and rendered
+    """
     def publishTraverse(self, request, name):
         # could encapsulate to separate view
         value = getattr( self, name, None)
@@ -63,7 +70,7 @@ class ViewletTraversableMixin( object ):
 
         # XXX - send error status message
         if not action:
-            return ""
+            raise NotFound("Viewlet Not Found")
 
         # do a dance to find the applicable viewlet
         # we need to know which viewlet managers we're using to do
@@ -89,6 +96,9 @@ class ViewletTraversableMixin( object ):
             prefix = getattr( viewlet, 'prefix', None)
             if prefix and action.startswith( prefix ):
                 active_viewlet = viewlet
+
+        if active_viewlet is None:
+            raise NotFound("Viewlet Not Found")
 
         # render the viewlet
         active_viewlet.update()
