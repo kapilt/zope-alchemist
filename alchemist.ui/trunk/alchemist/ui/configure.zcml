@@ -66,19 +66,11 @@
       allowed_interface="zope.formlib.interfaces.ISubPageForm"
       />
 
-  <!-- Create Menu for Actions, conditional? -->
-  <browser:menu
-     id="context_actions"
-     title="Actions"
-     />
-  
   <!-- Container UI -->
   <browser:page
      for="ore.alchemist.interfaces.IAlchemistContainer"
      permission="zope.View"
      name="index"
-     menu="context_actions"
-     title="Listing"
      template="templates/generic-container.pt"
      class=".container.ContainerListing"
      />
