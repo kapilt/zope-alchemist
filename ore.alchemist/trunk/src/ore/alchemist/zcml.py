@@ -40,12 +40,18 @@ class IEngineDirective( interface.Interface ):
                         default=False
                         )
 
+    pool_recycle = schema.Int( title = u"Connection Recycle",
+                               description=u"Time Given in Seconds",
+                               required = False,
+                               default = -1
+                               )
+
 # keyword arguments to pass to the engine
 IEngineDirective.setTaggedValue('keyword_arguments', True)
 
-def engine(_context, url, name='', echo=False, **kwargs):
+def engine(_context, url, name='', echo=False, pool_recycle=-1, **kwargs):
 
-    component = sqlalchemy.create_engine( url, echo=echo, **kwargs )
+    component = sqlalchemy.create_engine( url, echo=echo, pool_recycle=pool_recycle, **kwargs )
 
     utility( _context,
              provides = interfaces.IDatabaseEngine,
