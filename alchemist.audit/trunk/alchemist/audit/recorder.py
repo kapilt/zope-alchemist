@@ -85,4 +85,6 @@ class ChangeRecorder( object ):
         for participation in interaction.participations:
             if IRequest.providedBy(participation):
                 return participation.principal.id
-        raise RuntimeError(_("No IRequest in interaction"))    
+        return None
+    
+    #raise RuntimeError(_("No IRequest in interaction"))    
