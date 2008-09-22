@@ -31,7 +31,8 @@ class _ManagedContainer( PartialContainer ):
         
     def setConstraintManager( self, constraints ):
         self.constraints = constraints
-        self.setQueryModifier( constraints.getQueryModifier( self.__parent__, self ) )
+        if self.__parent__ is not None:
+            self.setQueryModifier( constraints.getQueryModifier( self.__parent__, self ) )
 
 class ConstraintManager( object ):
     """
