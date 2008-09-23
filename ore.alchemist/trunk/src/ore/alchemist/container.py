@@ -1,7 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 2006-2008 Kapil Thangavelu <kapil.foss@gmail.com>
-# Portions Copyright (c) Zope Corporation and Contributors.
+# Copyright (c) Zope Corporation and Contributors.
 # All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -13,7 +12,7 @@
 #
 ##############################################################################
 """
-portions from zope3 community (z3c.zalchemy) amechooser and contained
+portions from zope3 community (z3c.zalchemy) namechooser and contained
 implementation from z3c.zalchemy (ZPL 2.1).
 
 
@@ -128,11 +127,13 @@ class AlchemistContainer( Persistent, Contained ):
     def domain_model( self ):
         return self._class
 
-    def batch(self, order_by=(), offset=0, limit=20):
+    def batch(self, order_by=(), offset=0, limit=20, filter=None):
         """
         this method pulls a subset/batch of values for paging through a container.
         """
         query = self._query.limit( limit ).offset( offset )
+        if filter:
+            query = query.filter( filter )
         if order_by:
             query = query.order_by( order_by )
         for ob in query:
@@ -203,7 +204,8 @@ class PartialContainer( AlchemistContainer ):
     """
     an alchemist container that matches against an arbitrary subset, via definition
     of a query modification function. contents added to this container, may there 
-    fore not nesc. be accessible from it, unless they also match the query. 
+    fore not nesc. be accessible from it, unless they also match the query. the
+    alchemist ui views provide add views which can maintain the constraint
     """
     
     _subset_query = None
