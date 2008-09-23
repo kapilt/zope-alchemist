@@ -1,4 +1,10 @@
+0.6.0 (unreleased)
 
+ - allow for passing a filter to batch container method
+
+ - allow specification of pool timeout in zcml
+
+ - allowing specification of ordering for vocabularies
 
 0.5.2 2008-5-19
  
