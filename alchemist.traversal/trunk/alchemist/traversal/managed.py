@@ -117,9 +117,8 @@ class ManagedContainerDescriptor(object):
         container = self.domain_container()
         if instance is None:
             return container
-        if ILocation.providedBy( instance ):
-            container.__parent__ = instance
-            container.__name__ = self.name
+        container.__parent__ = instance
+        container.__name__ = self.name
         container.setConstraintManager( self.constraint )
         return container
     
