@@ -18,6 +18,7 @@ from ore.alchemist.interfaces import IAlchemistContent
 
 import pytz, datetime
 import zope.event
+from zope import security
 from zope.security.proxy import removeSecurityProxy
 from zope.lifecycleevent import Attributes
 from zope.lifecycleevent import ObjectModifiedEvent
@@ -43,7 +44,32 @@ class DateGetter( object ):
         if not value:
             return "N/A"
         return value.strftime( self.format )
-        
+
+def filterFields( context, fields, mode ):
+    """
+    filter form fields, context should be an instance of the class.
+
+    field mode should be in set of ('add', 'edit', 'search', 'view')
+    
+    There's a different set of use cases around field filtering,
+    which involves editable, then readable, then omit based on
+    permissions, but its a more involved as a use case with formlib
+    """
+    unwrapped = removeSecurityProxy( context )
+    descriptor = model.queryModelDescriptor( unwrapped )
+
+    check = mode in ('add', 'edit') \
+            and security.canWrite or security.canAccess
+    
+    omit_names = []
+    
+    for f in fields:
+        if check( context, f.__name__ ):
+            continue
+        omit_names.append( f.__name__)
+
+    return fields.omit( *omit_names )
+    
 def setUpFields( domain_model, mode ):
     """
     setup form fields for add/edit/view/search modes, with custom widgets
@@ -68,7 +94,9 @@ def setUpFields( domain_model, mode ):
 
     fields = []
     columns = getattr( domain_annotation, '%s_columns'%mode )
+    
 
+    
     for field_info in columns:
         if not field_info.name in domain_interface:
             #print "bad field", field_info.name, domain_interface.__name__
