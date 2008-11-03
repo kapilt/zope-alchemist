@@ -1,16 +1,16 @@
 from sqlalchemy import orm
-from ore.alchemist.model import ModelDescriptor
+#from ore.alchemist.model import ModelDescriptor
 from ore.alchemist import sa2zs, interfaces
 from alchemist.traversal.managed import ManagedContainerDescriptor
 from zope import interface
 from zope.dottedname.resolve import resolve
-from zope.location import ILocation
-from zope.app.container.interfaces import IContainer
+#from zope.location import ILocation
+#from zope.app.container.interfaces import IContainer
 from zope.app.security.protectclass import protectName, protectSetAttribute, protectLikeUnto
 
 def ApplySecurity( ctx ):
     # setup security
-    # 
+    #
     for c in ctx.domain_model.__bases__:
         if c is object:
             continue
@@ -21,12 +21,17 @@ def ApplySecurity( ctx ):
     attributes = attributes.union(
         set( [ f.get('name') for f in ctx.descriptor.fields] )
         )
-        
+
+    descriptor = ctx.descriptor
     for n in attributes:
-        protectName( ctx.domain_model, n, "zope.Public")
+        model_field = descriptor.get(n)
+        p = model_field and model_field.view_permission or 'zope.Public'
+        protectName( ctx.domain_model, n, p )
     
     for n in attributes:
-        protectSetAttribute( ctx.domain_model, n, "zope.Public")
+        model_field = descriptor.get(n)
+        p = model_field and model_field.edit_permission or 'zope.Public' # 'zope.ManageContent'
+        protectSetAttribute( ctx.domain_model, n, p)
         
     for k, v in ctx.domain_model.__dict__.items():
         if isinstance( v, ManagedContainerDescriptor ):
