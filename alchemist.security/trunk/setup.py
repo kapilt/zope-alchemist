@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="alchemist.security",
-    version="0.4.1-dev",    
+    version="0.4.2",    
     author='Kapil Thangavelu',
     author_email='kapil.foss@gmail.com',
     description="Relational Implementation of Zope Security components",
