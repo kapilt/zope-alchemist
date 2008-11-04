@@ -3,7 +3,7 @@ zope3 authenticator plugin against a relational database
 """
 
 from zope import interface
-from zope.app.authentication import interfaces
+from zope.app.authentication import interfaces, principalfolder
 from zope.app.container.contained import Contained
 
 from ore.alchemist import Session
@@ -67,3 +67,31 @@ class DatabaseAuthentication( Contained ):
         
     def __repr__(self):
         return "<DatabaseAuthPlugin>"
+
+class AuthenticatedPrincipalFactory( principalfolder.AuthenticatedPrincipalFactory ):
+    """
+    we enable returning an orm user object back for use as a principal. the only
+    constraint is attributes of a user object must not be orm mapped, as we overwrite
+    them with standard bookkeeping information as per the IPrincipal interface.
+
+    this enables interesting behavior for adaptation as we can use orm mapped hierarchies
+    to always return the most suitable class for an object.
+    """
+    interface.implements( interfaces.IAuthenticatedPrincipalFactory )
+    
+    def __call__( self, authentication ):
+        User = IAlchemistUser( self )
+        results = Session().query( User ).filter_by( login=self.info.id ).all()
+        
+        # delegate back if we can't find the user in the database
+        if len(results) != 1:
+            return super( AuthenticatedPrincipalFactory, self).__call__( authentication )
+
+        user  = results[0]
+        
+        user.id = self.info.id
+        user.title = self.info.title
+        user.description = self.info.description
+        user.groups = []
+
+        return user
