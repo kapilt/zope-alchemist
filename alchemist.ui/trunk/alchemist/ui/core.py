@@ -319,7 +319,8 @@ class DynamicFields( object ):
         
         TODO : assumes column == attribute         
         """
-        errors = form.getWidgetsData( self.widgets, self.prefix, data )
+        errors = form.getWidgetsData( self.widgets, self.prefix, data ) + \
+                 form.checkInvariants(self.form_fields, data) 
         if errors:
             return errors
         
