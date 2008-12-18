@@ -6,7 +6,7 @@ def read(*rnames):
     
 setup(
     name="alchemist.audit",
-    version="0.3.1",
+    version="0.3.2",
     install_requires=['setuptools',
                       'ore.alchemist',
                       'zope.formlib',
@@ -26,12 +26,16 @@ setup(
     author='Kapil Thangavelu',
     author_email='kapil.foss@gmail.com',
     description="Alchemist Auditing Components ( Event Subscribers, Change Recorders, UI ) for Relational Applications",
+
     long_description=(
         read('alchemist','audit','readme.txt')
         + '\n\n' +
         read('changes.txt')
         + '\n\n'
         ),
+    classifiers=['Programming Language :: Python',
+                 'Framework :: Zope3',
+                 ],        
     license='ZPL',
     )
 
