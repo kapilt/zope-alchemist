@@ -16,8 +16,11 @@ setup(
     zip_safe=False,
     author='Kapil Thangavelu',
     author_email='kapil.foss@gmail.com',
-    description="""traversal mechanisms for alchemist containers and domain objects.""",
-    long_description="Traversal of objects by foreign keys"+'\n\n'+read('changes.txt'),
+    description="""Foreign Key Traversal mechanisms for alchemist containers and domain objects.""",
+    long_description="Traversal of objects by foreign keys for relational applications"+'\n\n'+read('changes.txt'),
     license='LGPL',
+    classifiers=[
+                 'Framework :: Zope3',
+                 ],        
     keywords="zope zope3",
     )
