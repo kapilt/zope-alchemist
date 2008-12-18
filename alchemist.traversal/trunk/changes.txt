@@ -1,9 +1,11 @@
 Changes
 -------
  
-0.4.0 - ( unreleased )
+0.4.0 - December 17th, 2008
 
  - switch to buildout based testing environment 
+ - fix, only set parent on domain container if we have an instance
+ - fix, if parent not specified, don't set constraint
 
 0.3.1 - June 1st, 2008
 

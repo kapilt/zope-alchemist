@@ -6,10 +6,9 @@ def read(*rnames):
 
 setup(
     name="alchemist.traversal",
-    version="0.3.1",
+    version="0.4.0",
     install_requires=['setuptools', 'ore.alchemist', 'z3c.traverser'],
     packages=find_packages(exclude=["*.tests"]),
-#    package_dir= {'':'src'},
     namespace_packages=['alchemist'],
     package_data = {
       '': ['*.txt', '*.zcml', '*.pt'],
