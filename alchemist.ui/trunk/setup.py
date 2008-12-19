@@ -6,7 +6,7 @@ def read(*rnames):
 
 setup(
     name="alchemist.ui",
-    version="0.4.0",
+    version="0.4.1",
     install_requires=['setuptools',
                       'ore.alchemist',
                       'zope.formlib',
