@@ -1,0 +1,14 @@
+-------
+Changes
+-------
+
+0.4.0 - December 17th, 2008
+---------------------------
+
+ - fix, unique validator short circuits on form field validation and invariants
+ - removed browser menu registrations
+ - disallow field fields as container columns
+ - redo unique validation in the presence of property/column aliases
+ - server side sort, batching, paging json container views ( extjs / yui compatible )
+ - traversable viewlet
+
