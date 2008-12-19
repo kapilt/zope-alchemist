@@ -5,7 +5,7 @@ def read( name ):
 
 setup(
     name="ore.alchemist",
-    version="0.5.3",
+    version="0.6.0",
     url="http://code.google.com/p/zope-alchemist",
     install_requires=['setuptools', 'transaction', 'SQLAlchemy'],
     packages=find_packages('src', exclude=["*.tests"]),
@@ -19,9 +19,9 @@ setup(
     author_email='kapil.foss@gmail.com',
     description="sqlalchemy zope3 integration",
     long_description="""\
-ore.alchemist provides core features for zope3 relational database.
-including transformation of zope3 schemas to sqlalchemy tables, 
-sqlalchemy transformation into zope3 schemas, containers.
+ore.alchemist provides core features for zope3 relational database applications
+utilizing sqlalchemy. it includes transformation of zope3 schemas to sqlalchemy
+tables,  sqlalchemy transformation into zope3 schemas, and containers.
 
 it maintains a minimal api for sqlalchemy abstraction, you can use
 whatever constructions sqlalchemy supports.
