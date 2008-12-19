@@ -2,8 +2,7 @@
 Changes
 -------
 
-0.4.0 - December 17th, 2008
----------------------------
+0.4.1 - December 17th, 2008
 
  - fix, unique validator short circuits on form field validation and invariants
  - removed browser menu registrations
