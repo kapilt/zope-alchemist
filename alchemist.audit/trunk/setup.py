@@ -6,7 +6,7 @@ def read(*rnames):
     
 setup(
     name="alchemist.audit",
-    version="0.3.2",
+    version="0.3.3",
     install_requires=['setuptools',
                       'ore.alchemist',
                       'zope.formlib',
@@ -17,10 +17,6 @@ setup(
     '': ['*.txt', '*.zcml'],
     },
     zip_safe=False,
-    classifiers = [
-        'Intended Audience :: Developers',
-        'Framework :: Zope3'
-        ],
     url="http://code.google.com/p/zope-alchemist",
     keywords="zope3 audit",
     author='Kapil Thangavelu',
@@ -35,6 +31,7 @@ setup(
         ),
     classifiers=['Programming Language :: Python',
                  'Framework :: Zope3',
+	         'Intended Audience :: Developers',
                  ],        
     license='ZPL',
     )
