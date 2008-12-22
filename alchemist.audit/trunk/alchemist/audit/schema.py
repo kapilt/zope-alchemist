@@ -4,7 +4,7 @@ import sqlalchemy as rdb
 
 
 def make_changes_table( table, metadata ):
-    """ create an object log table for an object """
+    """ create an object log table for an object, this assumes per """
     table_name = table.name
     entity_name =  table_name.endswith('s') and table_name[:-1] or table_name
     
@@ -26,3 +26,6 @@ def make_changes_table( table, metadata ):
     )
     
     return changes_table
+
+def make_site_changes_table( metadata ):
+    """ create a single changes table to capture for a whole site """
