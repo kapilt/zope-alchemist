@@ -6,7 +6,7 @@ def read(*rnames):
     
 setup(
     name="alchemist.audit",
-    version="0.3.3",
+    version="0.3.4",
     install_requires=['setuptools',
                       'ore.alchemist',
                       'zope.formlib',
@@ -14,7 +14,7 @@ setup(
     packages=find_packages(),
     namespace_packages=['alchemist'],
     package_data = {
-    '': ['*.txt', '*.zcml'],
+    '': ['*.txt', '*.zcml', '*.pt'],
     },
     zip_safe=False,
     url="http://code.google.com/p/zope-alchemist",
