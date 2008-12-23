@@ -1,3 +1,7 @@
+0.3.4 - December 23rd, 2008
+
+ - packaging fixes ( template not included in package data )
+
 0.3.2 - December 17th, 2008
 
  - update package metadata / classifiers
