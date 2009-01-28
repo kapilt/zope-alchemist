@@ -77,7 +77,9 @@ def GenerateDomainInterface( ctx, interface_name=None ):
     
     # use the class's mapper select table as input for the transformation
     domain_mapper = orm.class_mapper( ctx.domain_model )
-    domain_interface = sa2zs.transmute( domain_mapper.select_table,
+    # 0.4 and 0.5 compatibility, 0.5 has the table as local_table (select_table) is none lazy gen?
+    domain_table  = getattr( domain_mapper, 'local_table', domain_mapper.select_table )
+    domain_interface = sa2zs.transmute( domain_table,
                                         annotation=ctx.descriptor,
                                         interface_name = interface_name,
                                         __module__ = ctx.interface_module.__name__,
