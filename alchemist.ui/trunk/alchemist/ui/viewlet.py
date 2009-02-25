@@ -3,10 +3,15 @@ from zope import interface
 from zope.viewlet import viewlet, manager
 from zope.formlib import form
 from zope.formlib.namedtemplate import NamedTemplate
-
+from zope.formlib.namedtemplate import NamedTemplateImplementation
+from zope.app.pagetemplate import ViewPageTemplateFile
 from i18n import _
 import core
 import content
+
+ContentViewletManagerTemplate = NamedTemplateImplementation(
+    ViewPageTemplateFile('templates/content-manager.pt')
+    )
 
 class FormViewlet( form.SubPageForm, viewlet.ViewletBase ):
 
@@ -63,8 +68,4 @@ class AttributesViewViewlet( core.DynamicFields, DisplayFormViewlet ):
     form_name = _(u"General")
 
 class ContentViewletManager( manager.ViewletManagerBase ):
-    
-    def sort( self, viewlets ):
-        sorted( viewlets )
-        #viewlets.sort( sorter )
-        return viewlets
+    template = NamedTemplate('alchemist.content')
