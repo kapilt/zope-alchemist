@@ -1,0 +1,5 @@
+<div class="alchemist-content-manager">
+  <div tal:repeat="viewlet view/viewlets">
+    <tal:render replace="structure viewlet/render" />
+  </div>
+</div>

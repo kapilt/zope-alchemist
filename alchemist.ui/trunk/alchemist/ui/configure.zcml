@@ -32,6 +32,13 @@
      name="alchemist.subform"
      factory=".form.SubFormTemplate"
      />
+  
+  <!-- Content Viewlet Manager as Named Template -->
+  <adapter
+     for="*"
+     name="alchemist.content"
+     factory=".viewlet.ContentViewletManagerTemplate"
+     />
 
   <!-- Content Edit/View Manager -->
   <browser:viewletManager
