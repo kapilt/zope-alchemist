@@ -171,9 +171,15 @@ class ModelViewletFactory( object ):
             if getattr( ctx.ui_module, viewlet_name, None):
                 self.context.logger.debug( "%s: skipped %s viewlet %s.%s"%msg)
                 continue
-                
+
+            inverse_model = property.mapper.class_ # domain model of endpoint
+            if len(tuple(interface.implementedBy(inverse_model))) == 0:
+                # do not create viewlet for models which do not
+                # implement a schema
+                continue
+            
             d = {}
-            d['domain_model'] = inverse_model = property.mapper.class_ # domain model of endpoint
+            d['domain_model'] = inverse_model
             d['form_name'] = inverse_model.__name__
             d['property_name'] = property_name
             
