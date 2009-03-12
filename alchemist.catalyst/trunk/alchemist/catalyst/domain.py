@@ -87,6 +87,12 @@ def GenerateDomainInterface( ctx, interface_name=None ):
                                         )
 
     implements.insert(0, domain_interface)
+
+    # if we're replacing an existing interface, make sure the new
+    # interface implements it
+    old = getattr( ctx.interface_module, interface_name, None)
+    if old is not None:
+        implements.append(old)
     
     interface.classImplementsOnly( ctx.domain_model, *implements )
     setattr( ctx.interface_module, interface_name, domain_interface )    
