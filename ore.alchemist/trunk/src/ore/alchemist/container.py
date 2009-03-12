@@ -167,7 +167,11 @@ class AlchemistContainer( Persistent, Contained ):
             yield (name, contained(obj, self, name) )
 
     def get( self, name, default=None ):
-        value = self._query.get( valueKey(name) )
+        try:
+            key = valueKey( name )
+        except KeyError:
+            return default
+        value = self._query.get( key )
         if value is None:
             return default
         value = contained( value, self, stringKey(value) )
