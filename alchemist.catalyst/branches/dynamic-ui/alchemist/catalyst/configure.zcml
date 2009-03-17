@@ -1,0 +1,23 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser"
+           i18n_domain="zalchemy">
+
+  <browser:page
+     name="add"
+     for="ore.alchemist.interfaces.IAlchemistContainer"
+     permission="zope.Public"
+     class=".ui.AddForm" />
+
+  <browser:page
+     name="edit"
+     for="ore.alchemist.interfaces.IAlchemistContent"
+     permission="zope.Public"
+     class=".ui.EditForm" />
+
+  <browser:page
+     name="view"
+     for="ore.alchemist.interfaces.IAlchemistContent"
+     permission="zope.Public"
+     class=".ui.DisplayForm" />
+
+</configure>

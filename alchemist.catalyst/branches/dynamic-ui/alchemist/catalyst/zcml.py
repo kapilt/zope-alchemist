@@ -145,9 +145,6 @@ def catalyst(_context,
         # create a container class 
         container.GenerateContainer( ctx )
         
-        # generate views
-        ui.GenerateViews( ctx )
-        
         # generate collection traversal 
         traversal.GenerateCollectionTraversal( ctx )
     except:

@@ -29,16 +29,70 @@ ajax todo..
 from zope import interface
 from zope.dottedname.resolve import resolve
 from zope.formlib import form
+from zope.security.proxy import removeSecurityProxy
 from sqlalchemy import orm, util
 
 from ore.alchemist import named, model, interfaces as irdb
 from alchemist.ui import interfaces, content, relation
+from alchemist.ui.core import setUpFields
 
 from zope.formlib.interfaces import ISubPageForm
-
+from zope.formlib.namedtemplate import NamedTemplate
 from zope.app.publisher.browser.viewmeta import page
 from zope.viewlet.metaconfigure import viewletDirective
 from zope.app.publisher.browser.fields import MenuField
+
+class BaseForm(object):
+    name_template = "%sForm"
+    template = NamedTemplate('alchemist.form')
+
+    additional_form_fields = form.Fields()
+
+    status = None
+    mode = None
+    
+    @property
+    def domain_model(self):
+        return type(removeSecurityProxy(self.context))
+
+    @property
+    def model_schema(self):
+        return tuple(interface.implementedBy(self.domain_model))[0]
+
+    def get_form_fields(self):
+        return setUpFields(self.domain_model, self.mode)
+   
+    def _get_form_fields(self):
+        try:
+            fields = self.__dict__['form_fields']
+        except KeyError:
+            fields = self.__dict__['form_fields'] = self.get_form_fields()
+        return fields
+    
+    def _set_form_fields(self, form_fields):
+        self.__dict__['form_fields'] = form_fields
+        
+    form_fields = property(_get_form_fields, _set_form_fields)
+    
+class AddForm(BaseForm, content.ContentAddForm):
+    mode = "add"
+    defaults = {}
+    
+    @property
+    def domain_model(self):
+        return removeSecurityProxy(self.context).domain_model
+
+    def update( self ):
+        for name, value in self.defaults.items():
+            self.form_fields[name].field.default = value
+            
+        super(AddForm, self).update()
+
+class EditForm(BaseForm, content.EditForm):
+    mode = "edit"
+
+class DisplayForm(content.ContentDisplayForm):
+    pass
 
 ########################################
 # View Factories
