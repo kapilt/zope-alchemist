@@ -1,8 +1,7 @@
 """
 $Id: $
 
-generate add/edit/view forms for all the content, these get stuffed in
-content.py module, and are registered by hand in content.zcml
+dynamic base classes for add/edit/view forms.
 
 todo..
 
