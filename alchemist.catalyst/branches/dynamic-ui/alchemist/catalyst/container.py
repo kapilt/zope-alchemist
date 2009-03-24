@@ -28,6 +28,7 @@ def GenerateContainer( ctx,
         """
         generate a zope3 container class for a domain model
         """
+
         # create container
         container_name = container_name or \
                          ctx.domain_model.__name__ + 'Container'
@@ -83,43 +84,43 @@ def GenerateContainer( ctx,
                 ctx.container_module.__name__,
                 container_iname )
         
-        # if we already have a container interface class, exit
+        # if we already have a container interface class, skip creation
         container_interface = getattr( ctx.interface_module, container_iname, None )
         if container_interface is not None:
             assert issubclass( container_interface, IAlchemistContainer )
             if ctx.echo:
                 ctx.logger.debug("%s: skipping container interface %s.%s for"%msg )
-            ctx.container_interface = container_interface
-            return
-        
-        if ctx.echo:
-            ctx.logger.debug("%s: generated container interface %s.%s"%msg )            
-                    
-        # ensure that our base interfaces include alchemist container 
-        if base_interfaces:
-            assert isinstance( base_interfaces, tuple )
-            found = False
-            for bi in base_interfaces:
-                found = issubclass( bi, IAlchemistContainer )
-                if found: break
-            if not found:
-                base_interfaces = base_interfaces + ( IAlchemistContainer,)
         else:
-            base_interfaces = ( IAlchemistContainer, )
-        
-        # create interface
-        container_interface = InterfaceClass( container_iname,
-                                              bases = base_interfaces,
-                                              __module__ = ctx.interface_module.__name__
-                                              )
-        # store container interface for catalyst
-        ctx.container_interface = container_interface
-        
-        # setup security
-        for n,d in container_interface.namesAndDescriptions(1):
-            protectName( container_class, n, "zope.Public")
-        
-        setattr( ctx.interface_module, container_iname, container_interface )
-        interface.classImplements( container_class, container_interface )    
+            if ctx.echo:
+                ctx.logger.debug("%s: generated container interface %s.%s"%msg )            
+            # ensure that our base interfaces include alchemist container 
+            if base_interfaces:
+                assert isinstance( base_interfaces, tuple )
+                found = False
+                for bi in base_interfaces:
+                    found = issubclass( bi, IAlchemistContainer )
+                    if found: break
+                if not found:
+                    base_interfaces = base_interfaces + ( IAlchemistContainer,)
+            else:
+                base_interfaces = ( IAlchemistContainer, )
+
+            # create interface
+            container_interface = InterfaceClass( container_iname,
+                                                  bases = base_interfaces,
+                                                  __module__ = ctx.interface_module.__name__
+                                                  )
+            # store container interface for catalyst
+            ctx.container_interface = container_interface
+
+            # setup security
+            for n,d in container_interface.namesAndDescriptions(1):
+                protectName( container_class, n, "zope.Public")
+
+            setattr( ctx.interface_module, container_iname, container_interface )
+
+        if not container_interface.implementedBy(container_class):
+            interface.classImplements(container_class, container_interface)
+            
         ctx.container_interface = container_interface
         
