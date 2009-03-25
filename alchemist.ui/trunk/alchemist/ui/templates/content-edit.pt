@@ -3,9 +3,9 @@
       metal:use-macro="context/@@standard_macros/page">
 <body>
 
- <div metal:fill-slot="title">
-   <title tal:content="string:${view/form_name} ${context/title|context/__class__/__name__}"></title>
- </div>
+  <metal:title fill-slot="title">
+    <title tal:content="string:${view/form_name} ${context/title|context/__class__/__name__}" />
+  </metal:title>
 
  <div metal:fill-slot="body">
    <h2 class="title" tal:content="string: ${view/form_name} ${context/short_name|context/__class__/__name__}"> </h2>
