@@ -113,11 +113,11 @@ def GenerateContainer( ctx,
             # store container interface for catalyst
             ctx.container_interface = container_interface
 
-            # setup security
-            for n,d in container_interface.namesAndDescriptions(1):
-                protectName( container_class, n, "zope.Public")
-
             setattr( ctx.interface_module, container_iname, container_interface )
+
+        # setup security
+        for n,d in container_interface.namesAndDescriptions(1):
+            protectName( container_class, n, "zope.Public")
 
         if not container_interface.implementedBy(container_class):
             interface.classImplements(container_class, container_interface)
