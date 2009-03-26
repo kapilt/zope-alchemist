@@ -220,7 +220,7 @@ class PartialContainer( AlchemistContainer ):
     def getQueryModifier( self ):
         return self._subset_query
     
-    subset_query = property( setQueryModifier, getQueryModifier )
+    subset_query = property( getQueryModifier, setQueryModifier )
     
     @property
     def _query( self ):
