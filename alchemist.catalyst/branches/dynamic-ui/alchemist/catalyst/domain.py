@@ -34,7 +34,8 @@ def ApplySecurity( ctx ):
         protectSetAttribute( ctx.domain_model, n, p)
         
     for k, v in ctx.domain_model.__dict__.items():
-        if isinstance( v, ManagedContainerDescriptor ):
+        if isinstance(v, ManagedContainerDescriptor) or isinstance(
+            v, orm.attributes.InstrumentedAttribute):
             protectName( ctx.domain_model, k, "zope.Public" )
 
 def getDomainInterfaces( domain_model ):
