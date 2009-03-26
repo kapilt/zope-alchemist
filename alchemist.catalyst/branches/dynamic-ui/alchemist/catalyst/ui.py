@@ -29,6 +29,7 @@ from zope import interface
 from zope.dottedname.resolve import resolve
 from zope.formlib import form
 from zope.security.proxy import removeSecurityProxy
+from zope.proxy import removeAllProxies
 from sqlalchemy import orm, util
 
 from ore.alchemist import named, model, interfaces as irdb
@@ -52,7 +53,7 @@ class BaseForm(object):
     
     @property
     def domain_model(self):
-        return type(removeSecurityProxy(self.context))
+        return removeSecurityProxy(self.context).__class__
 
     @property
     def model_schema(self):
