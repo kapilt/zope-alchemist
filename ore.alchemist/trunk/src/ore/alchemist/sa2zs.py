@@ -130,7 +130,7 @@ class ColumnVisitor( object ):
         ( rt.SmallInteger, ColumnTranslator( schema.Int ) ),
         ( rt.Date, ColumnTranslator( schema.Date ) ),
         ( rt.DateTime, ColumnTranslator( schema.Datetime ) ),
-#        ( rt.Time, ColumnTranslator( schema.Datetime ),
+        ( rt.Time, ColumnTranslator( schema.Time ) ),
         ( rt.TEXT, ColumnTranslator( schema.Text ) ),
         ( rt.Boolean, ColumnTranslator( schema.Bool ) ),
         ( rt.String, SizedColumnTranslator( schema.TextLine ) ),
