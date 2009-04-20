@@ -25,6 +25,7 @@ from zope.configuration.name import resolve
 from zope.exceptions.interfaces import UserError
 from zope.location.interfaces import ILocation
 from zope.proxy import sameProxiedObjects
+from zope.security.proxy import removeSecurityProxy
 
 from zope.app.container.contained import Contained, ContainedProxy, NameChooser
 from zope.app.container.interfaces import IContained
@@ -35,8 +36,9 @@ from sqlalchemy import orm, exceptions
 from ore.alchemist import Session, interfaces
 
 def stringKey( instance ):
-    mapper = orm.object_mapper( instance )
-    primary_key = mapper.primary_key_from_instance( instance )
+    unproxied = removeSecurityProxy( instance )
+    mapper = orm.object_mapper( unproxied )
+    primary_key = mapper.primary_key_from_instance( unproxied )
     identity_key = '-'.join( map( str, primary_key ) )
     return "obj-%s"%identity_key
 
