@@ -148,14 +148,14 @@ class EditForm( form.EditForm ):
             adapters=self.adapters, ignore_request=ignore_request
             )
             
-    @form.action(_(u"Cancel"), condition=form.haveInputWidgets, validator=core.null_validator)
-    def handle_cancel_action( self, action, data ):
-        return core.handle_edit_action( self, action, data )            
-        
     @form.action(_(u"Save"), condition=form.haveInputWidgets)
     def handle_edit_action( self, action, data ):
         return core.handle_edit_action( self, action, data )
     
+    @form.action(_(u"Cancel"), condition=form.haveInputWidgets, validator=core.null_validator)
+    def handle_cancel_action( self, action, data ):
+        return core.handle_edit_action( self, action, data )            
+        
     def invariantErrors( self ):        
         errors = []
         for error in self.errors:
