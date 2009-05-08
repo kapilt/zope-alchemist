@@ -72,14 +72,6 @@ class ObjectSource( DatabaseSource ):
         session = Session()
         query = session.query( self.domain_model )
         return query        
-        
-    def __call__( self, context=None ):
-        query = self.constructQuery( context )
-        results = query.all()
-        terms = [vocabulary.SimpleTerm( value=ob, token=getattr( ob, self.value_field), title=getattr( ob, self.token_field ) ) \
-                 for ob in results ]
-        return vocabulary.SimpleVocabulary( terms )
-
 
 class VocabularyTable( object ):
     """
