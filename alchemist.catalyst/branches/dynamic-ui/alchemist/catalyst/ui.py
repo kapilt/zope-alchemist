@@ -74,7 +74,7 @@ class BaseForm(object):
         
     form_fields = property(_get_form_fields, _set_form_fields)
     
-class AddForm(BaseForm, content.ContentAddForm):
+class AddForm(BaseForm, content.Add):
     mode = "add"
     defaults = {}
     
@@ -85,7 +85,7 @@ class AddForm(BaseForm, content.ContentAddForm):
     def update( self ):
         for name, value in self.defaults.items():
             self.form_fields[name].field.default = value
-            
+
         super(AddForm, self).update()
 
 class EditForm(BaseForm, content.EditForm):
@@ -112,7 +112,6 @@ class ModelViewFactory( object ):
         self.setUpView( domain_model )
         
     def setUpView( self, domain_model ):
-
         model_schema = list( interface.implementedBy(domain_model) )[0]        
         form_name = self.name_template%(domain_model.__name__)
 
