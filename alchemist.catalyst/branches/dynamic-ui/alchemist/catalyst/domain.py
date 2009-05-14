@@ -80,23 +80,31 @@ def GenerateDomainInterface( ctx, interface_name=None ):
     domain_mapper = orm.class_mapper( ctx.domain_model )
     # 0.4 and 0.5 compatibility, 0.5 has the table as local_table (select_table) is none lazy gen?
     domain_table  = getattr( domain_mapper, 'local_table', domain_mapper.select_table )
-    domain_interface = sa2zs.transmute( domain_table,
-                                        annotation=ctx.descriptor,
-                                        interface_name = interface_name,
-                                        __module__ = ctx.interface_module.__name__,
-                                        bases=bases
-                                        )
 
-    implements.insert(0, domain_interface)
+    # if the domain model already implements a model interface, use it
+    # instead of generating a new one
+    for iface in interface.implementedBy(ctx.domain_model):
+        if (interfaces.IIModelInterface.providedBy(iface) and 
+            iface.__name__ == interface_name):
+            domain_interface = iface
+            break
+    else:
+        domain_interface = sa2zs.transmute(
+            domain_table,
+            annotation=ctx.descriptor,
+            interface_name = interface_name,
+            __module__ = ctx.interface_module.__name__,
+            bases=bases)
+
+        implements.insert(0, domain_interface)
+        interface.classImplementsOnly(ctx.domain_model, *implements)
 
     # if we're replacing an existing interface, make sure the new
     # interface implements it
-    old = getattr( ctx.interface_module, interface_name, None)
+    old = getattr(ctx.interface_module, interface_name, None)
     if old is not None:
         implements.append(old)
-    
-    interface.classImplementsOnly( ctx.domain_model, *implements )
-    setattr( ctx.interface_module, interface_name, domain_interface )    
-    
+
+    setattr( ctx.interface_module, interface_name, domain_interface )
     ctx.domain_interface = domain_interface
     
