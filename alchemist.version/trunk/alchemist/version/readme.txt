@@ -1,19 +1,16 @@
 Versions
 ========
 
-  >>> import bungeni.core.version
-
+  >>> import alchemist.version
+  
 Set up the versions factory.
   
   >>> component.provideAdapter(
-  ...    bungeni.core.version.ContextVersioned,
-  ...    (bungeni.core.interfaces.IVersionable,),
-  ...    bungeni.core.interfaces.IVersioned)  
+  ...    alchemist.version.ContextVersioned,
+  ...    (alchemist.version.interfaces.IVersionable,),
+  ...    alchemist.version.interfaces.IVersioned)  
 
 Adding a question.
-
-  >>> from bungeni.models.testing import add_content
-  >>> from bungeni.models import domain
 
   >>> question = add_content(
   ...     domain.Question,
@@ -24,11 +21,11 @@ Adding a question.
 The ``question`` object needs to provide the versionable interface.
   
   >>> from zope.interface import alsoProvides
-  >>> alsoProvides(question, bungeni.core.interfaces.IVersionable)
+  >>> alsoProvides(question, alchemist.version.interfaces.IVersionable)
 
 Verify that no versions exist yet:
 
-  >>> versions =  bungeni.core.interfaces.IVersioned(question)
+  >>> versions =  alchemist.version.interfaces.IVersioned(question)
   >>> len(tuple(versions.values()))
   0  
 
