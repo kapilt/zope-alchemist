@@ -55,6 +55,19 @@ We can also deny grants:
   >>> list(elephant_rpm.getPermissionsForRole(u'zope.Editor'))
   [(u'zope.DeleteContent', PermissionSetting: Deny)]
 
+grant again:
+
+  >>> elephant_rpm.grantPermissionToRole( u'zope.DeleteContent', u'zope.Editor')
+  >>> list(elephant_rpm.getPermissionsForRole(u'zope.Editor'))
+  [(u'zope.DeleteContent', PermissionSetting: Allow)]  
+
+
+and deny grant again:
+
+  >>> elephant_rpm.denyPermissionToRole( u'zope.DeleteContent', u'zope.Editor')
+  >>> list(elephant_rpm.getPermissionsForRole(u'zope.Editor'))
+  [(u'zope.DeleteContent', PermissionSetting: Deny)]
+
 Or simply remove them:
 
   >>> elephant_rpm.unsetPermissionFromRole(  u'zope.DeleteContent', u'zope.Editor')

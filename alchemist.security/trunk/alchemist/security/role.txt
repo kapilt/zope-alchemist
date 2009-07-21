@@ -53,6 +53,19 @@ We can also deny grants:
   >>> list(elephant_prm.getRolesForPrincipal(u'test_user'))
   [(u'zope.Manager', PermissionSetting: Deny)]
 
+
+grant again:
+
+  >>> elephant_prm.assignRoleToPrincipal( u'zope.Manager', u'test_user')
+  >>> list(elephant_prm.getRolesForPrincipal(u'test_user'))
+  [(u'zope.Manager', PermissionSetting: Allow)]  
+  
+and deny again:  
+
+  >>> elephant_prm.removeRoleFromPrincipal( u'zope.Manager', u'test_user')
+  >>> list(elephant_prm.getRolesForPrincipal(u'test_user'))
+  [(u'zope.Manager', PermissionSetting: Deny)]
+
 Or simply remove them:
 
   >>> elephant_prm.unsetRoleForPrincipal(  u'zope.Manager', u'test_user')

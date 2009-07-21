@@ -2,6 +2,8 @@ from zope import interface
 from zope.securitypolicy.interfaces import IRolePermissionMap 
 from zope.app.security.settings import Allow, Deny, Unset
 
+from zope.security.proxy import removeSecurityProxy
+
 from sqlalchemy import select, and_, orm
 from schema import rpm
 
@@ -14,7 +16,8 @@ class LocalRolePermissionMap(object):
     
     def __init__(self, context):
         self.context = context
-        self.oid = orm.object_mapper( self.context ).primary_key_from_instance(self.context)[0]
+        trusted = removeSecurityProxy(context)        
+        self.oid = orm.object_mapper( trusted ).primary_key_from_instance(trusted)[0]
         self.object_type = context.__class__.__name__.lower()
 
     def getPermissionsForRole(self, role_id):
@@ -86,6 +89,15 @@ class LocalRolePermissionMap(object):
     def grantPermissionToRole(self, permission_id, role_id):
         """Bind the permission to the role.
         """
+        s = select( [rpm.c.permission_id ],
+                and_( rpm.c.object_id == self.oid,
+                      rpm.c.permission_id == permission_id,
+                      rpm.c.role_id == role_id,
+                      rpm.c.object_type == self.object_type )
+                      )
+
+        if s.execute().fetchone():
+            self.unsetPermissionFromRole( permission_id, role_id )
         rpm.insert( 
             values = dict( permission_id = permission_id,
                            role_id = role_id,
