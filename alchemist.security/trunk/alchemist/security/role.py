@@ -7,10 +7,10 @@ is not recommended, instead use alchemist keyreferences in conjunction with ore.
 (utility annotations).
 
 """
-
 from zope import interface
 from zope.securitypolicy.interfaces import IPrincipalRoleMap 
 from zope.securitypolicy.interfaces import Allow, Deny, Unset
+from zope.security.proxy import removeSecurityProxy
 
 from sqlalchemy import select, and_, orm
 from schema import prm
@@ -23,7 +23,8 @@ class LocalPrincipalRoleMap( object ):
     
     def __init__( self, context ):
         self.context = context
-        self.oid = orm.object_mapper( self.context ).primary_key_from_instance(self.context)[0]
+        trusted = removeSecurityProxy(context)
+        self.oid = orm.object_mapper( trusted ).primary_key_from_instance(trusted)[0]
         self.object_type = context.__class__.__name__.lower()
                                     
     def getPrincipalsForRole(self, role_id):
@@ -89,6 +90,14 @@ class LocalPrincipalRoleMap( object ):
             yield role_id, principal_id, BooleanAsSetting[ setting ]
         
     def assignRoleToPrincipal( self, role_id, principal_id ):
+        s = select( [prm.c.role_id, prm.c.setting],
+                and_( prm.c.principal_id == principal_id,
+                      prm.c.object_type == self.object_type,
+                      prm.c.role_id == role_id, 
+                      prm.c.object_id == self.oid )
+            )
+        if s.execute().fetchone():
+            self.unsetRoleForPrincipal( role_id, principal_id )        
         prm.insert(
             values=dict( role_id = role_id, 
                          principal_id = principal_id,
@@ -102,7 +111,7 @@ class LocalPrincipalRoleMap( object ):
                       prm.c.object_type == self.object_type,
                       prm.c.role_id == role_id, 
                       prm.c.object_id == self.oid )
-            )
+            )  
         if s.execute().fetchone():
             self.unsetRoleForPrincipal( role_id, principal_id )
 
