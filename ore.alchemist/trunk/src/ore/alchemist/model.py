@@ -71,7 +71,8 @@ class Field( object ):
     listing_column = None # zc.table.interfaces.IColumn object
     add_widget     = None # zope.app.form.interfaces.IInputWidget object
     search_widget  = None # zope.app.form.interfaces.IInputWidget object
-
+    differ = None         # z3c.schemadiff.interfaces.IFieldDiff
+    
     # for relations, we want to enable grouping them together based on
     # model, this attribute specifies a group. the relation name will be
     # used on a vocabulary. perhaps an example is cleaner, so say we
