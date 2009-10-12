@@ -92,7 +92,7 @@ class SQLAlchemyNameChooser(NameChooser):
     def chooseName(self, name, obj):
         # flush the object to make sure it contains an id
         session = Session()
-        session.save(obj)
+        session.add(obj)
         return stringKey(obj)
 
 class ContainerSublocations( object ):
@@ -190,7 +190,7 @@ class AlchemistContainer( Persistent, Contained ):
 
     def __setitem__( self, name, item ):
         session = Session()
-        session.save( item )
+        session.add( item )
         
     def __delitem__( self, name ):
         instance = self[ name ]
