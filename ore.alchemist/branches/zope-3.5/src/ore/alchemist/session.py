@@ -45,7 +45,6 @@ def _zope_session( session_factory ):
             super( ZopeSession, self).__init__( **kwargs )
     return ZopeSession
 
-Session = TransactionScoped( _zope_session( sessionmaker( autoflush=True,
-                                                          transactional=True ) ) )
+Session = TransactionScoped( _zope_session( sessionmaker( autoflush=True, autocommit=False ) ) )
 
 

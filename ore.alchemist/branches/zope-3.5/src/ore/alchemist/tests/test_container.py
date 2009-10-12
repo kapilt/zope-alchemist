@@ -44,7 +44,7 @@ orm.mapper( MultiKeyContent, multikey_content_table )
 
 def setUp( test ):
     setup.placefulSetUp()
-    test._engine = rdb.create_engine('sqlite://memory')
+    test._engine = rdb.create_engine('sqlite://')
     metadata.bind = test._engine
     metadata.create_all()
     

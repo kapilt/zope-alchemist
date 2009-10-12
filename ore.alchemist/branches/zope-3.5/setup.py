@@ -7,7 +7,7 @@ setup(
     name="ore.alchemist",
     version="0.6.0",
     url="http://code.google.com/p/zope-alchemist",
-    install_requires=['setuptools', 'transaction', 'SQLAlchemy'],
+    install_requires=['setuptools', 'transaction', 'SQLAlchemy', 'zope.app.container', 'zope.app.testing'],
     packages=find_packages('src', exclude=["*.tests"]),
     package_dir= {'':'src'},
     namespace_packages=['ore'],
