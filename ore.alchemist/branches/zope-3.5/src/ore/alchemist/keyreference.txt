@@ -1,0 +1,27 @@
+Alchemist KeyReferences
+-----------------------
+
+An adapter that adapts alchemist mapped objects to a zope
+keyreference.
+
+This allows for usage of intids for relationally persisted objects
+which in conjunction with additional packages allows for using many
+standard zope techniques and components with relationally stored
+content.
+
+Beaware that referencing relationally stored objects persistently
+within the zodb has implications for applications. ie. for example
+persistence the notion that another process is interacting directly
+with the database in read/write fashion could delete a relationally
+stored object would result in a previously stored keyreference to that
+object returning None. Also changing the primary key structure of any
+underlying table of objects with extant keyreferences will render
+extant references.
+
+
+Using KeyReferences
+-------------------
+
+
+
+

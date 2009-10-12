@@ -1,0 +1,76 @@
+Alchemist Container
+==================
+
+   >>> import ore.alchemist
+   >>> from ore.alchemist.tests.test_container import SimpleContent, MultiKeyContent
+   >>> from ore.alchemist.container import AlchemistContainer
+
+   >>> session = ore.alchemist.Session()
+
+We create a container :
+   
+   >>> c = AlchemistContainer()
+
+And assign a class to the container.
+The class must be mapped to a table.
+
+   >>> c.class_name = 'ore.alchemist.tests.test_container.SimpleContent'
+
+
+WriteContainer
+--------------
+
+It is important to note that the name used to assign an item to a container
+isn't meaningful. The container is only saving the item in the session and then
+flushing it to the database. The assigned id is discarded. After an
+object is flushed to the database its id will be based on soley on its
+primary key(s).
+
+   >>> c[''] = SimpleContent('a')
+
+The above line has the same effect as this :
+
+   >>> t = SimpleContent('b')
+
+Clean up for the next test :
+
+   >>> import transaction
+   >>> transaction.abort()
+
+ReadContainer
+-------------
+
+We can ask for the length :
+
+   >>> len(c)
+   0
+
+   >>> session.save(SimpleContent())
+
+We can iterate over the keys :
+
+   >>> [key for key in c.keys()]
+   ['1']
+
+We can iterate over the items :
+
+   >>> [item.id for key, item in c.items()]
+   [1]
+
+We can iterate over the values :
+
+   >>> [item.id for item in c.values()]
+   [1]
+
+   >>> session.save(SimpleContent())
+   >>> len(c)
+   2
+   >>> [key for key in c.keys()]
+   ['1', '2']
+
+We can access specific object by key :
+
+   >>> c['1'].id
+   1
+   >>> c['2'].id
+   2
