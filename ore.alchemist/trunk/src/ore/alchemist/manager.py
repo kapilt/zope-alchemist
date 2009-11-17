@@ -41,7 +41,7 @@ class SessionDataManager( object ):
         self.session.joined = False
         if self.session.transaction:
             self.session.transaction.rollback()
-        self.session.clear()
+        self.session.expunge_all()
         
     def commit(self, transaction):
         if not self.session.transaction:
@@ -53,12 +53,12 @@ class SessionDataManager( object ):
     def tpc_finish(self, transaction):
         self.session.joined = False        
         self.session.transaction.commit()
-        self.session.clear()
+        self.session.expunge_all()
         
     def tpc_abort(self, transaction):
         self.session.joined = False                
         self.session.transaction.rollback()
-        self.session.clear()
+        self.session.expunge_all()
         
     def sortKey(self):
         return "100-alchemist"

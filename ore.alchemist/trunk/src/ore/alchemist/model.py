@@ -27,7 +27,7 @@ def queryModelInterface( klass ):
     if not IInterface.providedBy( klass ):
         candidates = list( interface.implementedBy( klass ) )
         ifaces = filter( IIModelInterface.providedBy, candidates )
-
+        #import pdb; pdb.set_trace()
         if not ifaces:
             for i in candidates:
                 if issubclass( i, IAlchemistContent ):
@@ -38,7 +38,7 @@ def queryModelInterface( klass ):
 
         if ifaces:
             assert len(ifaces)==1, "Multiple Model Interfaces on Domain Object"
-
+        #import pdb; pdb.set_trace()
         klass = ifaces[0]
     else:
         assert IIModelInterface.providedBy( klass ), "Invalid Interface"
