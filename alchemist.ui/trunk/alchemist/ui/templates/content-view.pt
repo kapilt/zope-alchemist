@@ -8,7 +8,7 @@
   </metal:title>
 
  <div metal:fill-slot="body">
-   <h2 class="title" tal:content="string: ${view/form_name} ${context/title|context/__class__/__name__}"></h2>
+   <h2 class="title" tal:content="string: ${view/form_name} ${context/short_name|context/__class__/__name__}"></h2>
    <div tal:replace="structure provider:alchemist.content.view">
       Form
    </div>

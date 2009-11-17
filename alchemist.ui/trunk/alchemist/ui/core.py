@@ -59,7 +59,7 @@ def filterFields( context, fields, mode ):
     descriptor = model.queryModelDescriptor( unwrapped )
 
     check = mode in ('add', 'edit') \
-            and security.canWrite or security.canAccess
+            and security.canAccess or security.canWrite
     
     omit_names = []
     
@@ -252,9 +252,12 @@ def columns( mapper ):
 def unique_columns( mapper ):
     for cp in columns( mapper ):
         for c in cp.columns:
-            if c.unique:
-                yield cp.key, c
-            
+            try:
+                if c.unique:
+                    yield cp.key, c
+            except:
+                continue
+                    
 class DynamicFields( object ):
 
     mode = None # required string attribute
@@ -291,6 +294,7 @@ class DynamicFields( object ):
         return two lists of form fields split into two, int overflow into
         first column.
         """
+        pdb.set_trace()
         # give first and second set of field names
         field_count = len( self.form_fields )
         first_half_count = math.ceil( field_count / 2.0 )
