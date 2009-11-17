@@ -2,7 +2,7 @@
      xmlns:metal="http://xml.zope.org/namespaces/metal"
      metal:use-macro="context/@@standard_macros/form">
 
-     <!--div metal:fill-slot="widget_iter"
+     <div metal:fill-slot="widget_iter"
           tal:define="widgets_sets view/splitwidgets">
 
 	  <fieldset tal:define="widgets python:widgets_sets[0]"
@@ -19,6 +19,6 @@
             </div>
 	  </fieldset>
 
-     </div-->
+     </div>
 
 </div>

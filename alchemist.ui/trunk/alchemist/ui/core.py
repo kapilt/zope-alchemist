@@ -294,7 +294,6 @@ class DynamicFields( object ):
         return two lists of form fields split into two, int overflow into
         first column.
         """
-        pdb.set_trace()
         # give first and second set of field names
         field_count = len( self.form_fields )
         first_half_count = math.ceil( field_count / 2.0 )
