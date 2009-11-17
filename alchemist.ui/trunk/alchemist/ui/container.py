@@ -164,7 +164,7 @@ def getFields( context ):
     domain_interface = queryModelInterface( domain_model )
     field_names = schema.getFieldNamesInOrder( domain_interface )
     for f in field_names:
-        field = domain_interface[f]
+        field = domain_interface[ f ]
         if isinstance( field,  ( schema.Choice, schema.Object,
                                  schema.List, schema.Tuple, schema.Bytes ) ):
             continue

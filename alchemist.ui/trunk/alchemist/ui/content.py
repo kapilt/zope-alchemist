@@ -45,7 +45,7 @@ class AddFormBase( object ):
         
         # flush so we have database id
         session = Session()
-        session.flush()
+        session.flush()        
         
         # fire an object created event
         notify(ObjectCreatedEvent(ob))
@@ -121,7 +121,7 @@ class Display( BrowserView ):
     """
     template = ViewPageTemplateFile('templates/content-view.pt')
     form_name = _("View")    
-    
+
     def __call__( self ):
         return self.template()
 
