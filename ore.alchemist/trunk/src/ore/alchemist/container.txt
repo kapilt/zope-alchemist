@@ -45,12 +45,12 @@ We can ask for the length :
    >>> len(c)
    0
 
-   >>> session.save(SimpleContent())
+   >>> session.add(SimpleContent())
 
 We can iterate over the keys :
 
    >>> [key for key in c.keys()]
-   ['1']
+   ['obj-1']
 
 We can iterate over the items :
 
@@ -62,15 +62,17 @@ We can iterate over the values :
    >>> [item.id for item in c.values()]
    [1]
 
-   >>> session.save(SimpleContent())
+   >>> session.add(SimpleContent())
    >>> len(c)
    2
    >>> [key for key in c.keys()]
-   ['1', '2']
+   ['obj-1', 'obj-2']
 
 We can access specific object by key :
 
-   >>> c['1'].id
+   >>> c['obj-1'].id
    1
-   >>> c['2'].id
+   >>> c['obj-2'].id
    2
+
+  >>> session.close()   

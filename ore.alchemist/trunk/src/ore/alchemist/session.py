@@ -46,6 +46,6 @@ def _zope_session( session_factory ):
     return ZopeSession
 
 Session = TransactionScoped( _zope_session( sessionmaker( autoflush=True,
-                                                          transactional=True ) ) )
+                                                          autocommit=False ) ) )
 
 

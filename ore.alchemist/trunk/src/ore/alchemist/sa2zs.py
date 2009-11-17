@@ -271,7 +271,7 @@ def transmute(  table, annotation=None, __module__=None, **kw):
         import sys
         __module__ = sys._getframe(1).f_globals['__name__']
 
-
+    #import pdb; pdb.set_trace()
     z3iface = SQLAlchemySchemaTranslator().translate( table,
                                                       annotation,
                                                       __module__,

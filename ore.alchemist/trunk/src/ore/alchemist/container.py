@@ -92,7 +92,7 @@ class SQLAlchemyNameChooser(NameChooser):
     def chooseName(self, name, obj):
         # flush the object to make sure it contains an id
         session = Session()
-        session.save(obj)
+        session.add(obj)
         return stringKey(obj)
 
 class ContainerSublocations( object ):
@@ -132,12 +132,14 @@ class AlchemistContainer( Persistent, Contained ):
     def batch(self, order_by=(), offset=0, limit=20, filter=None):
         """
         this method pulls a subset/batch of values for paging through a container.
-        """
-        query = self._query.limit( limit ).offset( offset )
+        """      
+        query = self._query  
         if filter:
             query = query.filter( filter )
         if order_by:
             query = query.order_by( order_by )
+        #limit and offset must be applied after filter and order_by            
+        query = query.limit( limit ).offset( offset )            
         for ob in query:
             ob = contained( ob, self, stringKey(ob) )
             yield ob
@@ -173,7 +175,11 @@ class AlchemistContainer( Persistent, Contained ):
             key = valueKey( name )
         except KeyError:
             return default
-        value = self._query.get( key )
+        #value = self._query.get( key )
+        # sqlalchemy 0.5.x does thow an exception instead of a warning as in .4.x:
+        # InvalidRequestError: Query.get() being called on a Query with existing criterion.
+        session = Session()
+        value = session.query(self.domain_model).get(key)
         if value is None:
             return default
         value = contained( value, self, stringKey(value) )
@@ -190,7 +196,7 @@ class AlchemistContainer( Persistent, Contained ):
 
     def __setitem__( self, name, item ):
         session = Session()
-        session.save( item )
+        session.add( item )
         
     def __delitem__( self, name ):
         instance = self[ name ]
