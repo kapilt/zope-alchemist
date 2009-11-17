@@ -59,14 +59,17 @@ class One2Many( ConstraintManager ):
     def getQueryModifier( self, instance, container ):
         mapper = orm.class_mapper( instance.__class__ )
         primary_key = mapper.primary_key_from_instance( instance )[0]
-        return container.domain_model.c[ self.fk ] == primary_key 
+        return getattr(container.domain_model, self.fk) == primary_key 
         
     def setConstrainedValues( self, instance, target ):
         trusted = removeSecurityProxy( instance )
         mapper = orm.object_mapper( trusted )
         primary_key = mapper.primary_key_from_instance( trusted )[0]
-        column = target.__class__.c[ self.fk ]
-        setattr( target, column.name, primary_key )
+        #column = target.__class__.c[ self.fk ]        
+        table = orm.class_mapper(target.__class__).mapped_table
+        #column = table.c[ self.fk ]
+        #setattr( target, column.name, primary_key )
+        setattr( target, self.fk, primary_key )
         
 ## class Many2Many( ConstraintManager ):
 
