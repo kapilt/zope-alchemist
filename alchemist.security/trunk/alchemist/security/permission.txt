@@ -10,7 +10,7 @@ First let's setup a table, and a mapped class:
   >>> class Content( object ): 
   ...    pass
   >>> orm.mapper( Content, content )
-  <sqlalchemy.orm.mapper.Mapper ...>
+   <Mapper at ...; Content>
 
 And test against a sqllite in memory database:
 
@@ -22,9 +22,9 @@ And create some sample content to test against:
   >>> zebra = Content()
   >>> elephant = Content()
   >>> session = Session()
-  >>> session.save( zebra )
-  >>> session.save( elephant )  
-  >>> transaction.commit()
+  >>> session.add( zebra )
+  >>> session.add( elephant )  
+  >>> session.flush()
   >>> zebra.content_id
   1
   >>> elephant.content_id
