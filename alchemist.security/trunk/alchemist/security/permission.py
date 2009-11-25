@@ -5,6 +5,9 @@ from zope.app.security.settings import Allow, Deny, Unset
 from zope.security.proxy import removeSecurityProxy
 
 from sqlalchemy import select, and_, orm
+
+from ore.alchemist import Session
+
 from schema import rpm
 
 BooleanAsSetting = { True : Allow, False : Deny, None : Unset }
@@ -16,7 +19,9 @@ class LocalRolePermissionMap(object):
     
     def __init__(self, context):
         self.context = context
+        session = Session()
         trusted = removeSecurityProxy(context)        
+        session.add(trusted)
         self.oid = orm.object_mapper( trusted ).primary_key_from_instance(trusted)[0]
         self.object_type = context.__class__.__name__.lower()
 
