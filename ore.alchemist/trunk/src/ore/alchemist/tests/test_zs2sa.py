@@ -20,8 +20,8 @@ class ZopeSchemaTransformTests( TestCase ):
         meta = rdb.MetaData()
         table = transmute(ITestInterface, meta)
 
-        self.assertEqual(table.columns.ASCII.type.__class__, rdb.String)
-        self.assertEqual(table.columns.ASCIILine.type.__class__, rdb.String)
+        self.assertEqual(table.columns.ASCII.type.__class__, rdb.Text)
+        self.assertEqual(table.columns.ASCIILine.type.__class__, rdb.Text)
         self.assertEqual(table.columns.Bool.type.__class__, rdb.BOOLEAN)
 
 
