@@ -5,6 +5,7 @@ from zope.app.security.settings import Allow, Deny, Unset
 from zope.security.proxy import removeSecurityProxy
 
 from sqlalchemy import select, and_, orm
+from sqlalchemy.exc import UnboundExecutionError
 
 from ore.alchemist import Session
 
@@ -27,7 +28,6 @@ class LocalRolePermissionMap(object):
         except UnboundExecutionError:
             session.add(trusted)     
             self.oid = orm.object_mapper( trusted ).primary_key_from_instance(trusted)[0]         
-        self.oid = orm.object_mapper( trusted ).primary_key_from_instance(trusted)[0]
         self.object_type = context.__class__.__name__.lower()
 
     def getPermissionsForRole(self, role_id):
