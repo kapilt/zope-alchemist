@@ -21,7 +21,12 @@ class LocalRolePermissionMap(object):
         self.context = context
         session = Session()
         trusted = removeSecurityProxy(context)        
-        session.add(trusted)
+        session.merge(trusted)
+        try:
+            self.oid = orm.object_mapper( trusted ).primary_key_from_instance(trusted)[0]
+        except UnboundExecutionError:
+            session.add(trusted)     
+            self.oid = orm.object_mapper( trusted ).primary_key_from_instance(trusted)[0]         
         self.oid = orm.object_mapper( trusted ).primary_key_from_instance(trusted)[0]
         self.object_type = context.__class__.__name__.lower()
 
