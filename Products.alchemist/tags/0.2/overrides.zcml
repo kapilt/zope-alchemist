@@ -1,6 +1,0 @@
-<configure xmlns="http://namespaces.zope.org/zope">
-
-  <!-- For DateTime Widgetry
-  <include package="zc.datetimewidget" file="overrides.zcml" />
-  -->
-</configure>

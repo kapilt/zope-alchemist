@@ -1,8 +1,0 @@
-<html metal:use-macro="context/@@standard_macros/view">
-<head></head>
-<body>
-<div metal:fill-slot="body">
-  <table tal:replace="structure view/getTable" />
-</div>
-</body>
-</html>
