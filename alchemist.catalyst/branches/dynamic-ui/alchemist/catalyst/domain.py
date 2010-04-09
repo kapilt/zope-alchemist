@@ -112,9 +112,11 @@ def GenerateDomainInterface( ctx, interface_name=None ):
     # interfaces are both "<InterfaceClass bungeni.models.interfaces.IReport>"
     # but, they are not the same! So, to compare unique we use the string
     # representation of each interface:
-    str_implements = map(str, implements)
-    implements = [ ifc for i,ifc in enumerate(implements) 
-                   if str_implements.index(str(ifc))==i ]
+    # str_implements = map(str, implements)
+    # implements = [ ifc for i,ifc in enumerate(implements) 
+    #                if str_implements.index(str(ifc))==i ]
+    # Ooops making the interfaces unique breaks other things downstream :(
+    
     interface.classImplementsOnly(ctx.domain_model, *implements)
     
     setattr( ctx.interface_module, interface_name, domain_interface )
