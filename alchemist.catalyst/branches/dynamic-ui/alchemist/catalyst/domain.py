@@ -101,10 +101,22 @@ def GenerateDomainInterface( ctx, interface_name=None ):
     old = getattr(ctx.interface_module, interface_name, None)
     if old is not None:
         implements.append(old)
-
+    
     implements.insert(0, domain_interface)
+    # ensure interfaces are unique, preserving the order
+    #implements = [ ifc for i,ifc in enumerate(implements) 
+    #               if implements.index(ifc)==i ]
+    #
+    # XXX: Oooh, strangely the above does not work... it turns out that 
+    # implements contains seemingly repeated interfaces e.g. the first and last 
+    # interfaces are both "<InterfaceClass bungeni.models.interfaces.IReport>"
+    # but, they are not the same! So, to compare unique we use the string
+    # representation of each interface:
+    str_implements = map(str, implements)
+    implements = [ ifc for i,ifc in enumerate(implements) 
+                   if str_implements.index(str(ifc))==i ]
     interface.classImplementsOnly(ctx.domain_model, *implements)
-
+    
     setattr( ctx.interface_module, interface_name, domain_interface )
     ctx.domain_interface = domain_interface
     
