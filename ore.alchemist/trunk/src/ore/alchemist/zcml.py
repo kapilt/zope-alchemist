@@ -15,7 +15,7 @@ from zope import interface, schema
 from zope.configuration.fields import GlobalObject
 
 from zope import component
-from zope.app.component.metaconfigure import utility, PublicPermission
+from zope.security.metaconfigure import utility, PublicPermission
 
 import sqlalchemy
 import interfaces
