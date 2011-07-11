@@ -1,0 +1,32 @@
+Alchemist Sources
+=================
+
+Setup some are test environment
+   
+   >>> from ore.alchemist.tests.test_vocabulary import ExampleVocabularyContent
+   >>> from ore.alchemist.vocabulary import DatabaseSource
+   >>> import transaction   
+   >>> session = ore.alchemist.Session()   
+ 
+Setup our source::
+
+   >>> animal_types_source = DatabaseSource( ExampleVocabularyContent, "title", "id" )
+
+Create Some Terms for the source::
+   
+   >>> term1 = ExampleVocabularyContent('Mammals : Tigers')
+   >>> term2 = ExampleVocabularyContent('Reptiles : Snakes')
+
+Let's use it with a field:  
+
+   >>> from zope import interface, schema
+   >>> class IAnimalFood( interface.Interface ):
+   ...     animal_type = schema.Choice( source=animal_types_source )
+            
+   >>> class AnimalFood( object ):
+   ...     interface.implements( IAnimalFood )
+
+   >>> mice = AnimalFood()
+   >>> choice_field = IAnimalFood['animal_type'].bind( mice)
+   >>> 
+   
