@@ -1,0 +1,16 @@
+0.6.0 2008-12-17
+
+ - allow for passing a filter to batch container method
+
+ - allow specification of pool timeout in zcml
+
+ - allowing specification of ordering for vocabularies
+
+0.5.2 2008-5-19
+ 
+ - Relicensed under the ZPL
+
+ - Session Integration with Elixir
+
+ - made keyreference config conditional on keyreference
+ 
