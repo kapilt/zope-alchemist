@@ -1,4 +1,6 @@
-from sqlalchemy import orm
+from sqlalchemy import (orm,
+                        __version__ as sa_version
+                        ) 
 #from ore.alchemist.model import ModelDescriptor
 from ore.alchemist import sa2zs, interfaces
 from alchemist.traversal.managed import ManagedContainerDescriptor
@@ -7,6 +9,9 @@ from zope.dottedname.resolve import resolve
 #from zope.location import ILocation
 #from zope.app.container.interfaces import IContainer
 from zope.app.security.protectclass import protectName, protectSetAttribute, protectLikeUnto
+
+sa_version = map(int, sa_version.split("."))
+    
 
 def ApplySecurity( ctx ):
     # setup security
@@ -52,7 +57,6 @@ def getDomainInterfaces( domain_model ):
     return (domain_bases, domain_implements)
     
 def GenerateDomainInterface( ctx, interface_name=None ):
-
     # when called from zcml, most likely we'll get a class not an instance
     # if it is a class go ahead and call instantiate it
     if isinstance( ctx.descriptor, type):
@@ -78,9 +82,14 @@ def GenerateDomainInterface( ctx, interface_name=None ):
     
     # use the class's mapper select table as input for the transformation
     domain_mapper = orm.class_mapper( ctx.domain_model )
-    # 0.4 and 0.5 compatibility, 0.5 has the table as local_table (select_table) is none lazy gen?
-    domain_table  = getattr( domain_mapper, 'local_table', domain_mapper.select_table )
-
+    ## 0.4 and 0.5 compatibility, 0.5 has the table as local_table (select_table) is none lazy gen?
+    #domain_table  = getattr( domain_mapper, 'local_table', domain_mapper.select_table )
+    # The 0.6 has no attribute select_table attribute. We still have 0.4 
+    # compitability thought
+    domain_table  = (domain_mapper.local_table if sa_version[1] >= 5 
+                                    else  domain_mapper.select_table)
+    
+    
     # if the domain model already implements a model interface, use it
     # instead of generating a new one
     for iface in interface.implementedBy(ctx.domain_model):
