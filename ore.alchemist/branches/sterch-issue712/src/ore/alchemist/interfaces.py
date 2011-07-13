@@ -91,12 +91,6 @@ class ISQLAlchemyMetadata( Interface ):
 class ISchemaIntrospector( IEnumerableMapping ):
     """ a read dictionary interfaces to tables """
 
-    def bind( metadata=None, engine=None ):
-        """
-        binds introspector to a particular bound metadata, if metadata is none, create a new
-        metadata and bind to the passed in engine
-        """
-
     def bindEngine( engine, schema_name=None):
         """
         bind the engine to the introspector, creates an internal bound metadata to the engine.
