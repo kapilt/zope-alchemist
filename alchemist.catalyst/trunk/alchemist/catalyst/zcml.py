@@ -24,7 +24,10 @@ from zope import interface, schema
 from zope.configuration.fields import GlobalObject, GlobalInterface
 
 from zope import component
-from zope.app.component.metaconfigure import utility, PublicPermission
+from zope.app.component.metaconfigure import PublicPermission
+# !+BUNGENI_UPGRADE(ah,nov-2011) zope.app.component.metaconfigure does not import 'utility' anymore
+# so we import it directly from zope.component.zcml
+from zope.component.zcml import utility
 
 import container
 import domain
