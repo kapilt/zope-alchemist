@@ -134,7 +134,7 @@ class AlchemistContainer( Persistent, Contained ):
         this method pulls a subset/batch of values for paging through a container.
         """      
         query = self._query  
-        if filter:
+        if filter is not None:
             query = query.filter( filter )
         if order_by:
             query = query.order_by( order_by )
